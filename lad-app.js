@@ -1,0 +1,2550 @@
+/* LAD Bible dashboard - full application (data + logic) */
+/* Loaded by the Lindo embed block via <script src>. */
+(function(){
+function start(){
+(()=>{
+const root=document.getElementById('ladbible-dashboard-embed');
+if(!root) return;
+const META_LAD = { range:"24 Jun – 14 Aug 2026", pulled:"14 Aug 2026, 08:36", source:"Facebook Professional Dashboard" };
+// Every LAD Bible reel/live video published in the window, read from the Content Library
+// (Reels+Live filter), walked day-by-day. Fields: v=views, vw=viewers, e=engagement,
+// er=earnings, nf=net follows, im=impressions, c=comments, d=distribution multiplier,
+// wt=total watch time, aw=avg watch time, s3=3-sec views, m1=1-minute views.
+const RAW_LAD = [
+["CIA officer — what makes a good CIA officer","24 Jun 09:45",27788,23584,227,2.2,1,27294,4,-15.6,"1d 20h","6s",7222,0,27788],
+["Angry Ginge & Jakey decorate gingerbread men (AD)","24 Jun 11:58",1119738,582043,6332,0,6,1185157,23,-5.8,"62d 17h","5s",298588,22081,1119738],
+["Jodie Comer or Austin Butler — better villain?","24 Jun 12:30",55461,51895,1819,7.48,4,55670,1,-76.7,"5d 3h","9s",23667,1708,55461],
+["EuroMillions — what would you spend £200M on","24 Jun 14:58",1017413,356085,2220,0,1,1054199,6,-31,"22d 3h","2s",79658,3253,1017413],
+["Jackass — Knoxville & Pontius Snack Wars","24 Jun 18:15",478597,388171,26875,231.72,1163,410862,271,2.3,"569d 17h","2m 1s",297316,123098,478597],
+["Criminologist on the Madeleine McCann case","24 Jun 21:15",49847,45760,1387,6.18,0,49955,19,-28,"4d 23h","9s",19758,2618,49847],
+["CIA officer on what surveillance is really like","25 Jun 09:45",34215,29945,319,2.73,6,33206,15,-54.8,"2d 12h","7s",9224,1231,34215],
+["Ewan McGregor scared to meet Darth Vader","25 Jun 12:15",65408,57093,1787,6.41,8,64696,1,-6819,"5d 23h","9s",21791,9,65408],
+["Stephen Graham judges unhinged British snacks","25 Jun 18:15",332615,296350,11176,135.67,298,308620,145,-0.8,"211d 18h","1m",208676,73281,332615],
+["Rosie Nelson — discovering abuse images","25 Jun 21:15",87103,77672,4273,13.99,6,83805,17,-13,"11d 23h","13s",42629,7565,87103],
+["CIA officer on whether hitmen are real","26 Jun 09:45",47346,40593,557,4.04,1,44965,4,-11.6,"4d 3h","8s",13834,0,47346],
+["Romesh Ranganathan plays This Or That","26 Jun 12:15",44522,41365,441,5.68,1,44735,2,-85.2,"3d 8h","7s",13494,1048,44522],
+["Lorna Tucker on being homeless at 14","26 Jun 21:16",46564,40797,699,12.68,3,47171,1,-59.2,"8d 10h","17s",19900,3089,46564],
+["Gambling addict on how much he's lost","27 Jun 09:00",53594,48054,964,5.95,2,54747,5,-11.3,"4d 5h","7s",19773,0,53594],
+["Zendaya & Robert Pattinson on white lies","27 Jun 12:15",232480,199606,8289,35.32,32,210756,13,-5.4,"58d 9h","25s",126585,35617,232480],
+["Halle Bailey & Regé-Jean Page try food","27 Jun 18:15",137031,110716,6355,71.25,102,116637,76,-2.1,"158d 23h","2m 1s",70282,32139,137031],
+["Criminologist on murderer Ian Huntley","27 Jun 21:15",68840,61342,1259,8.1,7,69093,0,-3.8,"6d 15h","9s",25559,0,68840],
+["Former gambling addict — biggest wins & losses","28 Jun 09:00",127547,103536,1201,13.75,7,111770,3,-14.6,"9d 21h","8s",46091,0,127547],
+["Ewan McGregor & Hayden on lightsaber colour","28 Jun 12:15",56483,50294,1280,5.45,2,56035,5,-11.5,"5d 11h","9s",18002,0,56483],
+["Steve Carell tries British snacks","28 Jun 18:15",740612,626342,56220,423.2,712,674914,221,1.4,"667d 22h","1m 30s",399859,125910,740612],
+["She makes HOW much an hour?!","29 Jun 09:45",4213505,2658508,336647,500.46,7079,2596829,1743,3.3,"701d 8h","24s",2051704,0,4213505],
+["Ewan McGregor on Obi-Wan's mullet","29 Jun 12:05",74022,62670,1118,7.56,3,70876,2,-25.9,"5d 15h","7s",25974,0,74022],
+["Supergirl's Milly Alcock tries food","29 Jun 18:15",365712,311750,18354,112.62,217,322006,146,-0.5,"268d 14h","1m 13s",210198,83535,365712],
+["Navy SEAL on the recruitment process","29 Jun 21:15",54844,48423,1530,11.81,0,54256,9,-22.6,"14d 18h","25s",22568,4143,54844],
+["DID sufferer on her multiple identities","30 Jun 09:45",33316,29820,676,1.38,0,33563,5,-42.8,"3d 6h","9s",12395,1917,33316],
+["Jake Gyllenhaal & Gabrielle Union on accents","30 Jun 12:15",63748,57186,2624,8.79,4,62809,8,-23.1,"9d 1h","13s",28406,4118,63748],
+["Aaron Taylor-Johnson & Brian Tyree Henry snacks","30 Jun 18:15",287701,249817,16793,108.39,238,259826,157,-0.7,"197d 10h","1m 7s",177040,53905,287701],
+["Louis Tomlinson reacts to snacks","30 Jun 18:16",287700,249817,16793,108.39,238,259826,157,-0.7,"197d 10h","1m 7s",177040,53905,287700],
+["Terrorist hunter on the mission to find Bin Laden","30 Jun 21:15",46576,42654,740,9.38,8,47539,3,-39.4,"7d 5h","14s",18497,2466,46576],
+["Navy SEAL on being shot in the face in Afghanistan","1 Jul 09:45",48594,42457,754,7.7,3,47672,5,-31.9,"5d 5h","10s",17326,2666,48594],
+["Jack Black & Paul Rudd on drinking from the carton","1 Jul 12:15",67471,59475,1882,9.99,2,67870,3,-26.5,"9d 17h","13s",33023,5599,67471],
+["Strawberry sando — Angry Ginge in Tokyo (AD)","1 Jul 14:29",1179533,682370,7788,0,10,1225037,26,-4.3,"128d 11h","10s",412611,71168,1179533],
+["What it's like to live with 30 alternate identities","1 Jul 21:15",41602,37001,949,5.34,13,42235,18,-29.1,"4d 15h","10s",17145,2450,41602],
+["Ali Gonzalez — former Sicario (hitman)","2 Jul 09:45",60494,55265,2716,14.4,11,59026,7,-15.9,"14d 13h","23s",28911,6529,60494],
+["Angryginge serenading Jakey — dip or dare (AD)","2 Jul 11:28",1108554,592686,6618,0,4,1132342,17,-4.5,"85d 13h","7s",441246,0,1108554],
+["Jack Black & Paul Rudd on Ant-Man vs Kung-Fu Panda","2 Jul 12:15",64850,60014,1562,8.62,6,64631,0,-15.3,"7d 23h","12s",29106,4646,64850],
+["Teddy Swims puts snacks to the test","2 Jul 18:15",614304,523867,32739,275.47,741,534924,300,2.1,"602d 19h","1m 39s",394555,150347,614304],
+["Robert Irwin on the lesson from Steve Irwin","2 Jul 21:15",86739,81030,2084,12.65,6,86940,17,-3.3,"7d 13h","8s",38518,0,86739],
+["Navy SEAL on his lowest moment","3 Jul 09:45",85460,79601,2687,10.65,15,84580,13,-13.2,"11d 8h","13s",36041,7360,85460],
+["Jack Black & Paul Rudd on American vs UK food","3 Jul 12:15",2456627,1781028,80354,266.22,644,2408235,979,3.5,"558d 12h","27s",947926,464501,2456627],
+["Millie Bobby Brown & Louis Partridge — Snack Wars","3 Jul 18:15",50420,45547,2222,8.97,6,50032,3,-31.4,"10d","19s",18878,3747,50420],
+["Jo Millington — forensic blood spatter expert","3 Jul 21:15",376333,321162,17207,189.79,1020,332944,73,-0.6,"311d 14h","1m 21s",227814,100318,376333],
+["Robert Irwin — more scared of sharks or crocs?","4 Jul 09:01",203919,173775,17407,68.96,7,197208,50,-3.3,"46d 20h","22s",106332,30361,203919],
+["Emma Stone & Mark Ruffalo on their fave Spice Girl","4 Jul 12:15",67343,60281,2048,7.89,1,65782,3,-19.7,"8d","11s",30146,0,67343],
+["Lily Allen tries British & American snacks","4 Jul 18:16",768778,647997,47301,367.18,753,672200,408,1.8,"702d 22h","1m 31s",491216,176346,768778],
+["Sir Ranulph Fiennes — greatest living explorer","4 Jul 21:15",46256,43139,485,8.43,2,46983,4,-81.1,"4d 16h","9s",19867,876,46256],
+["Robert Irwin on koalas having chlamydia","5 Jul 09:01",170757,149355,11379,26.77,3,164120,24,-2.6,"24d 18h","14s",84046,0,170757],
+["Matt Damon explains his beef with Jimmy Fallon","5 Jul 12:15",2761037,1843875,110243,321.59,1079,2088428,384,0.9,"632d 2h","30s",1276649,0,2761037],
+["James & Clair Buckley review posh British food","5 Jul 18:15",201749,166851,12414,103.1,78,177780,41,-2,"179d 16h","1m 30s",107691,36001,201749],
+["Navy SEAL on 'Hell Week'","5 Jul 21:15",69050,62677,1172,8.49,8,69022,2,-33.2,"7d 19h","11s",26630,4645,69050],
+["Robert Irwin — Honesty Box on animals","6 Jul 09:45",38053,34229,663,4.2,3,38753,14,-47.7,"6d 1h","15s",8924,1395,38053],
+["We'd all love a School Of Rock sequel","6 Jul 12:16",43618,39151,885,3.58,3,43730,2,-62.2,"3d 15h","8s",13524,1586,43618],
+["Timothée Chalamet & Austin Butler rate British food","6 Jul 18:15",237569,198547,11740,94.67,126,211413,74,-1.6,"179d 7h","1m 14s",134111,47882,237569],
+["Innocent Opwonya — former child soldier","6 Jul 21:15",52134,47587,1031,10.56,7,53149,6,-32.2,"9d 12h","17s",22761,2469,52134],
+["Robert Irwin on the unfair hate pigeons get","7 Jul 09:45",58443,53033,1844,7.32,4,59045,47,-2.2,"4d 16h","7s",22447,0,58443],
+["Pedro Pascal & Vanessa Kirby on Irish exits","7 Jul 12:15",76505,66812,4892,18.07,4,76273,5,-23.2,"11d 12h","14s",34410,5264,76505],
+["Would You Rather? — Ayamé, Nella Rose & more","7 Jul 18:15",26562,23938,262,3.92,0,27548,2,-137.7,"2d 15h","9s",10379,557,26562],
+["FBI agent on being undercover for 20 years","7 Jul 21:15",95519,81256,3037,13.09,42,90682,18,-8.7,"15d 3h","15s",39907,9924,95519],
+["Robert Irwin on dinosaurs","8 Jul 09:45",74352,67126,3309,11.03,1,72396,26,-2.3,"8d 20h","11s",33496,0,74352],
+["Shots fired at adults who regularly drink milk","8 Jul 12:16",1238621,919325,61299,202.13,397,1058980,2544,3.3,"235d 5h","22s",630566,0,1238621],
+["Jared Leto is obsessed with British food","8 Jul 18:16",159063,136720,11873,55.39,137,142071,244,-1.5,"113d 6h","1m 9s",82945,28240,159063],
+["The real Black Klansman, Ron Stallworth","8 Jul 21:15",42550,36542,947,9.03,21,41988,7,-29.1,"10d 17h","24s",16889,2670,42550],
+["Robert Irwin on teaching kids about nature","9 Jul 09:45",39315,36044,790,5.95,5,40571,14,-77.8,"3d 4h","7s",14049,829,39315],
+["Damson Idris & Brad Pitt on driving","9 Jul 12:15",70845,62854,2207,9.06,4,68322,12,-7.1,"9d 14h","13s",29990,0,70845],
+["Zoe Saldana & the Avatar cast play Would You Rather","9 Jul 18:15",36101,34008,480,4.78,4,36504,0,-51,"5d 4h","13s",12751,1285,36101],
+["What it's like to care for serial killers","9 Jul 21:15",125514,111102,6483,28.75,108,126222,12,-10.3,"26d 5h","20s",55720,9219,125514],
+["Robert Irwin on his favourite animal","10 Jul 09:45",46328,42084,1388,8.14,1,46784,17,-28.1,"6d","12s",17218,2554,46328],
+["Crocs are the greatest clothing item ever","10 Jul 12:15",510793,390595,13842,52.86,134,397601,125,-0.3,"109d 8h","24s",274830,0,510793],
+["Chris Evans, Dakota Johnson & Pedro Pascal WYR","10 Jul 18:15",42681,39549,1183,6.86,9,42232,5,-33.2,"11d 19h","26s",16415,2664,42681],
+["Peter Faulding — hunting for bodies & evidence","10 Jul 21:15",43578,39982,435,6.55,11,43371,3,-50.1,"5d 8h","11s",16337,1698,43578],
+["Robert Irwin on which animal could go extinct next","11 Jul 09:01",660942,529682,100614,94.69,91,600913,170,0.4,"101d 12h","16s",298146,0,660942],
+["Colin Firth really took this one seriously","11 Jul 12:15",66986,61804,1421,8.8,3,66369,5,-10.7,"7d 11h","10s",27885,0,66986],
+["Daniel Kaluuya rates American & British snacks","11 Jul 18:15",93032,81249,4366,23.39,32,88542,20,-8,"46d 6h","48s",39448,10828,93032],
+["The real Black Klansman on meeting the KKK leader","11 Jul 21:15",44783,39561,528,4.48,9,41908,2,-41.5,"4d 19h","11s",14396,3124,44783],
+["Robert Irwin — kangaroos or koalas?","12 Jul 09:00",82596,72995,1919,9.68,5,82352,9,-5.7,"7d 14h","9s",30126,0,82596],
+["Shots fired at people with private number plates","12 Jul 12:15",118556,105117,6045,18.74,10,117304,6,-14.5,"18d","14s",57346,9213,118556],
+["Angryginge in Spain — Snack Wars: World Tour ep2 (AD)","12 Jul 16:31",1061805,582324,7285,0.03,6,1106955,21,-3.4,"97d 11h","9s",313602,0,1061805],
+["Matt Smith & Paddy Considine try UK vs US snacks","12 Jul 18:16",469594,423214,31672,180.71,262,442766,166,-0.3,"285d 5h","59s",289859,80444,469594],
+["We asked a CSI your questions on catching killers","12 Jul 21:15",128909,102283,6456,37.2,331,107287,62,-2.8,"94d 5h","1m 17s",67671,24796,128909],
+["CSI on her worst day at work","14 Jul 09:45",55396,43208,1087,5.95,15,47573,5,-8.7,"8d 12h","17s",19085,0,55396],
+["Stanley Tucci went against Italy quick","14 Jul 12:15",116665,101019,8001,15.78,5,112128,12,-9.3,"21d 16h","18s",55338,14667,116665],
+["Why did Tom Holland sound so concerned","14 Jul 18:16",48943,40242,848,4.73,6,46787,3,-13.1,"4d 3h","8s",16376,0,48943],
+["Navy Seal on the ruthless training program","14 Jul 21:15",100300,89095,2384,13.44,36,99661,10,-4.4,"10d 20h","10s",43674,0,100300],
+["CSI on the importance of bugs at crime scenes","15 Jul 09:45",117862,88085,3596,14.58,116,91586,17,-2.5,"24d 4h","24s",50903,0,117862],
+["Robert Pattinson was so confident — unicorn wishes","15 Jul 12:21",265305,194266,16026,26.86,88,205431,64,-0.9,"57d 14h","25s",131627,0,265305],
+["Gordon Ramsay reacts to airfryers, Taylor Swift & golf","15 Jul 18:15",36329,31599,592,5.48,16,35187,3,-35.5,"10d 1h","27s",13121,2377,36329],
+["Criminologist on psychopaths vs sociopaths","15 Jul 21:15",64184,54768,1086,5.82,29,58275,8,-4.9,"7d 4h","11s",19801,0,64184],
+["CSI on making sure a crime scene is contained","16 Jul 09:45",43422,33226,590,4.14,20,37281,6,-7.7,"6d 10h","16s",14935,0,43422],
+["Anne Hathaway had a point until Ben Safdie figured it out","16 Jul 12:15",91687,77676,5428,9.5,10,84439,7,-11.6,"15d 1h","16s",35533,11145,91687],
+["Anya Taylor-Joy rates Disney, Twilight & Messi","16 Jul 18:15",248938,222483,22384,51.62,18,239165,9,-6.3,"72d 8h","28s",127877,25634,248938],
+["Former KKK member on taking a blood oath","16 Jul 21:15",181792,140790,11057,49.55,145,161268,56,-2.4,"55d 22h","33s",79806,31274,181792],
+["CSI on her most satisfying moment on a case","17 Jul 09:45",48326,38508,771,10.99,58,42034,3,-20.1,"11d 23h","27s",18701,6869,48326],
+["The Odyssey cast debate time travel","17 Jul 12:15",52662,44786,579,4.84,11,48670,8,-7.7,"4d 22h","9s",17206,0,52662],
+["We took Angryginge to Spain — Catalunya (AD)","17 Jul 16:26",1247105,619528,5806,6.33,15,1315743,26,-7.3,"81d 4h","6s",389451,32239,1247105],
+["Joe Locke & Kit Connor — Snack Wars: Showdown","17 Jul 18:15",61571,56832,428,3.97,13,59851,5,-45.3,"5d 16h","9s",12979,1600,61571],
+["Former KKK member on his upbringing & beliefs","17 Jul 21:15",221937,149220,5308,33.78,351,162112,158,-1.3,"71d 14h","39s",96181,48383,221937],
+["CSI talks about her favourite type of evidence","18 Jul 09:00",107098,76417,2708,11.59,81,84980,16,-2.8,"13d 11h","15s",40242,0,107098],
+["McDonald's breakfast should be available all day","18 Jul 12:15",2068256,1349480,80793,348.13,1104,1448764,932,1.9,"515d 5h","32s",1132187,0,2068256],
+["Benny Safdie has a point","18 Jul 18:15",128415,110001,5939,16.77,11,120546,11,-9.1,"16d 9h","13s",57389,0,128415],
+["Former KKK member on the moment he left the Klan","18 Jul 21:15",7824483,4625464,314142,1053.38,15910,5097693,4320,8,"1110d 22h","20s",3079717,0,7824483],
+["CSI on the strangest piece of evidence she's found","19 Jul 10:21",4156584,3045987,222913,534.88,12742,3023573,878,8.5,"1500d 22h","44s",2207296,1284600,4156584],
+["Margot Robbie explaining a shandy to America Ferrera","19 Jul 12:15",322088,292921,16724,54.07,29,306758,8,-7.5,"60d 4h","18s",179204,33159,322088],
+["Being trapped in a musical would be hell","19 Jul 18:15",1416351,969715,53049,169.01,482,1183384,141,1.4,"333d 4h","28s",643456,271678,1416351],
+["Forensic psychologist on interviewing serial killers","19 Jul 21:15",347966,290387,16234,119.43,869,304573,146,-0.2,"321d 15h","1m 34s",179340,76973,347966],
+["I wasn't expecting this answer (CSI)","20 Jul 09:45",1994208,1283581,73133,243.62,7020,1537441,235,0.5,"267d 23h","17s",843879,0,1994208],
+["Pushing a boulder forever sounds hard...","20 Jul 12:15",90153,75346,2517,9.72,10,83493,5,-8.7,"10d 22h","12s",34205,0,90153],
+["Shania Twain tries UK vs Canadian food — Snack Wars","20 Jul 18:15",1495693,1258291,97832,530.3,1644,1305183,849,3.6,"949d 1h","1m 3s",969609,266190,1495693],
+["Forensic psychologist on Jeffrey Dahmer","20 Jul 21:15",153962,114468,4206,15.29,98,127397,30,-1.8,"19d 13h","14s",57873,0,153962],
+["Gambling addict on the worst thing he did","21 Jul 09:45",62021,54780,788,6.63,27,60226,3,-27.4,"7d 23h","12s",25357,3561,62021],
+["Both of these scenarios sound like hell","21 Jul 12:15",108075,93233,7621,13.26,23,104103,9,-10.9,"18d 13h","17s",48730,10046,108075],
+["Millie Bobby Brown & Louis Partridge — wrong answers","21 Jul 18:15",100325,91209,3411,15.9,18,98528,4,-18.6,"14d 19h","14s",40037,7332,100325],
+["Forensic psychologist on meeting Dahmer's mother","21 Jul 21:15",2147253,1505143,78286,281.02,3606,1619045,823,4.9,"655d 8h","38s",915520,535213,2147253],
+["Amish person answers tough questions","22 Jul 09:45",308787,253958,17089,55.98,49,271650,45,-1.5,"57d","19s",169374,0,308787],
+["Obviously Tom Holland picked always dancing","22 Jul 11:55",101666,87737,3469,12.3,24,95143,4,-10.4,"13d 21h","14s",45138,0,101666],
+["We thought we nearly killed Shania Twain — Snack Wars","22 Jul 18:15",159385,141090,6871,19.05,29,160596,31,-7.3,"22d","13s",76401,12449,159385],
+["Forensic psychologist on serial killers","22 Jul 21:15",136135,107901,4234,14.07,178,118463,54,-4.2,"25d 23h","20s",53312,16896,136135],
+["Amish woman on birthdays","23 Jul 09:45",274390,224883,9794,40.72,49,251475,12,-3.6,"39d 4h","14s",135373,0,274390],
+["First to laugh loses — Millie Bobby Brown & Louis Partridge","23 Jul 12:15",148579,127081,7463,34.41,35,139579,3,-13.4,"31d 1h","21s",67075,21922,148579],
+["Fish & chips or paella — Snack Wars: World Tour ep3 (AD)","23 Jul 16:27",1126005,604313,13589,0,36,1164993,48,-2,"124d 16h","10s",421191,0,1126005],
+["Tom Holland, Zendaya & Jacob Batalon play Would You Rather","23 Jul 18:15",691785,555632,63913,222.88,585,608174,195,2.2,"640d 8h","1m 35s",411045,156552,691785],
+["Forensic psychologist on the killer behind 'Black Bird'","23 Jul 21:15",633354,431375,18941,92.68,991,464031,103,1.2,"228d 8h","43s",331969,178917,633354],
+["Amish woman on contraception","24 Jul 09:45",1030702,840427,61578,148.1,569,865347,243,0.4,"202d 19h","21s",582406,0,1030702],
+["Imagine signing off every email with one of these","24 Jul 12:15",77511,65932,1187,9.31,32,74169,3,-14.4,"7d 16h","10s",37029,0,77511],
+["Shania Twain on Beaver Tail & nun's farts — Snack Wars","24 Jul 18:15",60561,54637,711,6.58,33,59403,6,-25.5,"6d 23h","11s",26808,2680,60561],
+["Forensic psychologist on surviving a serial killer","24 Jul 21:15",533389,351716,18617,59.02,766,395171,114,0.2,"124d 20h","29s",245521,0,533389],
+["Sociopath on why she doesn't commit crimes like Ted Bundy","25 Jul 09:00",1281914,973976,136600,370.06,720,1114007,1248,3.6,"415d 23h","36s",634857,223476,1281914],
+["Will Ferrell & Reese Witherspoon on eating pizza with cutlery","25 Jul 12:15",159354,126334,5365,23.26,37,141952,42,-1.1,"27d 13h","18s",74118,0,159354],
+["We think Shania Twain likes maple syrup","25 Jul 18:15",78309,65427,954,7.86,14,74580,14,-3.7,"7d 18h","10s",32707,0,78309],
+["Forensic psychologist on Jeffrey Dahmer's need for power","25 Jul 21:15",126656,99501,3171,12.77,125,108186,41,-3.2,"26d 22h","23s",49061,18758,126656],
+["Sociopath on being manipulative","26 Jul 09:01",227132,186694,17047,30.96,89,204674,194,-1.4,"39d 15h","18s",112519,25882,227132],
+["Spaghetti would be more practical — Tom Holland & Zendaya","26 Jul 12:15",111831,98460,3162,14.5,13,107356,0,-2.5,"11d 20h","10s",49828,0,111831],
+["Millie Bobby Brown & Louis Partridge play true or false","26 Jul 18:15",66692,61260,2285,8.9,15,66146,9,-18.2,"8d 12h","12s",28026,3685,66692],
+["Penile cancer survivor on his symptoms","26 Jul 21:15",112878,97968,3199,10.04,16,111606,12,-3.7,"9d 5h","8s",41917,0,112878],
+["Louis Theroux on meeting evil people","27 Jul 10:45",2464738,2012489,111385,628.56,1038,2867035,1434,5.5,"558d 16h","24s",912333,324059,2464738],
+["Zendaya & Robert Pattinson on Spider-Man vs Batman","27 Jul 12:15",167619,147311,9299,17.03,25,161971,35,-1.8,"18d 18h","11s",71536,0,167619],
+["Peggy Gou compares UK & Korean snacks — Snack Wars","27 Jul 18:15",290443,252062,17231,58.26,196,263199,52,-0.8,"186d 15h","1m 3s",167743,43515,290443],
+["Penile cancer survivor on his operation","27 Jul 21:15",391079,342786,38736,59.5,31,371815,45,-1,"65d 8h","17s",205149,0,391079],
+["Amish woman on what happens if they…","28 Jul 09:45",1854429,1199902,58656,215.59,811,1601780,397,0.7,"200d 20h","14s",705119,0,1854429],
+["Peggy Gou tries WKD for the first time","28 Jul 11:59",188776,146781,4739,16.24,82,153007,18,-1.5,"34d 19h","20s",91044,0,188776],
+["Spider-Man 4 cast on meeting aliens or dinosaurs","28 Jul 18:15",78411,66980,2287,7.5,23,74909,9,-6.2,"7d 7h","9s",29617,0,78411],
+["P*nile cancer survivor on his life after a","28 Jul 21:16",647788,459789,18619,84.11,430,484285,148,0.5,"97d 8h","19s",291138,0,647788],
+["Spider-Man: Brand New Day cast on speaking","29 Jul 18:00",251538,199841,7942,29.99,38,209707,10,-3.6,"25d 16h","11s",108909,0,251538],
+["Peggy Gou on the best UK accent and trying","29 Jul 12:15",116498,102678,5538,12.92,41,112216,10,-7,"19d 22h","17s",52836,8968,116498],
+["Apparently Angry Ginge has cheerleading sk (AD)","29 Jul 10:58",1047936,368752,9407,0,26,1145108,14,-9.8,"32d 2h","3s",186518,4199,1047936],
+["Amish woman and them being treated as seco","29 Jul 09:45",90888,75580,2349,10.88,54,85880,36,-3.1,"12d 20h","14s",40293,0,90888],
+["D*ath investigator describes what it actua","29 Jul 21:15",1339599,967879,90202,112.68,5597,997619,1166,6.6,"361d 23h","32s",645972,320009,1339599],
+["Robert Pattinson went all on at first 😭","30 Jul 12:00",2705143,2141751,267308,398.35,344,2236895,700,1.7,"569d 4h","23s",1365639,0,2705143],
+["D*ath investigator on her most memorable i","30 Jul 09:45",183527,140533,9703,47.94,331,149921,57,-0.8,"55d 23h","34s",85548,35132,183527],
+["This is one of my biggest fears","30 Jul 21:15",707628,499041,33466,78.97,2256,505225,407,1.5,"145d 22h","26s",324056,0,707628],
+["Spider-Man: Brand New Day cast on what the","30 Jul 18:15",82398,71611,1185,8.06,27,77218,5,-8.1,"7d 12h","9s",29920,0,82398],
+["Ted Lasso: Season 4 cast on their real-lif","30 Jul 17:31",61760,54596,918,5,18,61176,2,-28.9,"5d 3h","8s",22684,2243,61760],
+["Simon Pegg talks through his favourite chi","31 Jul 22:31",149203,136238,5062,16.78,33,144686,72,-2.7,"24d 18h","16s",66839,13722,149203],
+["D*ath investigator on the mistakes k*llers","31 Jul 21:16",7230608,5486543,426661,2218.79,24984,5650959,4404,34.8,"2661d 5h","42s",3890879,1956013,7230608],
+["The After Eight challenge is not for the f","31 Jul 18:16",98887,90283,1555,8.36,8,98454,3,-9.3,"7d 8h","7s",37980,0,98887],
+["Spider-Man: Brand New Day on disco dancing","31 Jul 12:15",212888,184481,15840,27.49,44,204469,7,-4.5,"43d 7h","20s",106171,26986,212888],
+["Angry Ginge is not a fan of olives! 🥴🤣 W (AD)","31 Jul 11:29",933984,386431,9890,0,50,1015691,19,-6.1,"29d 11h","3s",142182,6259,933984],
+["Epstein survivor on the release of the Eps","1 Aug 21:45",98319,83264,1990,16.42,153,93918,68,-4,"16d 10h","16s",45639,6321,98319],
+["Barbara Butcher spent over 20 years as a d","1 Aug 18:15",667546,488021,56575,247.2,3481,530518,465,4.5,"646d 12h","1m 47s",334621,120091,667546],
+["The way Simon Pegg stares at his After Eig","1 Aug 17:30",77198,65547,726,3.82,40,72951,1,-42.4,"6d","8s",19284,1573,77198],
+["Tom Holland leaves slime everywhere?! 🤨 #","1 Aug 12:35",117981,97900,4154,15.81,42,111984,9,-6.3,"19d 14h","16s",57133,10354,117981],
+["D*ath investigator on what a body can tell","1 Aug 09:00",339291,269787,22330,67.16,1100,292514,81,1,"91d 5h","29s",150639,63493,339291],
+["Zendaya was taking this one very seriously","2 Aug 18:15",855827,736182,116270,210.02,95,815002,133,2.1,"236d 14h","28s",467561,114517,855827],
+["Simon Pegg explains his reason for having ","2 Aug 17:31",74822,66274,1698,7.69,11,73823,6,-5.1,"8d","10s",29338,0,74822],
+["Simon Pegg tries his favourite snacks of a","2 Aug 12:15",24331,20557,774,1.75,5,23737,1,-5.1,"3d 1h","12s",8482,860,24331],
+["D*ath investigator on talking to d*ad bodi","2 Aug 09:01",285596,211722,17571,31.86,642,232711,81,0.2,"60d 6h","24s",129018,0,285596],
+["We spoke to Charlie Hendrie, the commando ","2 Aug 21:16",44172,39435,685,4.72,35,43845,10,-16,"8d 2h","17s",12943,1820,44172],
+["Former Marine, Charlie Hendrie, talks abou","3 Aug 09:45",60201,55308,892,4.6,30,59765,3,-23.5,"6d 7h","10s",19650,3842,60201],
+["Former Royal Marine on how he ended up fal","3 Aug 22:30",63929,57329,1096,6.02,17,63764,3,-24.6,"7d 6h","11s",24406,3800,63929],
+["Former p*rn addict talks about his lowest ","3 Aug 21:15",674775,590125,114749,94.38,56,633321,400,-0.4,"112d 22h","17s",332498,48682,674775],
+["Simon Pegg on the under appreciation for p","3 Aug 18:15",41984,38418,365,3.31,14,42278,3,-40.6,"3d 18h","8s",14440,1343,41984],
+["Spider-Man: Brand New Day cast on never br","3 Aug 12:15",322713,282756,33526,49.56,35,300981,38,-2,"74d 18h","23s",165736,45316,322713],
+["Former Royal Butler on what really happene","4 Aug 22:30",277572,248072,31533,109.78,51,271645,996,0.4,"84d 10h","30s",172649,56865,277572],
+["UK's oldest dominatrix on why she loves he","4 Aug 21:15",175623,160031,12479,20.67,41,173908,53,-2.6,"31d 11h","17s",87377,16012,175623],
+["Tom Holland knew straight away 😭 #spiderm","4 Aug 18:15",94690,83392,4675,13.5,27,93081,6,-11.7,"14d 19h","15s",45000,6458,94690],
+["Louix Theroux on the current state of Amer","4 Aug 12:15",388982,350044,41248,98.99,154,419669,219,0.1,"100d 18h","25s",208494,45900,388982],
+["Former Marine turned dr*g runner on being ","4 Aug 09:45",47328,41898,416,3.99,40,45995,1,-35.5,"4d 9h","9s",17469,0,47328],
+["UK's oldest dominatrix on why she does it ","5 Aug 21:15",47294,41274,1108,4.95,25,47005,11,-12.4,"6d 19h","14s",19379,3360,47294],
+["Anya Taylor-Joy on her love for David Atte","5 Aug 18:15",86565,75743,2027,10.44,14,83797,8,-15.3,"7d 17h","9s",42832,0,86565],
+["Would you call this one a 'tasty' head-to-","5 Aug 15:28",863490,342057,8736,0,18,935991,28,-9.5,"27d 10h","3s",158445,3662,863490],
+["Mark Ruffalo had it all figured out 🤣 #ma","5 Aug 12:15",109814,98110,5138,16.57,7,107655,8,-7.3,"16d 23h","15s",56651,0,109814],
+["Louis Theroux on time travelling to the past ","5 Aug 09:45",47911,42649,1070,7.53,15,47865,17,-12.6,"7d 10h","15s",16872,3079,47911],
+["Dath investigator talks about how many cases","5 Aug 22:30",437949,301719,14714,45.18,829,323327,48,-0.9,"59d 7h","16s",197465,0,437949],
+["Chris Pratt  Rebecca Ferguson compare pickle","5 Aug 12:16",121025,108053,10823,18.11,12,120738,5,-12.6,"24d 7h","20s",65242,15359,121025],
+["Louis Partridge  Millie Bobby Brown play nam","5 Aug 17:30",76882,69152,4611,16.88,11,74301,3,-25.8,"19d 5h","24s",35422,5966,76882],
+["Former CIA spy on if hitmen are actually real","5 Aug 18:16",2443783,1730515,131162,355.3,5430,1843469,1820,9.9,"695d","34s",1175537,504143,2443783],
+["Brthel manager on how often they get vrgins","5 Aug 21:16",77700,69160,4215,10.99,32,74351,21,-6.2,"13d 4h","17s",36514,7939,77700],
+["'I was arrested for a mrder I didn't commit'","5 Aug 22:31",41047,34693,356,3.13,18,40839,0,-17.1,"3d 19h","9s",16950,2119,41047],
+["Louis Theroux on his on-screen persona  #lo","6 Aug 09:45",58609,52809,2875,5.54,26,61191,7,-20.9,"7d 4h","12s",22790,2994,58609],
+["Former CIA spy on how accurate spy TV  movie","6 Aug 12:16",1456697,1149210,78903,175.93,1178,1213083,554,3.5,"453d 3h","35s",722534,349471,1456697],
+["Millie Bobby Brown  Louis Partridge try and ","6 Aug 18:15",37311,32386,618,4.49,7,37349,3,-34.2,"3d 19h","10s",12799,1934,37311],
+["CSI talks about THAT rumour about cats  #cs","13 Jul 09:46",15238056,10091061,575057,2043.31,24637,10497980,7006,24.1,"2499d 1h","21s",8191098,0,15238056],
+["Devil Wears Prada 2 cast on British vs. US fo","13 Jul 12:15",754543,571790,39152,98.47,211,613224,202,0.4,"191d 6h","28s",401722,0,754543],
+["The cast of The Odyssey play Would You Rather","13 Jul 18:15",120770,111455,8080,22.79,21,119114,10,-9.6,"34d 22h","28s",51479,10428,120770],
+["The Real Black Klansman on how he infiltrated","13 Jul 21:15",64166,52332,1701,7.39,30,60386,12,-11.6,"10d 12h","16s",22906,6862,64166],
+["Amish woman on knowing the lyrics to Amish Pa","31 Jul 09:45",78007,62353,1056,9.07,20,69236,8,-4.3,"6d 13h","9s",34565,0,78007],
+["Louis Theroux on the worst person he's ever m","6 Aug 09:46",713913,574631,41850,96.44,439,632323,138,-0.3,"162d 4h","24s",375474,0,713913],
+["David Tennant on Scottish vs English lager ","7 Aug 21:15",281003,255478,20281,35.21,29,286922,91,-1.8,"53d 5h","18s",142187,38926,281003],
+["Former dath row prisoner who was wrongfully ","7 Aug 22:30",98166,81283,2089,10.79,43,94748,4,-11.9,"11d 10h","11s",44229,0,98166],
+["David Tennant decides between bread and butte","8 Aug 09:01",109522,96981,5548,11.82,26,110686,21,-6.5,"21d 4h","18s",52010,14794,109522],
+["How I was initiated into the KKK...","7 Aug 17:02",34272,26239,301,3.83,27,27584,9,-23,"4d 12h","15s",13171,0,34272],
+["Robert Pattinson  Zendaya debate who should ","8 Aug 12:15",3383937,2203421,103520,287.72,411,3098684,1266,1.3,"501d 18h","19s",1005449,0,3383937],
+["Jack Black  Paul Rudd try to name as many ty","8 Aug 18:15",263798,222038,24951,29.98,27,249626,19,-4,"48d 1h","18s",126689,41681,263798],
+["Dath investigator on the worst way to de...","8 Aug 21:15",904349,573095,54257,82.49,838,597350,1051,1,"101d 18h","15s",365575,0,904349],
+["'I found out my dad was a cannibal'  #canni","8 Aug 22:30",1182060,1049028,136049,227.24,214,1122600,119,0.9,"303d 18h","25s",619967,131037,1182060],
+["David Tennant decides between sausage rolls ","9 Aug 09:00",484928,429497,37720,165,71,482717,432,0.3,"127d 12h","25s",264775,74752,484928],
+["Robert Pattinson  Zendaya debate English chi","9 Aug 12:15",201317,180381,10708,27.86,13,192387,26,-4.1,"26d 22h","13s",105314,0,201317],
+["Paul Rudd  Jack Black debate Ant-Man vs Kung","9 Aug 18:15",63719,58378,1509,7.62,19,63873,2,-28.1,"7d 22h","12s",29177,4100,63719],
+["How i solve crimes using insects  #csi #tru","9 Aug 21:15",46273,38254,894,3.53,43,43969,6,-15.2,"6d 22h","15s",15722,4494,46273],
+["Crime scene cleaner on one of his worst disco","9 Aug 22:30",304239,233584,12766,35.59,226,242703,74,-0.7,"65d 7h","25s",137270,0,304239],
+["Forensic entomologist talks about one of her ","9 Aug 22:31",533280,438728,47586,172.23,535,466384,74,0.5,"198d 4h","39s",254347,98406,533280],
+["David Tennant is fuming at not being selected","10 Aug 09:46",181908,169203,13355,44.22,29,189458,95,-2.2,"37d 20h","19s",82922,17587,181908],
+["Louis Theroux reflects on Joe Exotic  Carole","10 Aug 12:01",677748,487617,20378,30.15,233,636147,131,0.7,"165d 5h","28s",290112,109430,677748],
+["I put Ayra Starr to the test...  #SnackWars","10 Aug 18:16",49486,44298,2496,6.33,9,49899,18,-16.7,"6d 16h","13s",17529,3475,49486],
+["Ayra Starr has a tough decision ahead..  #S","10 Aug 21:16",47777,42508,1101,1.51,14,45303,6,-18.9,"6d 1h","12s",19007,3500,47777],
+["Forensic pathologist talks about what caused ","11 Aug 09:01",653912,571858,79715,246.27,218,628567,490,3,"222d","33s",346507,136364,653912],
+["NAVY seal talks about his experiences  #nav","11 Aug 12:16",99288,87057,4670,20.95,42,83631,23,-4,"24d 6h","23s",43833,7540,99288],
+["The CIA's secret to hearing everything...  ","11 Aug 18:16",99855,84195,7066,19.95,64,97937,44,-2.1,"20d","20s",37385,13014,99855],
+["Snoop Dogg’s reacting to scampi...  #SnackW","11 Aug 21:17",5447728,4091442,213684,600.76,5711,4663926,661,14.9,"1394d 9h","29s",2574991,943989,5447728],
+["Ex-Mafia boss reveals how he survived...  #","11 Aug 22:31",38165,33869,792,5.71,39,37541,2,-19.4,"5d 19h","15s",13783,3264,38165],
+["Rob Beckett, Alison Hammond  Josh Widdicombe","12 Aug 09:01",99851,85290,9242,38,40,96907,22,-3.7,"54d 13h","54s",40347,6617,99851],
+["He opens up about a disturbing chapter of his","12 Aug 12:16",28084,23781,320,4.16,25,27248,0,-14.7,"4d 10h","15s",8759,2085,28084],
+["The Bov Boys get a scare on a cable car! ","12 Aug 15:29",248402,137431,2674,0,10,269900,0,-24,"8d 7h","3s",42819,1237,248402],
+["Shaolin monk answers the ultimate question ab","12 Aug 18:17",36658,29709,560,0.81,29,33250,7,-17.1,"3d 11h","10s",11470,1898,36658],
+["The moment a CIA agent feared for his life...","12 Aug 21:16",48905,39804,2296,10.52,24,45136,8,-5.9,"12d 8h","26s",18819,7691,48905],
+["Snoop Dogg tells us what he truly thinks of t","12 Aug 22:32",56435,50777,2367,5.5,18,57764,10,-6.4,"9d 12h","16s",23587,6175,56435],
+["She makes HOW much an hour?! #jobs #oriignal #honestybox","13 Aug 09:01",348928,241593,20537,34.38,198,253603,98,0,"44d 18h","16s",156429,0,348928],
+["They had to pay over 10,000...","13 Aug 12:16",28631,25395,332,2.65,5,29282,1,-20.4,"3d 11h","11s",10527,1853,28631],
+["One of these got a brutal review from Lily Allen","13 Aug 18:17",80022,71924,3560,9.17,6,82244,20,-2.9,"11d 8h","13s",38889,0,80022],
+["Chris Pratt in pure shock.. #chrispratt #SnackWars #original","13 Aug 21:16",136047,115404,11502,20.33,6,126345,9,-1.2,"17d 17h","13s",74889,0,136047],
+["How much I earned in the Mafia... #mafia #original #honestybox","13 Aug 22:32",25599,23064,649,3.39,5,26186,3,-5,"3d 7h","12s",8756,1532,25599]
+];
+const KEYS=["t","date","v","vw","e","er","nf","im","c","d","wt","aw","s3","m1","pv"];
+const DUR_LAD = {24331:300,25599:100,26562:627,28084:100,28631:80,33316:62,34215:62.8,34272:40,36101:485,36329:545.9,36658:60,37311:100,38053:496.1,38165:100,39315:104.9,41602:73.3,41984:65.5,42550:431.9,42681:704.7,43422:55.6,43578:174.5,43618:63.2,44172:436.3,44522:130.6,44783:80,46256:295.9,46273:80,46328:114.4,46564:198.3,46576:265.9,47294:88.81,47328:47.658,47346:50,47777:60,48326:96.1,48594:97,48905:100,48943:38.7,49486:50,49847:75.8,50420:285.6,52134:441.5,52662:51.1,53594:50.4,54844:478.1,55396:53.6,55461:61,56435:80,56483:59.7,58443:54.3,58609:60,60201:69.9,60494:174,60561:88.6,61571:299.2,61760:66.3,62021:69.1,63719:60,63748:61.7,63929:75.4,64184:46.2,64850:66.5,65408:59.9,66692:114.1,66986:58,67343:57.2,67471:64.8,68840:56.5,69050:78.5,70845:55.3,74022:30.4,74352:57.3,74822:49.8,76505:93.9,77198:80.2,77511:41.7,78309:48.2,78411:39,80022:40,82398:39.2,82596:39,85460:74.1,86565:30.976,86739:48.3,87103:68.2,90153:50.7,90888:50.8,91687:62.8,93032:544.1,94690:72.896,95519:82.4,98166:40,98319:98.1,98887:46.2,99288:150,99851:600,99855:80,100300:53.8,100325:107.1,101666:57.3,107098:32.4,108075:79.7,109522:80,109814:57.77,111831:39.2,112878:32.5,116498:72,116665:73,117862:53,117981:67.8,118556:79,125514:200,126656:70.6,127547:23.8,128415:49,128909:433.6,136047:30,136135:60.5,137031:627.8,148579:92.5,149203:74.3,153962:33.8,159063:509.4,159354:56,159385:69.8,167619:38.1,170757:59.3,175623:88.8,181792:138,181908:100,183527:99.2,188776:55.9,201317:30,201749:755,203919:102.4,212888:73.9,221937:86.5,227132:60.5,232480:72.8,237569:463.2,248402:80,248938:348.1,251538:25.4,263798:60,265305:55,274390:40.3,277572:94.848,281003:60,285596:58.5,287700:394.2,287701:345.1,290443:561.6,304239:40,308787:46.2,322088:69.1,322713:74.4,332615:436,339291:91.4,347966:485.1,348928:20,365712:453.9,376333:315.5,388982:126.656,391079:59,469594:456.4,478597:569.6,484928:100,510793:46.4,533280:100,533389:51.5,614304:559.9,633354:79.2,647788:30.8,653912:100,660942:55.3,667546:660.2,674775:80.5,677748:60,691785:598.7,707628:43.8,740612:687.1,768778:516.2,855827:111.3,863490:63.338,904349:15,933984:65.9,1017413:70.7,1030702:41.4,1047936:99.4,1061805:58.9,1108554:58,1119738:77.4,1126005:56.2,1179533:72.2,1182060:150,1238621:47.4,1247105:63.9,1281914:130.4,1339599:61,1416351:60.6,1456697:60,1495693:465.2,1854429:23.4,1994208:26.6,2068256:48.1,2147253:75.7,2456627:65.6,2464738:101.5,2705143:51.1,2761037:50.3,3383937:40,4156584:75.4,4213505:27.2,5447728:80,7230608:91.8,7824483:25.9};
+const fmtLen=s=>s==null?null:(Math.floor(s/60)+":"+String(Math.round(s%60)).padStart(2,"0"));
+const CID_LAD={"24331":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDU4NjkxMDQ2MjkyNzc4OjE0NTg2OTEwNDYyOTI3Nzg=","25599":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDY5NjQ0MTI4NTMwODAzOjE0Njk2NDQxMjg1MzA4MDM=","26562":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDM0ODI2ODQ1MzQ1ODY1OjE0MzQ4MjY4NDUzNDU4NjU=","27788":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDIxOTk4NTk2NjI4NjkwOjE0MjE5OTg1OTY2Mjg2OTA=","28084":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDY4MjQxMTYyMDA0NDMzOjE0NjgyNDExNjIwMDQ0MzM=","28631":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDY5MTg3MTU4NTc2NTAwOjE0NjkxODcxNTg1NzY1MDA=","33316":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDI3NjU2MTU5Mzk2MjY3OjE0Mjc2NTYxNTkzOTYyNjc=","34215":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDIyOTExNjYzMjA0MDUwOjE0MjI5MTE2NjMyMDQwNTA=","34272":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDYzODAxODU5MTE1MDMwOjE0NjM4MDE4NTkxMTUwMzA=","36101":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDM2Njk1MjQ4NDkyMzU4OjE0MzY2OTUyNDg0OTIzNTg=","36329":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQyMDM3MTk3OTU4MTYzOjE0NDIwMzcxOTc5NTgxNjM=","36658":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDY4NTI2NTE1MzA5MjMxOjE0Njg1MjY1MTUzMDkyMzE=","37311":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDYzODU4OTUyNDQyNjU0OjE0NjM4NTg5NTI0NDI2NTQ=","38053":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDMzNDUxNjk1NDgzMzgwOjE0MzM0NTE2OTU0ODMzODA=","38165":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDY3NzQwNzk1Mzg3ODAzOjE0Njc3NDA3OTUzODc4MDM=","39315":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDM2MzMyNTM4NTI4NjI5OjE0MzYzMzI1Mzg1Mjg2Mjk=","41047":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDYzMDY1NzQ1ODU1MzA4OjE0NjMwNjU3NDU4NTUzMDg=","41602":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDI5MTMxNDMyNTgyMDczOjE0MjkxMzE0MzI1ODIwNzM=","41984":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDU5OTA2OTc5NTA0NTE4OjE0NTk5MDY5Nzk1MDQ1MTg=","42550":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDM1OTExOTk1MjM3MzUwOjE0MzU5MTE5OTUyMzczNTA=","42681":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDM3NTc2ODExNzM3NTM1OjE0Mzc1NzY4MTE3Mzc1MzU=","43422":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQyNjExNDQ0NTY3NDA1OjE0NDI2MTE0NDQ1Njc0MDU=","43578":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDM3Njg3NTAxNzI2NDY2OjE0Mzc2ODc1MDE3MjY0NjY=","43618":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDMzNTYwMTA1NDcyNTM5OjE0MzM1NjAxMDU0NzI1Mzk=","44172":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDU5MTAyNjc5NTg0OTQ4OjE0NTkxMDI2Nzk1ODQ5NDg=","44522":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDIzOTU5MzI2NDMyNjE3OjE0MjM5NTkzMjY0MzI2MTc=","44783":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDM4NTUzMzc0OTczMjEyOjE0Mzg1NTMzNzQ5NzMyMTI=","46256":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDMyMDE2MTc4OTYwMjY1OjE0MzIwMTYxNzg5NjAyNjU=","46273":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDY1ODQyMDgyMjQ0MzQxOjE0NjU4NDIwODIyNDQzNDE=","46328":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDM3MjIxNjI1MTA2Mzg3OjE0MzcyMjE2MjUxMDYzODc=","46564":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDI0MzQ1NjEzMDYwNjU1OjE0MjQzNDU2MTMwNjA2NTU=","46576":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDI4MTUxNDY5MzQ2NzM2OjE0MjgxNTE0NjkzNDY3MzY=","47294":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDYyMDM3MDE5MjkxNTE0OjE0NjIwMzcwMTkyOTE1MTQ=","47328":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDYwNDk5Njk5NDQ1MjQ2OjE0NjA0OTk2OTk0NDUyNDY=","47346":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDIzODYwMjIzMTA5MTk0OjE0MjM4NjAyMjMxMDkxOTQ=","47777":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDY2NzUwMDYyMTUzNTQzOjE0NjY3NTAwNjIxNTM1NDM=","47911":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDYxNDgxNTg2MDEzNzI0OjE0NjE0ODE1ODYwMTM3MjQ=","48326":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQzNTU1ODg0NDcyOTYxOjE0NDM1NTU4ODQ0NzI5NjE=","48594":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDI4NjMwNzk5Mjk4ODAzOjE0Mjg2MzA3OTkyOTg4MDM=","48905":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDY4NjQ2MTYxOTYzOTMzOjE0Njg2NDYxNjE5NjM5MzM=","48943":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQxMTA5MTk0NzE3NjMwOjE0NDExMDkxOTQ3MTc2MzA=","49486":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDY2NjI2MTYyMTY1OTMzOjE0NjY2MjYxNjIxNjU5MzM=","49847":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDIyNDY1MjQzMjQ4NjkyOjE0MjI0NjUyNDMyNDg2OTI=","50420":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDMwOTU0NDUyMzk5NzcxOjE0MzA5NTQ0NTIzOTk3NzE=","52134":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDMzOTc3MzkyMDk3NDc3OjE0MzM5NzczOTIwOTc0Nzc=","52662":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQzNjU1ODU3Nzk2Mjk3OjE0NDM2NTU4NTc3OTYyOTc=","53594":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDI0NzQ3Njk2MzUzNzgwOjE0MjQ3NDc2OTYzNTM3ODA=","54844":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDI3MTkwMDcyNzc2MjA5OjE0MjcxOTAwNzI3NzYyMDk=","55396":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQwNzYxNDc0NzUyNDAyOjE0NDA3NjE0NzQ3NTI0MDI=","55461":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDIyMTA0MTUzMjg0ODAxOjE0MjIxMDQxNTMyODQ4MDE=","56435":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDY4Njk1NDg1MjkyMzM0OjE0Njg2OTU0ODUyOTIzMzQ=","56483":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDI1ODA4ODU2MjQ3NjY0OjE0MjU4MDg4NTYyNDc2NjQ=","58443":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDM0NDM2NjkyMDUxNTQ3OjE0MzQ0MzY2OTIwNTE1NDc=","58609":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDYzNDgzNjk5MTQ2ODQ2OjE0NjM0ODM2OTkxNDY4NDY=","60201":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDU5NTQ0NTY5NTQwNzU5OjE0NTk1NDQ1Njk1NDA3NTk=","60494":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDI5NTc5NDE1ODcwNjA4OjE0Mjk1Nzk0MTU4NzA2MDg=","60561":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDUwMzMyNDMwNDYxOTczOjE0NTAzMzI0MzA0NjE5NzM=","61571":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQzOTI0NTg3NzY5NDI0OjE0NDM5MjQ1ODc3Njk0MjQ=","61760":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDU2MDc2NTQ2NTU0MjI4OjE0NTYwNzY1NDY1NTQyMjg=","62021":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQ3MjM5MDkwNzcxMzA3OjE0NDcyMzkwOTA3NzEzMDc=","63719":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDY1NzEyMzg1NTkwNjQ0OjE0NjU3MTIzODU1OTA2NDQ=","63748":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDI3NzYyNTY2MDUyMjkzOjE0Mjc3NjI1NjYwNTIyOTM=","63929":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDYwMDg3OTI2MTUzMDkwOjE0NjAwODc5MjYxNTMwOTA=","64166":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQwMzQ3NDYxNDYwNDcwOjE0NDAzNDc0NjE0NjA0NzA=","64184":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQyMTUwMTUxMjgwMjAxOjE0NDIxNTAxNTEyODAyMDE=","64850":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDI5NjkyMDcyNTI2MDA5OjE0Mjk2OTIwNzI1MjYwMDk=","65408":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDIzMDE0MzQ5ODYwNDQ4OjE0MjMwMTQzNDk4NjA0NDg=","66692":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDUyMTQ1NjYwMjgwNjUwOjE0NTIxNDU2NjAyODA2NTA=","66986":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDM4MTg2MDc4MzQzMjc1OjE0MzgxODYwNzgzNDMyNzU=","67343":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDMxNjM2ODE4OTk4MjAxOjE0MzE2MzY4MTg5OTgyMDE=","67471":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDI4NzM2Mjk5Mjg4MjUzOjE0Mjg3MzYyOTkyODgyNTM=","68840":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDI1MjYzNTQ5NjM1NTI4OjE0MjUyNjM1NDk2MzU1Mjg=","69050":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDMyOTg3MDg1NTI5ODQxOjE0MzI5ODcwODU1Mjk4NDE=","70845":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDM2NDI3NTc4NTE5MTI1OjE0MzY0Mjc1Nzg1MTkxMjU=","74022":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDI2NzgzNjk2MTUwMTgwOjE0MjY3ODM2OTYxNTAxODA=","74352":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDM1NDMxMjAxOTUyMDk2OjE0MzU0MzEyMDE5NTIwOTY=","74822":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDU4OTQ1ODYyOTMzOTYzOjE0NTg5NDU4NjI5MzM5NjM=","76505":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDM0NTQxNTk4NzA3NzIzOjE0MzQ1NDE1OTg3MDc3MjM=","76882":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDYyODUzNzEyNTQzMTc4OjE0NjI4NTM3MTI1NDMxNzg=","77198":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDU3OTkxMjg2MzYyNzU0OjE0NTc5OTEyODYzNjI3NTQ=","77511":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDUwMDU1MzQwNDg5NjgyOjE0NTAwNTUzNDA0ODk2ODI=","77700":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDYzMDIwNjg5MTkzMTQ3OjE0NjMwMjA2ODkxOTMxNDc=","78007":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDU2NzEyMDYzMTU3MzQzOjE0NTY3MTIwNjMxNTczNDM=","78309":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDUxMjI0NTMzNzA2MDk2OjE0NTEyMjQ1MzM3MDYwOTY=","78411":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDU0MDg3MzAzNDE5ODE5OjE0NTQwODczMDM0MTk4MTk=","80022":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDY5NDY5NTk4NTQ4MjU2OjE0Njk0Njk1OTg1NDgyNTY=","82398":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDU2MTExODQ5ODg0MDMxOjE0NTYxMTE4NDk4ODQwMzE=","82596":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDM4OTcwODk4MjY0NzkzOjE0Mzg5NzA4OTgyNjQ3OTM=","85460":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDMwNTU2Njc5MTA2MjE1OjE0MzA1NTY2NzkxMDYyMTU=","86565":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDYxODk4MDE5MzA1NDE0OjE0NjE4OTgwMTkzMDU0MTQ=","86739":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDMwMDkzNTMyNDg1ODYzOjE0MzAwOTM1MzI0ODU4NjM=","87103":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDIzNDA4NDUzMTU0MzcxOjE0MjM0MDg0NTMxNTQzNzE=","90153":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQ2Mzk2MjY0MTg4OTIzOjE0NDYzOTYyNjQxODg5MjM=","90888":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDU0Njk1OTQzMzU4OTU1OjE0NTQ2OTU5NDMzNTg5NTU=","91687":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQyNzE1NDQ3ODkwMzM4OjE0NDI3MTU0NDc4OTAzMzg=","93032":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDM4NDQ3NDg4MzE3MTM0OjE0Mzg0NDc0ODgzMTcxMzQ=","94690":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDYwODg4MDE5NDA2NDE0OjE0NjA4ODgwMTk0MDY0MTQ=","95519":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDM0OTY3MjU1MzMxODI0OjE0MzQ5NjcyNTUzMzE4MjQ=","98166":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDY0MDEzMzk1NzYwNTQzOjE0NjQwMTMzOTU3NjA1NDM=","98319":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDU4MTU5ODA5Njc5MjM1OjE0NTgxNTk4MDk2NzkyMzU=","98887":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDU3MDk2MTUzMTE4OTM0OjE0NTcwOTYxNTMxMTg5MzQ=","99288":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDY2NTcyMjM4ODM3OTkyOjE0NjY1NzIyMzg4Mzc5OTI=","99851":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDY3Mzg2NjEyMDg5ODg4OjE0NjczODY2MTIwODk4ODg=","99855":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDY3NTU4ODkyMDcyNjYwOjE0Njc1NTg4OTIwNzI2NjA=","100300":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQxMjI2MjU4MDM5MjU3OjE0NDEyMjYyNTgwMzkyNTc=","100325":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQ3NjA2NjU3NDAxMjE3OjE0NDc2MDY2NTc0MDEyMTc=","101666":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQ4MjI0MTMwNjcyODAzOjE0NDgyMjQxMzA2NzI4MDM=","107098":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQ0NDQ5OTg0MzgzNTUxOjE0NDQ0NDk5ODQzODM1NTE=","108075":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQ3MzMyNDg3NDI4NjM0OjE0NDczMzI0ODc0Mjg2MzQ=","109522":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDY0MzY5NDY1NzI0OTM2OjE0NjQzNjk0NjU3MjQ5MzY=","109814":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDYxNTkxMjQyNjY5NDI1OjE0NjE1OTEyNDI2Njk0MjU=","111831":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDUxODY1OTEzNjQxOTU4OjE0NTE4NjU5MTM2NDE5NTg=","112878":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDUyMjY3OTU2OTM1MDg3OjE0NTIyNjc5NTY5MzUwODc=","116498":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDU0ODA2ODIwMDE0NTM0OjE0NTQ4MDY4MjAwMTQ1MzQ=","116665":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQwODU1ODMxNDA5NjMzOjE0NDA4NTU4MzE0MDk2MzM=","117862":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQxNjU2NTM3OTk2MjI5OjE0NDE2NTY1Mzc5OTYyMjk=","117981":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDU3NzY2Mjc5NzE4NTg4OjE0NTc3NjYyNzk3MTg1ODg=","118556":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDM5MDg4MDc4MjUzMDc1OjE0MzkwODgwNzgyNTMwNzU=","120770":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQwMjMxNDcxNDcyMDY5OjE0NDAyMzE0NzE0NzIwNjk=","121025":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDYyNjAxMDEyNTY4NDQ4OjE0NjI2MDEwMTI1Njg0NDg=","125514":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDM2ODA2OTY1MTQ3ODUzOjE0MzY4MDY5NjUxNDc4NTM=","126656":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDUxMzMwMjI3MDI4ODYwOjE0NTEzMzAyMjcwMjg4NjA=","127547":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDI1NjczMjQ2MjYxMjI1OjE0MjU2NzMyNDYyNjEyMjU=","128415":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQ0ODI4ODM0MzQ1NjY2OjE0NDQ4Mjg4MzQzNDU2NjY=","128909":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDM5NDY0NTgxNTQ4NzU4OjE0Mzk0NjQ1ODE1NDg3NTg=","136047":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDY5NjAwOTI1MjAxNzkwOjE0Njk2MDA5MjUyMDE3OTA=","136135":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQ4NjA2MzIwNjM0NTg0OjE0NDg2MDYzMjA2MzQ1ODQ=","137031":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDI1MTQ2OTA2MzEzODU5OjE0MjUxNDY5MDYzMTM4NTk=","148579":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQ5MTI1MjIzOTE2MDI3OjE0NDkxMjUyMjM5MTYwMjc=","149203":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDU3MjU2MDM2NDM2Mjc5OjE0NTcyNTYwMzY0MzYyNzk=","153962":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQ2NzkwNzk3NDgyODAzOjE0NDY3OTA3OTc0ODI4MDM=","159063":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDM1Nzk5NTkxOTE1MjU3OjE0MzU3OTk1OTE5MTUyNTc=","159354":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDUwOTYxMjU3MDY1NzU3OjE0NTA5NjEyNTcwNjU3NTc=","159385":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQ4NDg4OTIzOTc5NjU3OjE0NDg0ODg5MjM5Nzk2NTc=","167619":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDUyODE3ODEzNTQ2NzY4OjE0NTI4MTc4MTM1NDY3Njg=","170757":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDMyNDQzNTI1NTg0MTk3OjE0MzI0NDM1MjU1ODQxOTc=","175623":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDYxMDExNzg2MDYwNzA0OjE0NjEwMTE3ODYwNjA3MDQ=","181792":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQzMTEyODUxMTgzOTMxOjE0NDMxMTI4NTExODM5MzE=","181908":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDY2MjU3MTk4ODY5NDk2OjE0NjYyNTcxOTg4Njk0OTY=","183527":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDU1NzA4NTU2NTkxMDI3OjE0NTU3MDg1NTY1OTEwMjc=","188776":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDUzNzk1MDQzNDQ5MDQ1OjE0NTM3OTUwNDM0NDkwNDU=","201317":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDY1NDI3Mzc1NjE5MTQ1OjE0NjU0MjczNzU2MTkxNDU=","201749":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDMyODUzNTQ4ODc2NTI4OjE0MzI4NTM1NDg4NzY1Mjg=","203919":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDMxNTEyMzQ1Njc3MzE1OjE0MzE1MTIzNDU2NzczMTU=","212888":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDU2ODE0MDAzMTQ3MTQ5OjE0NTY4MTQwMDMxNDcxNDk=","221937":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQ0MDM4MDQ3NzU4MDc4OjE0NDQwMzgwNDc3NTgwNzg=","227132":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDUxNzQzMzY2OTg3NTQ2OjE0NTE3NDMzNjY5ODc1NDY=","232480":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDI0ODczNzYzMDA3ODQwOjE0MjQ4NzM3NjMwMDc4NDA=","237569":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDMzODQ5NTE1NDQzNTk4OjE0MzM4NDk1MTU0NDM1OTg=","248402":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDY4Mzk0MTAxOTg5MTM5OjE0NjgzOTQxMDE5ODkxMzk=","248938":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQyOTk3MTA3ODYyMTcyOjE0NDI5OTcxMDc4NjIxNzI=","251538":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDU1MDkxNzQ5OTg2MDQxOjE0NTUwOTE3NDk5ODYwNDE=","263798":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDY0Nzc3NDM1Njg0MTM5OjE0NjQ3Nzc0MzU2ODQxMzk=","265305":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQxNzU4NTg0NjUyNjkxOjE0NDE3NTg1ODQ2NTI2OTE=","274390":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQ5MDMwMjUzOTI1NTI0OjE0NDkwMzAyNTM5MjU1MjQ=","277572":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDYxMDU1OTQ2MDU2Mjg4OjE0NjEwNTU5NDYwNTYyODg=","281003":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDYzOTczMjAyNDMxMjI5OjE0NjM5NzMyMDI0MzEyMjk=","285596":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDU4NTY4ODcyOTcxNjYyOjE0NTg1Njg4NzI5NzE2NjI=","287700":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDI4MDMxODY5MzU4Njk2OjE0MjgwMzE4NjkzNTg2OTY=","287701":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDI4MDMyMTU2MDI1MzM0OjE0MjgwMzIxNTYwMjUzMzQ=","290443":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDUzMTAzNzMwMTg0ODQzOjE0NTMxMDM3MzAxODQ4NDM=","304239":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDY1ODg1OTc4OTA2NjE4OjE0NjU4ODU5Nzg5MDY2MTg=","308787":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQ4MTQyMjUwNjgwOTkxOjE0NDgxNDIyNTA2ODA5OTE=","322088":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQ1NDE4MjM3NjIwMDU5OjE0NDU0MTgyMzc2MjAwNTk=","322713":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDU5NjQzNjEyODY0MTg4OjE0NTk2NDM2MTI4NjQxODg=","332615":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDIzMjg5NzM2NDk5NTc2OjE0MjMyODk3MzY0OTk1NzY=","339291":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDU3NjMxMTg5NzMyMDk3OjE0NTc2MzExODk3MzIwOTc=","347966":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQ1ODEwODg3NTgwNzk0OjE0NDU4MTA4ODc1ODA3OTQ=","348928":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDY4MjQ3MDY1MzM3MTc2OjE0NjgyNDcwNjUzMzcxNzY=","365712":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDI3MDY2MTA5NDU1MjcyOjE0MjcwNjYxMDk0NTUyNzI=","376333":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDMxMDc5NjM5MDUzOTE5OjE0MzEwNzk2MzkwNTM5MTk=","388982":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDYwNjAxMzE2MTAxNzUxOjE0NjA2MDEzMTYxMDE3NTE=","391079":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDUzMjQxOTMwMTcxMDIzOjE0NTMyNDE5MzAxNzEwMjM=","437949":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDYyMDc5OTY1OTUzODg2OjE0NjIwNzk5NjU5NTM4ODY=","469594":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDM5MzUyMjQ4MjI2NjU4OjE0MzkzNTIyNDgyMjY2NTg=","478597":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDIyMzU2NzYzMjU5NTQwOjE0MjIzNTY3NjMyNTk1NDA=","484928":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDY1MzAyMDE1NjMxNjgxOjE0NjUzMDIwMTU2MzE2ODE=","510793":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDM3MzEwNDIxNzY0MTc0OjE0MzczMTA0MjE3NjQxNzQ=","533280":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDY1ODg2MzM1NTczMjQ5OjE0NjU4ODYzMzU1NzMyNDk=","533389":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDUwNDQ3ODQ3MTE3MDk4OjE0NTA0NDc4NDcxMTcwOTg=","614304":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDI5OTcxODA5MTY0NzAyOjE0Mjk5NzE4MDkxNjQ3MDI=","633354":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQ5NTI4MTc3MjA5MDY1OjE0NDk1MjgxNzcyMDkwNjU=","647788":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDU0MjA4OTUwMDc0MzIxOjE0NTQyMDg5NTAwNzQzMjE=","653912":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDY2NTcwMzA1NTA0ODUyOjE0NjY1NzAzMDU1MDQ4NTI=","660942":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDM4MDcxMjY1MDIxNDIzOjE0MzgwNzEyNjUwMjE0MjM=","667546":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDU4MDI0MDkzMDI2MTQwOjE0NTgwMjQwOTMwMjYxNDA=","674775":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDYwMDM5Nzg5NDkxMjM3OjE0NjAwMzk3ODk0OTEyMzc=","677748":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDY2MzQzMTM4ODYwOTAyOjE0NjYzNDMxMzg4NjA5MDI=","691785":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQ5Mzk5MTc3MjIxOTY1OjE0NDkzOTkxNzcyMjE5NjU=","707628":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDU2MjQ1NTkzMjAzOTkwOjE0NTYyNDU1OTMyMDM5OTA=","713913":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDYyNDk4NzQ5MjQ1MzQxOjE0NjI0OTg3NDkyNDUzNDE=","740612":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDI2MTA1MTQ5NTUxMzY4OjE0MjYxMDUxNDk1NTEzNjg=","754543":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDM5OTcwNDU4MTY0ODM3OjE0Mzk5NzA0NTgxNjQ4Mzc=","768778":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDMxOTAzNDI4OTcxNTQwOjE0MzE5MDM0Mjg5NzE1NDA=","855827":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDU4OTgwMjIyOTMwNTI3OjE0NTg5ODAyMjI5MzA1Mjc=","863490":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDYxNzU0MjcyNjUzMTIyOjE0NjE3NTQyNzI2NTMxMjI=","904349":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDY0ODk3MzE1NjcyMTUxOjE0NjQ4OTczMTU2NzIxNTE=","933984":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDU2NzgwMDQ2NDgzODc4OjE0NTY3ODAwNDY0ODM4Nzg=","1017413":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDIyMjEzOTAzMjczODI2OjE0MjIyMTM5MDMyNzM4MjY=","1030702":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQ5OTU5NzAzODMyNTc5OjE0NDk5NTk3MDM4MzI1Nzk=","1047936":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDU0NzUwMTg2Njg2ODY0OjE0NTQ3NTAxODY2ODY4NjQ=","1061805":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDM5Mjc0Mzc0OTAxMTEyOjE0MzkyNzQzNzQ5MDExMTI=","1108554":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDI5NjQ2OTY1ODYzODUzOjE0Mjk2NDY5NjU4NjM4NTM=","1119738":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDIyMDgzMTg2NjIwMjMxOjE0MjIwODMxODY2MjAyMzE=","1126005":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQ5MzE1NTEwNTYzNjY1OjE0NDkzMTU1MTA1NjM2NjU=","1179533":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDI4ODQwOTgyNjExMTE4OjE0Mjg4NDA5ODI2MTExMTg=","1182060":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDY0OTM5MDU1NjY3OTc3OjE0NjQ5MzkwNTU2Njc5Nzc=","1238621":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDM1NTI2ODcxOTQyNTI5OjE0MzU1MjY4NzE5NDI1Mjk=","1247105":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQzODQ3NTA3Nzc3MTMyOjE0NDM4NDc1MDc3NzcxMzI=","1281914":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDUwODQzNTQzNzQ0MTk1OjE0NTA4NDM1NDM3NDQxOTU=","1339599":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDU1MjM4ODYzMzA0NjYzOjE0NTUyMzg4NjMzMDQ2NjM=","1416351":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQ1Njg4MzM3NTkzMDQ5OjE0NDU2ODgzMzc1OTMwNDk=","1456697":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDYzNTg0OTU5MTM2NzIwOjE0NjM1ODQ5NTkxMzY3MjA=","1495693":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQ2Njc0NTc0MTYxMDkyOjE0NDY2NzQ1NzQxNjEwOTI=","1854429":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDUzNzAzNDYwMTI0ODcwOjE0NTM3MDM0NjAxMjQ4NzA=","1994208":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQ2Mjk4MjU3NTMyMDU3OjE0NDYyOTgyNTc1MzIwNTc=","2068256":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQ0NTY5MTMxMDM4MzAzOjE0NDQ1NjkxMzEwMzgzMDM=","2147253":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQ3NzE4MzY0MDU2NzEzOjE0NDc3MTgzNjQwNTY3MTM=","2443783":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDYyODkxMDE5MjA2MTE0OjE0NjI4OTEwMTkyMDYxMTQ=","2456627":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDMwNjY0Njc1NzYyMDgyOjE0MzA2NjQ2NzU3NjIwODI=","2464738":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDUyNzU1MzEzNTUzMDE4OjE0NTI3NTUzMTM1NTMwMTg=","2705143":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDU1Nzk4MTAzMjQ4NzM5OjE0NTU3OTgxMDMyNDg3Mzk=","2761037":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDMyNTY0MDYyMjM4ODEwOjE0MzI1NjQwNjIyMzg4MTA=","3383937":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDY0NDg5NjM1NzEyOTE5OjE0NjQ0ODk2MzU3MTI5MTk=","4156584":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQ1MzM5ODQ0Mjk0NTY1OjE0NDUzMzk4NDQyOTQ1NjU=","4213505":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDI2NjkyNTQ2MTU5Mjk1OjE0MjY2OTI1NDYxNTkyOTU=","5447728":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDY3NjgzOTI1MzkzNDkwOjE0Njc2ODM5MjUzOTM0OTA=","7230608":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDU3MjA4MTgzMTA3NzMxOjE0NTcyMDgxODMxMDc3MzE=","7824483":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDQ0OTM1MzU3NjY4MzQ3OjE0NDQ5MzUzNTc2NjgzNDc=","15238056":"UzpfSTEwMDA2NDU1Njg5NTIzNToxNDM5ODc5NjExNTA3MjU1OjE0Mzk4Nzk2MTE1MDcyNTU="};
+const XTRA_LAD={"12769":{"reac":27,"clk":129,"shr":0,"lc":null,"vr":12168,"traf":{"Feed":89,"Reels":7.2,"Other":2.1,"Your Page":1.7},"age":{"25-34":24.9,"35-44":24.6,"45-54":17.7,"55-64":15.7,"65+":14.5,"18-24":2.6}},"24423":{"reac":66,"clk":193,"shr":4,"lc":null,"vr":20830,"traf":{"Feed":55.3,"Reels":38,"Your Page":4.3,"Other":2.4,"Stories":0},"age":{"25-34":26.8,"35-44":25.4,"45-54":16.3,"65+":13.5,"55-64":13.3,"18-24":4.7}},"25599":{"reac":66,"clk":575,"shr":2,"lc":1,"vr":23064,"traf":{"Feed":77,"Reels":19.3,"Your Page":1.9,"Other":1.8,"Stories":0},"age":{"25-34":28.9,"35-44":28.8,"45-54":16.9,"55-64":12.1,"65+":9.9,"18-24":3.4}},"26839":{"reac":195,"clk":487,"shr":4,"lc":null,"vr":21951,"traf":{"Feed":58.2,"Reels":37.6,"Your Page":2.5,"Other":1.7,"Stories":0},"age":{"35-44":29,"25-34":28,"45-54":17.2,"55-64":11.5,"65+":10,"18-24":4.3}},"28084":{"reac":88,"clk":212,"shr":6,"lc":null,"vr":23781,"traf":{"Feed":51,"Reels":42.7,"Your Page":4.1,"Other":2.2,"Stories":0},"age":{"25-34":27.7,"35-44":25.6,"45-54":16.1,"65+":12.8,"55-64":12.6,"18-24":5.2}},"28631":{"reac":97,"clk":227,"shr":2,"lc":null,"vr":25395,"traf":{"Feed":68.6,"Reels":25,"Your Page":3.6,"Other":2.8},"age":{"25-34":25.2,"35-44":24.4,"45-54":16.8,"65+":15,"55-64":14.9,"18-24":3.7}},"31330":{"reac":134,"clk":328,"shr":5,"lc":null,"vr":24949,"traf":{"Feed":69.4,"Reels":25,"Your Page":3.4,"Other":2.1,"Stories":0},"age":{"25-34":28.8,"35-44":27.5,"45-54":16.4,"55-64":12.4,"65+":10.8,"18-24":4.1}},"34272":{"reac":147,"clk":116,"shr":1,"lc":null,"vr":26239,"traf":{"Reels":78.7,"Feed":18.3,"Other":2.1,"Your Page":0.8,"Stories":0},"age":{"25-34":30.6,"35-44":28.4,"45-54":15.6,"55-64":10.6,"65+":8.8,"18-24":6}},"36658":{"reac":191,"clk":345,"shr":6,"lc":null,"vr":29709,"traf":{"Feed":62.7,"Reels":32.1,"Your Page":3.3,"Other":1.9,"Stories":0},"age":{"25-34":29.4,"35-44":27.7,"45-54":16,"55-64":11.9,"65+":10.4,"18-24":4.6}},"37311":{"reac":142,"clk":467,"shr":0,"lc":null,"vr":32386,"traf":{"Reels":51.3,"Feed":43.5,"Your Page":2.8,"Other":2.4,"Stories":0},"age":{"25-34":31.5,"35-44":28.7,"45-54":15.8,"55-64":10.5,"65+":8,"18-24":5.5}},"37379":{"reac":225,"clk":943,"shr":6,"lc":null,"vr":33920,"traf":{"Feed":71.8,"Reels":24.6,"Your Page":1.8,"Other":1.8,"Stories":0,"Groups":0},"age":{"35-44":29.5,"25-34":27.8,"45-54":18.3,"55-64":11.6,"65+":8.7,"18-24":4.1}},"38165":{"reac":181,"clk":605,"shr":3,"lc":null,"vr":33942,"traf":{"Feed":57.7,"Reels":37.8,"Your Page":2.7,"Other":1.9,"Stories":0},"age":{"25-34":30.6,"35-44":28.1,"45-54":15.9,"55-64":11.2,"65+":9.6,"18-24":4.6}},"46273":{"reac":312,"clk":552,"shr":14,"lc":null,"vr":38254,"traf":{"Feed":51,"Reels":45.6,"Your Page":2.4,"Other":1.1},"age":{"35-44":28.6,"25-34":28.5,"45-54":16.8,"55-64":12.2,"65+":9.4,"18-24":4.5}},"47777":{"reac":236,"clk":844,"shr":2,"lc":null,"vr":42545,"traf":{"Feed":57.1,"Reels":39.2,"Your Page":2.2,"Other":1.4,"Stories":0,"Groups":0},"age":{"25-34":33.4,"35-44":28.9,"45-54":14.6,"55-64":9.9,"65+":8.1,"18-24":5.1}},"48905":{"reac":400,"clk":1843,"shr":8,"lc":null,"vr":39804,"traf":{"Feed":61.6,"Reels":35.5,"Your Page":1.8,"Other":1.1,"Stories":0},"age":{"35-44":30.9,"25-34":29.1,"45-54":17.5,"55-64":10.2,"65+":7.9,"18-24":4.4}},"49486":{"reac":275,"clk":2195,"shr":2,"lc":null,"vr":44379,"traf":{"Feed":60.1,"Reels":35.6,"Your Page":2.8,"Other":1.4,"Stories":0},"age":{"25-34":33.7,"35-44":27.3,"45-54":14,"55-64":9.6,"65+":8.3,"18-24":7.1}},"56435":{"reac":404,"clk":1928,"shr":11,"lc":null,"vr":50777,"traf":{"Feed":70.8,"Reels":26.3,"Your Page":1.5,"Other":1.4,"Stories":0,"Groups":0},"age":{"35-44":30.8,"25-34":27.1,"45-54":19.4,"55-64":11.1,"65+":7.5,"18-24":4.1}},"58609":{"reac":340,"clk":2511,"shr":7,"lc":null,"vr":52809,"traf":{"Feed":59.2,"Reels":37.5,"Your Page":1.9,"Other":1.5,"Stories":0},"age":{"35-44":28.6,"25-34":24.5,"45-54":21.8,"55-64":13.7,"65+":8.1,"18-24":3.3}},"63719":{"reac":360,"clk":1115,"shr":9,"lc":null,"vr":58378,"traf":{"Feed":65.4,"Reels":32,"Your Page":1.8,"Other":0.8,"Stories":0},"age":{"35-44":30,"25-34":29.9,"45-54":16.7,"55-64":11.6,"65+":8.4,"18-24":3.4}},"65519":{"reac":484,"clk":5034,"shr":12,"lc":null,"vr":54681,"traf":{"Feed":82.7,"Reels":14.5,"Your Page":1.6,"Other":1.2,"Stories":0,"Groups":0},"age":{"35-44":34.4,"45-54":27,"25-34":18.2,"55-64":13.2,"65+":5.4,"18-24":1.8}},"80022":{"reac":136,"clk":3410,"shr":1,"lc":1,"vr":72436,"traf":{"Feed":90.6,"Reels":7.6,"Your Page":1,"Other":0.8,"Stories":0},"age":{"35-44":31.3,"25-34":24.6,"45-54":21.1,"55-64":13.3,"65+":7.5,"18-24":2.2}},"98166":{"reac":346,"clk":1697,"shr":14,"lc":1,"vr":81283,"traf":{"Feed":66.8,"Reels":31.1,"Your Page":1,"Other":1,"Stories":0,"Groups":0},"age":{"35-44":27.2,"25-34":27.1,"45-54":16.8,"55-64":13.5,"65+":12,"18-24":3.4}},"99288":{"reac":745,"clk":3866,"shr":28,"lc":1,"vr":87401,"traf":{"Feed":50.8,"Reels":46.8,"Your Page":1.3,"Other":1,"Stories":0},"age":{"25-34":32.8,"35-44":30.6,"45-54":16.1,"55-64":9.9,"65+":6.7,"18-24":3.9}},"99851":{"reac":789,"clk":8345,"shr":20,"lc":null,"vr":85290,"traf":{"Feed":84.3,"Reels":13.7,"Your Page":1.1,"Other":0.9,"Stories":0,"Groups":0},"age":{"35-44":36.7,"45-54":27.2,"25-34":18.4,"55-64":11.9,"65+":4.2,"18-24":1.6}},"99855":{"reac":903,"clk":6039,"shr":96,"lc":1,"vr":84241,"traf":{"Feed":78,"Reels":19.7,"Your Page":1.3,"Other":1,"Stories":0},"age":{"25-34":32.6,"35-44":32.6,"45-54":16.2,"55-64":8.4,"65+":5.8,"18-24":4.4}},"109522":{"reac":755,"clk":4739,"shr":11,"lc":1,"vr":96981,"traf":{"Feed":71.7,"Reels":26.5,"Your Page":1,"Other":0.8,"Stories":0,"Groups":0},"age":{"35-44":26.5,"45-54":23.3,"25-34":19.6,"55-64":18,"65+":10.5,"18-24":2.1}},"111839":{"reac":309,"clk":5509,"shr":8,"lc":3,"vr":91713,"traf":{"Feed":62.9,"Reels":36.2,"Other":0.5,"Your Page":0.3,"Stories":0,"Groups":0},"age":{"25-34":37.5,"35-44":30.1,"45-54":13.5,"55-64":9,"65+":6.4,"18-24":3.5}},"136047":{"reac":243,"clk":11166,"shr":5,"lc":1,"vr":115404,"traf":{"Feed":94.3,"Reels":4.8,"Other":0.5,"Your Page":0.4,"Stories":0,"Groups":0},"age":{"35-44":35.4,"45-54":22.2,"25-34":21.9,"55-64":12.2,"65+":6.9,"18-24":1.4}},"150609":{"reac":779,"clk":998,"shr":4,"lc":3,"vr":103914,"traf":{"Feed":69.5,"Reels":29.2,"Your Page":0.7,"Other":0.6,"Stories":0,"Groups":0},"age":{"35-44":22.8,"55-64":20.9,"45-54":20.6,"25-34":16.7,"65+":14.4,"18-24":4.6}},"181908":{"reac":2051,"clk":11022,"shr":76,"lc":null,"vr":169203,"traf":{"Feed":80.5,"Reels":17.7,"Other":1.1,"Your Page":0.7,"Groups":0,"Stories":0},"age":{"45-54":26.1,"35-44":24.9,"55-64":20.1,"25-34":17,"65+":10.3,"18-24":1.6}},"201317":{"reac":552,"clk":10103,"shr":7,"lc":null,"vr":180381,"traf":{"Feed":83.9,"Reels":14.7,"Your Page":0.7,"Other":0.7,"Stories":0,"Groups":0},"age":{"35-44":32.5,"25-34":31.7,"45-54":17.9,"55-64":9,"65+":5.9,"18-24":3}},"248402":{"reac":1196,"clk":1481,"shr":4,"lc":5,"vr":137431,"traf":{"Feed":68.2,"Reels":30.9,"Other":0.5,"Your Page":0.4,"Stories":0,"Groups":0},"age":{"35-44":22.5,"55-64":21.5,"45-54":20.7,"25-34":16.1,"65+":14.7,"18-24":4.5}},"263798":{"reac":1110,"clk":23755,"shr":14,"lc":2,"vr":222038,"traf":{"Feed":86.1,"Reels":13,"Your Page":0.5,"Other":0.4,"Stories":0,"Groups":0},"age":{"25-34":46.6,"35-44":32,"45-54":9.8,"55-64":4.5,"18-24":4,"65+":3.1}},"281003":{"reac":1278,"clk":18811,"shr":40,"lc":1,"vr":255478,"traf":{"Feed":87,"Reels":12.3,"Your Page":0.4,"Other":0.3,"Stories":0,"Groups":0},"age":{"35-44":29.7,"25-34":28,"45-54":21.1,"55-64":13.2,"65+":5.8,"18-24":2.2}},"304239":{"reac":3404,"clk":9126,"shr":35,"lc":1,"vr":233831,"traf":{"Reels":65.9,"Feed":33.5,"Your Page":0.3,"Other":0.3,"Stories":0,"Groups":0},"age":{"35-44":29.9,"25-34":22.2,"45-54":21.8,"55-64":15.4,"65+":8.3,"18-24":2.4}},"348928":{"reac":2459,"clk":17891,"shr":42,"lc":3,"vr":241593,"traf":{"Reels":67.2,"Feed":32.2,"Other":0.3,"Your Page":0.3,"Stories":0,"Groups":0},"age":{"25-34":43.7,"35-44":29.7,"45-54":10.7,"18-24":7,"55-64":5.2,"65+":3.7}},"484928":{"reac":4121,"clk":32689,"shr":168,"lc":3,"vr":429497,"traf":{"Feed":88.7,"Reels":10.4,"Other":0.5,"Your Page":0.4,"Groups":0,"Stories":0},"age":{"35-44":25.4,"45-54":24.5,"55-64":19.9,"25-34":18.4,"65+":10.2,"18-24":1.6}},"533280":{"reac":4200,"clk":42911,"shr":99,"lc":4,"vr":438977,"traf":{"Feed":54.4,"Reels":44.9,"Other":0.4,"Your Page":0.3,"Stories":0,"Groups":0},"age":{"35-44":33.1,"25-34":22.9,"45-54":21.6,"55-64":13.3,"65+":6.9,"18-24":2.2}},"653912":{"reac":3788,"clk":75128,"shr":247,"lc":5,"vr":571753,"traf":{"Feed":89.6,"Reels":9.7,"Other":0.5,"Your Page":0.2,"Stories":0,"Groups":0},"age":{"45-54":25.5,"55-64":25.4,"35-44":20.7,"65+":16.5,"25-34":11,"18-24":0.9}},"677748":{"reac":4509,"clk":15446,"shr":51,"lc":null,"vr":488165,"traf":{"Reels":54.9,"Feed":44.6,"Other":0.3,"Your Page":0.2,"Stories":0},"age":{"35-44":41.7,"25-34":30.7,"45-54":17.7,"55-64":5.7,"18-24":2.2,"65+":2}},"904349":{"reac":12486,"clk":40139,"shr":204,"lc":1,"vr":573095,"traf":{"Reels":83.2,"Feed":16.4,"Other":0.2,"Your Page":0.2,"Stories":0,"Groups":0},"age":{"25-34":40.6,"35-44":27.1,"45-54":11.9,"18-24":10,"55-64":6.3,"65+":4.1}},"1182060":{"reac":2162,"clk":133267,"shr":183,"lc":6,"vr":1049028,"traf":{"Feed":95.1,"Reels":4.4,"Other":0.3,"Your Page":0.2,"Stories":0,"Groups":0},"age":{"25-34":44.3,"35-44":33.7,"45-54":11.6,"55-64":4.5,"18-24":3.7,"65+":2.2}},"1456697":{"reac":22339,"clk":54415,"shr":711,"lc":7,"vr":1149210,"traf":{"Reels":68.9,"Feed":30.1,"Other":0.8,"Your Page":0.1,"Groups":0,"Stories":0},"age":{"35-44":34.2,"25-34":26.7,"45-54":21.2,"55-64":9.9,"65+":4.5,"18-24":3.5}},"3383937":{"reac":17343,"clk":83850,"shr":272,"lc":6,"vr":2206857,"traf":{"Feed":86.8,"Reels":13,"Other":0.2,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":46.3,"35-44":32.6,"45-54":10,"18-24":5.6,"55-64":3.6,"65+":1.9}},"5447728":{"reac":87699,"clk":123614,"shr":2402,"lc":6,"vr":4116343,"traf":{"Feed":60.5,"Reels":39.2,"Other":0.2,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":35,"35-44":32,"45-54":15.1,"18-24":10.5,"55-64":5.4,"65+":2}}};
+const MONTHS={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+function wtHours(s){let h=0;const d=s.match(/(\d+)d/);const hr=s.match(/(\d+)h/);if(d)h+=+d[1]*24;if(hr)h+=+hr[1];return h;}
+function awSec(s){let sec=0;const m=s.match(/(\d+)m/);const ss=s.match(/(\d+)s/);if(m)sec+=+m[1]*60;if(ss)sec+=+ss[1];return sec;}
+let DATEF='all';
+function dateWin(mode,maxTs){if(mode==='all'||!isFinite(maxTs))return null;const D=86400000;const a=new Date(maxTs);a.setHours(0,0,0,0);const t0=a.getTime();if(mode==='today')return[t0,t0+D];if(mode==='yday')return[t0-D,t0];return[t0+D-(+mode)*D,t0+D];}
+function fmtDW(dw){const MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];const f=t=>{const d=new Date(t);return d.getDate()+' '+MN[d.getMonth()];};const a=f(dw[0]),b=f(dw[1]-1);return a===b?a:a+' – '+b;}
+function setDnote(dw,maxTs){const el=root.querySelector('#' + 'dnote');if(el)el.textContent=dw?('Showing '+fmtDW(dw)+' · newest data day: '+fmtDW([maxTs,maxTs+1])):'';}
+// Per-video insights fields pulled from each video's own insights page (opened individually;
+// refreshed 26 Jul for the biggest movers — KKK, She makes HOW much, Shania, Dahmer's mother, McDonald's,
+// Jackass, Teddy Swims, Lily Allen, Amish contraception, Tom Holland WYR, Sociopath, Snack Wars ep3;
+// keyed by the video's view count at snapshot). [non-foll %, non-foll count, foll count, avg % watched,
+// drop-off, qualified views, RPM(qual), 20-sec rate (null where Facebook shows "--"), net follows]
+const DEEP_LAD = {
+  24331:[17.9,4257,19505,4,"0:08",3217,0.54,,5],
+  25599:[9.5,2404,22834,12,"0:03",6007,0.56,10.4,5],
+  26562:[9,2039,20510,1,"0:16",7868,0.42,,-2],
+  28084:[23.1,6389,21313,14,"0:03",6503,0.64,10.1,25],
+  28631:[11,3121,25371,13,"0:02",6966,0.38,13.2,5],
+  33316:[5.5,1687,28944,13,"0:02",9966,0.11,,0],
+  34215:[6.2,2006,30525,10,"0:02",7759,0.33,,3],
+  34272:[43.4,14824,19371,33,"0:01",9811,0.39,,27],
+  36101:[7.1,2229,29040,2,"0:12",9794,0.4,,2],
+  36329:[7.1,1624,21172,2,"0:14",5039,0.49,,-1],
+  36658:[19,6309,26816,16,"0:02",7701,0.11,,29],
+  37311:[31.4,11704,25535,9,"0:03",7756,0.58,,7],
+  38053:[13.3,4573,29711,3,"0:12",6925,0.53,,1],
+  38165:[21,7972,29954,13,"0:03",8684,0.66,8.1,40],
+  39315:[6.2,2144,32398,6,"0:03",11064,0.46,,1],
+  41602:[5.3,2073,36810,13,"0:02",14351,0.34,,5],
+  41984:[16.6,4036,20318,10,"0:02",4053,0.37,5.7,4],
+  42550:[5.5,1991,34282,3,"0:11",12843,0.5,,4],
+  42681:[7.3,2593,33009,3,"0:18",10373,0.47,,4],
+  43422:[5.9,1249,19851,8,"0:01",2715,0.38,,0],
+  43578:[5.2,1918,35150,4,"0:04",10978,0.46,,2],
+  43618:[7.6,3001,36531,11,"0:02",9372,0.34,,2],
+  44172:[21.5,5119,18721,4,"0:11",4618,0.51,4.3,20],
+  44522:[5.8,2501,40598,5,"0:03",11755,0.47,,1],
+  44783:[5.1,1708,31939,8,"0:02",9372,0.35,,3],
+  46256:[7.6,3287,39901,3,"0:07",16722,0.47,,-2],
+  46273:[30.2,13930,32219,17,"0:02",9806,0.36,,43],
+  46328:[7.1,2862,37278,10,"0:03",12978,0.52,7.5,1],
+  46564:[6.9,3085,41577,8,"0:05",17695,0.69,,1],
+  46576:[4.6,2023,41951,5,"0:07",15935,0.54,6.8,2],
+  47294:[1.1,53,4705,,,0,0,,0],
+  47328:[19.7,7714,31384,16,"0:01",7879,0.36,7.7,28],
+  47346:[4.6,2080,43490,16,"0:01",11906,0.32,10.1,0],
+  47777:[19.2,9158,38488,17,"0:02",12999,0.12,,15],
+  48326:[6.9,1261,17040,6,"0:02",2829,0.52,,1],
+  48594:[6.1,2752,42466,9,"0:02",14334,0.48,,2],
+  48905:[47.1,22839,25690,24,"0:03",13833,0.77,,24],
+  48943:[6.3,2195,32419,16,"0:02",9818,0.33,,0],
+  49486:[24.5,12064,37202,13,"0:02",11465,0.55,,9],
+  49847:[5.6,2675,45105,12,"0:02",17678,0.34,,1],
+  50420:[7.6,3526,42734,6,"0:07",13972,0.6,,5],
+  52134:[3.7,1777,45863,3,"0:11",19171,0.49,,1],
+  52662:[5.1,1484,27673,11,"0:01",7638,0.38,6.9,-2],
+  53594:[4.2,2204,49727,14,"0:01",17795,0.33,,0],
+  54844:[3.7,1933,50062,5,"0:12",19612,0.57,,0],
+  55396:[5.4,1824,32229,14,"0:01",9405,0.34,8.6,1],
+  55461:[4.2,2259,51864,14,"0:02",21035,0.35,,3],
+  56435:[28.3,15856,40174,20,"0:02",16641,0.33,,18],
+  56483:[8.3,4542,49889,15,"0:02",15885,0.33,,1],
+  58443:[5.4,2963,51490,13,"0:01",19845,0.35,,4],
+  58609:[50.4,29470,29026,16,"0:02",16458,0.34,,27],
+  60201:[3,454,14636,11,"0:02",753,0.38,8.4,3],
+  60494:[6.7,3778,52757,12,"0:04",24433,0.55,,1],
+  60561:[26.2,10362,29138,11,"0:02",11186,0.38,4.8,21],
+  61571:[4.7,1495,30637,2,"0:08",3331,0.45,,1],
+  61760:[38.8,19391,30588,11,"0:02",11198,0.35,,12],
+  62021:[2.7,931,33836,10,"0:02",6705,0.38,,-1],
+  63719:[16.8,10696,52912,18,"0:02",20189,0.38,12.2,19],
+  63748:[6.9,4244,56924,21,"0:02",24171,0.35,,2],
+  63929:[11.7,3826,28959,13,"0:02",8114,0.39,7.7,7],
+  64184:[3.5,1560,42977,14,"0:02",9339,0.37,,2],
+  64850:[10.5,6541,55489,17,"0:02",24004,0.35,10.9,4],
+  65408:[11.2,7132,56669,14,"0:02",18707,0.34,,7],
+  66692:[10.5,3892,33006,7,"0:03",7110,0.47,5.3,2],
+  66986:[3.4,2004,57434,17,"0:01",22778,0.35,,2],
+  67343:[9.9,6216,56748,19,"0:01",21647,0.34,9.2,0],
+  67471:[10.8,7062,58112,20,"0:02",27954,0.35,,1],
+  68840:[3.3,2179,64415,15,"0:01",23058,0.34,,6],
+  69050:[6.1,3887,60113,12,"0:02",22678,0.35,,4],
+  70845:[4.9,3075,60309,22,"0:01",24325,0.33,,2],
+  74022:[4.1,2908,68742,24,"0:02",22327,0.33,,2],
+  74352:[5.3,3636,64588,19,"0:01",29019,0.36,,1],
+  74822:[2.1,259,11926,14,"0:01",0,0,10,0],
+  76505:[3,2180,69464,14,"0:02",29918,0.56,,2],
+  77198:[41.9,18921,26198,9,"0:02",6453,0.34,,27],
+  77511:[20.3,11447,45006,20,"0:02",16856,0.39,7.3,15],
+  78309:[12.3,5516,39456,14,"0:01",10086,0.38,7,2],
+  78411:[0.8,119,14291,15,"0:02",131,0,10,-1],
+  80022:[16.3,12998,66534,23,"0:01",25374,0.36,12.1,7],
+  82398:[36.2,24756,43549,21,"0:01",18605,0.35,11,23],
+  82596:[2.8,2015,69481,20,"0:02",23900,0.35,,1],
+  85460:[12.8,10319,70096,16,"0:02",30468,0.33,8.1,10],
+  86565:[2.3,967,40886,23,"0:02",5344,0.3,15.4,0],
+  86739:[8.7,7310,76555,16,"0:01",34836,0.35,,5],
+  87103:[2.9,2435,82091,19,"0:02",38864,0.35,,2],
+  90153:[2.2,1291,56611,19,"0:01",15830,0.4,,0],
+  90888:[10.8,4358,35856,19,"0:01",7809,0.39,12,9],
+  91687:[4,1842,43970,17,"0:02",10785,0.4,,0],
+  93032:[4.9,2346,45240,4,"0:14",14468,0.59,,-2],
+  94690:[24.8,17935,54383,19,"0:02",23465,0.37,12.9,19],
+  95519:[3.1,2595,81537,16,"0:02",32637,0.35,,7],
+  98166:[16.5,16156,81892,21,"0:01",30395,0.35,,43],
+  98319:[28.6,16907,42283,13,"0:02",15944,0.47,5.9,104],
+  98887:[24.9,19945,60281,15,"0:01",18275,0.38,11.7,7],
+  99288:[23.9,23653,75115,12,"0:05",31629,0.66,25.7,43],
+  99851:[55,53036,43335,8,"0:17",27762,1.37,8.7,41],
+  99855:[52.3,51547,47028,21,"0:02",27707,0.72,,64],
+  100300:[2.1,1584,72733,13,"0:03",28055,0.35,5.8,1],
+  100325:[1.8,1084,58774,9,"0:03",13558,0.49,7.9,1],
+  101666:[1.4,333,23134,14,"0:01",5308,0.39,,0],
+  107098:[4.6,1270,26480,14,"0:02",4087,0.37,,1],
+  108075:[3.3,1233,36046,13,"0:02",10039,0.4,8.7,1],
+  109522:[50.2,54817,54414,21,"0:02",35840,0.33,15.7,26],
+  109814:[8,5039,57564,22,"0:01",14255,0.4,16.8,2],
+  111831:[13.3,8787,57280,23,"0:02",21334,0.4,9.5,9],
+  112878:[6.8,4161,57346,21,"0:02",13768,0.39,8.9,3],
+  116498:[7.6,4087,49932,18,"0:02",8215,0.37,16.2,11],
+  116665:[3.1,2264,70139,21,"0:02",30612,0.35,,2],
+  117862:[6.6,1954,27633,13,"0:01",7786,0.33,8.1,-3],
+  117981:[39.3,32001,49395,22,"0:02",28969,0.34,,25],
+  118556:[2.4,2576,105688,17,"0:02",48943,0.36,,3],
+  125514:[4.1,1681,39028,5,"0:05",13826,0.56,,1],
+  126656:[14.8,6349,36431,14,"0:02",7384,0.39,9.6,14],
+  127547:[3.7,4588,120690,34,"0:01",41697,0.32,,6],
+  128415:[2.7,2319,83598,22,"0:01",29063,0.4,,1],
+  128909:[6.8,1869,25590,4,"0:11",7896,0.57,,11],
+  136047:[21.6,28423,103246,35,"0:02",59544,0.34,7.9,6],
+  136135:[31.6,20841,45099,21,"0:02",13718,0.39,7.8,67],
+  137031:[7.9,3752,43575,8,"0:16",14983,0.93,,9],
+  148579:[32.8,33610,68776,21,"0:02",33640,0.72,13.8,22],
+  149203:[35.6,40105,72631,22,"0:02",36556,0.36,13.4,28],
+  153962:[2.3,1082,45582,16,"0:02",7344,0.39,,1],
+  159063:[9.4,6270,60156,8,"0:13",25323,0.72,,3],
+  159354:[13.8,10380,64617,23,"0:01",24051,0.41,14.3,9],
+  159385:[22.3,23014,80089,17,"0:02",32616,0.38,,18],
+  167619:[8.5,4788,51673,22,"0:02",6859,0.4,9.2,2],
+  170757:[1.7,2813,163823,23,"0:02",74772,0.35,,3],
+  175623:[18.1,16708,75789,16,"0:02",26409,0.39,9.3,26],
+  181792:[2.4,1485,60403,11,"0:03",15375,0.67,,1],
+  181908:[63.7,115584,65760,14,"0:04",59572,0.74,16.6,31],
+  183527:[12.6,2057,14252,8,"0:03",2136,0.55,6.1,12],
+  188776:[6.1,2463,37740,22,"0:01",6773,0.36,18.4,0],
+  201317:[61,122660,78426,35,"0:02",78016,0.36,13.2,13],
+  201749:[5.9,6975,110747,8,"0:19",50021,0.99,,7],
+  203919:[9,17934,181852,21,"0:03",90581,0.75,8.8,5],
+  212888:[64.3,116410,64711,26,"0:02",67766,0.34,15,34],
+  221937:[3.6,1677,44780,13,"0:02",11906,0.42,,6],
+  227132:[9.3,10828,105525,18,"0:02",37199,0.38,7.1,9],
+  232480:[3.3,3623,104681,23,"0:02",49059,0.36,13.6,0],
+  237569:[6.4,5147,74899,10,"0:12",32845,0.79,,6],
+  248402:[43.1,106248,140357,4,"0:02",0,0,1.5,11],
+  248938:[2.1,2568,118064,6,"0:09",44450,0.53,,0],
+  251538:[3,2102,67922,32,"0:02",2332,0.37,20.9,3],
+  263798:[59.3,155748,106896,29,"0:02",87152,0.34,,29],
+  265305:[6.8,2729,37325,17,"0:01",12625,0.35,8.2,0],
+  274390:[17.8,43709,201687,34,"0:02",93254,0.4,14.6,42],
+  277572:[63.7,100104,57083,27,"0:02",48259,0.82,12.3,25],
+  281003:[46,128933,151506,24,"0:02",103275,0.34,,33],
+  285596:[36.6,17996,31239,22,"0:01",6449,0.29,14.5,64],
+  287700:[6.2,8014,120851,10,"0:10",58311,0.31,,2],
+  287701:[8.9,6741,68654,11,"0:09",32487,0.37,,4],
+  290443:[3.3,282,8238,3,"0:14",0,0,5.7,0],
+  304239:[63.2,190688,111103,47,"0:03",105245,0.34,38.1,230],
+  308787:[0.3,547,178137,38,"0:01",64657,0.42,14.2,1],
+  322088:[5.9,15844,253978,24,"0:02",111990,0.41,9.3,2],
+  322713:[66.4,124828,63298,27,"0:02",73484,0.36,11.5,25],
+  332615:[12.2,14315,103499,8,"0:11",59703,0.61,,7],
+  339291:[73.2,129492,47409,27,"0:02",47546,0.58,20.8,467],
+  347966:[3,1360,43740,2,"0:12",5119,0.61,3,2],
+  348928:[47.9,165635,179882,58,"0:02",119611,0.29,32.6,199],
+  365712:[9.9,10641,96483,9,"0:11",42323,0.21,,5],
+  376333:[4.6,2261,47274,8,"0:08",17853,0.69,9.4,5],
+  388982:[59,130034,90423,18,"0:03",70094,0.62,16.6,74],
+  391079:[6.7,10131,140763,26,"0:01",55862,0.42,10.5,5],
+  469594:[2.8,3247,114085,8,"0:11",58081,0.66,,3],
+  478597:[52.6,168866,152058,20,"0:14",161967,0.95,,619],
+  484928:[62.8,303731,179909,21,"0:03",194436,0.85,,79],
+  510793:[2.4,2868,114767,31,"0:01",52797,0.35,,0],
+  533280:[70.8,373713,154193,31,"0:03",199047,0.87,30.3,536],
+  533389:[44.7,48485,59991,30,"0:01",29651,0.36,23.9,74],
+  614304:[39.4,152140,234158,16,"0:14",193754,0.86,29.6,341],
+  633354:[55.7,72853,57994,39,"0:02",44074,0.38,42.2,182],
+  647788:[39,88575,138589,46,"0:02",55528,0.36,36.5,92],
+  653912:[72.4,470025,179399,28,"0:03",255129,0.97,18.9,224],
+  660942:[2,4013,195568,26,"0:01",88432,0.36,,3],
+  667546:[71.5,210408,83936,13,"0:17",94416,0.83,22.1,1506],
+  674775:[15.6,51366,278593,21,"0:02",119641,0.39,8.9,12],
+  677748:[78.2,503772,140062,40,"0:02",238567,0.13,45,235],
+  691785:[73.8,194096,68836,12,"0:15",107557,0.66,29.5,147],
+  707628:[73.3,260552,94962,58,"0:02",125188,0.27,40.5,1219],
+  740612:[56.7,234856,179629,10,"0:17",183125,1.19,,163],
+  768778:[38.2,170039,275451,15,"0:13",234544,0.84,27.3,280],
+  855827:[63.5,249466,143455,23,"0:03",174578,0.48,13.7,34],
+  863490:[20,17399,69763,8,"0:02",0,0,3.6,0],
+  904349:[73.9,667452,235769,77,"0:02",312478,0.26,,840],
+  933984:[52.7,171963,154323,5,"0:02",0,0,2.4,19],
+  1017413:[59.3,602802,412919,3,"0:02",2,0.19,,1],
+  1030702:[67.9,551965,261509,48,"0:02",368633,0.32,40.4,389],
+  1047936:[40.4,27937,41275,4,"0:03",0,0,2,2],
+  1061805:[45.7,480453,571838,15,"0:01",64,0.41,22.9,2],
+  1108554:[57.9,640039,465330,12,"0:01",3,0.32,,4],
+  1119738:[62.1,693550,424138,7,"0:02",1,0.41,,6],
+  1126005:[48.2,232777,250223,20,"0:01",0,0,28.8,24],
+  1179533:[51.6,606570,569500,14,"0:02",5,0.37,,10],
+  1182060:[60.4,710392,464928,16,"0:04",428336,0.53,9.4,234],
+  1238621:[1.6,5619,342526,34,"0:01",199369,0.36,12.7,5],
+  1247105:[60,592288,395234,10,"0:02",10891,0.37,8.7,9],
+  1281914:[34.9,96118,179568,18,"0:03",114044,0.59,8.5,44],
+  1339599:[29.8,22377,52721,23,"0:02",18934,0.37,13.5,34],
+  1416351:[1.5,1545,98545,19,"0:02",30159,0.4,15.7,2],
+  1456697:[76.4,1099171,339975,44,"0:02",599543,0.29,42.6,1184],
+  1495693:[63.9,539711,305314,13,"0:12",448228,0.67,27.1,844],
+  1854429:[4.2,12806,291131,49,"0:02",83198,0.39,30.3,2],
+  1994208:[2.7,2056,74864,25,"0:02",16237,0.41,,6],
+  2068256:[76.3,530832,164709,59,"0:01",333421,0.35,51.9,300],
+  2147253:[72.4,480629,182869,48,"0:02",244527,0.39,37.7,1093],
+  2456627:[75,1598381,533524,40,"0:02",747353,0.32,,550],
+  2464738:[11.4,8465,65865,14,"0:03",12270,0.73,11.4,6],
+  2705143:[27.6,51571,135076,37,"0:01",39475,0.4,8.7,-1],
+  2761037:[7.6,16826,204405,33,"0:01",88746,0.36,,7],
+  3383937:[88.5,2701093,352384,40,"0:01",894561,0.32,59.8,420],
+  4156584:[6,2676,42174,18,"0:02",9421,0.39,,5],
+  4213505:[78.7,2845993,769277,85,"0:02",1531555,0.28,36.7,6346],
+  5447728:[79.1,4034027,1063795,34,"0:02",2206222,0.27,48.6,5791],
+  7230608:[86.2,3761695,602085,45,"0:02",1838388,0.66,36.7,14302],
+  7824483:[80.5,4118132,994594,77,"0:02",1755197,0.4,39,11222]
+};
+/* ---------- Food Bible data (filled by data pull) ---------- */
+const META_FOOD={ range:"24 Jun – 14 Aug 2026", pulled:"14 Aug 2026, 08:36", source:"Facebook Professional Dashboard" };
+const RAW_FOOD=[
+["This catch shouldn't have been in there.. ","25 Jun 13:15",40637,35841,531,4.9,12,39979,3,-37.8,"3d 14h","8s",18333,1412,40637],
+["The difference was bigger than we expected","24 Jun 13:16",202786,186984,9430,120.98,154,199076,67,-1.1,"72d 13h","33s",118762,36704,202786],
+["Some people are eating like kings tonight.","24 Jun 10:32",23191,19888,325,2.85,2,22198,3,-8.1,"2d 2h","9s",9374,0,23191],
+["The difference is obvious the second they ","27 Jun 13:17",663425,588334,29557,499.83,621,622983,365,3.2,"345d 19h","49s",423695,183921,663425],
+["How we make our egg drop soup 🤤","26 Jun 13:16",163514,146791,6113,27.62,9,156925,58,-2.6,"30d 10h","18s",91434,20306,163514],
+["She absolutely inhaled this raw dinner 😳","1 Jul 18:19",6965591,5486041,364540,1783.43,5228,5777821,4830,27.1,"2917d 23h","44s",3817286,1799904,6965591],
+["Would this work with your kids...? 🥦🍫👀 ","1 Jul 15:04",105534,97079,2688,16.51,2,104967,55,-1.9,"7d 19h","7s",64316,0,105534],
+["Pickle matcha or swamp juice? 🍵🥒 #matcha","30 Jun 18:19",21827,19869,181,1.65,1,21320,0,-97.4,"1d 13h","7s",8391,409,21827],
+["He served me raw beef! 🥩😳 #rawfood #meat","29 Jun 18:19",257190,231224,11397,13.67,2,247070,291,0.3,"37d 15h","14s",162923,0,257190],
+["Challenge is: get the orange out of the wa","4 Jul 18:19",83980,75550,4642,22.76,1,83587,19,-5.9,"16d 6h","18s",48186,10211,83980],
+["What do you want to say to the next person","4 Jul 13:17",18884,16201,192,2.09,0,18393,2,-16.9,"1d 17h","9s",8044,0,18884],
+["The difference in colour is crazy 😮🍔 #bu","3 Jul 18:19",661099,579136,49184,384.81,374,639240,210,2,"233d 19h","33s",364085,124237,661099],
+["We did not realise how dry cream crackers ","3 Jul 13:18",16844,15382,379,2.74,7,17079,11,-75.9,"1d 10h","8s",8302,526,16844],
+["There were some interesting answers about ","2 Jul 18:19",14600,13220,136,1.24,3,14432,1,-144.7,"22h 49m","6s",4549,314,14600],
+["Who is the snack thief? 🥷🥨 #food #challe","7 Jul 18:19",34708,30366,556,4.5,4,34777,2,-28.1,"4d 13h","12s",15495,3196,34708],
+["Would you like some cheese with your mold?","7 Jul 13:18",47456,42519,934,6.15,1,47690,17,-6.4,"4d 19h","9s",21349,0,47456],
+["The difference between these peppered stea","6 Jul 18:20",696977,616165,54055,408.59,612,688078,340,2.4,"244d 11h","33s",374828,128626,696977],
+["£150 on lunch is mad! 😮 #food #lunch","6 Jul 13:28",21278,18390,382,2.18,0,21805,7,-63.2,"1d 19h","8s",8562,764,21278],
+["What's inside this giant pie... 😮 #pies #","5 Jul 18:19",508547,474589,11058,99.29,15,488946,49,-0.4,"80d 13h","15s",337113,0,508547],
+["What's inside this furry hump? 😮😬 #chees","5 Jul 13:18",1029236,746960,14028,116.69,238,808241,28,-0.7,"123d 19h","14s",563737,0,1029236],
+["We settled the internet's most important d","10 Jul 13:15",29875,27120,348,5.13,3,30194,7,-155.1,"1d 20h","6s",18493,254,29875],
+["My dog gets the best dinners... 😅 #rawmea","9 Jul 18:17",48305,43490,1259,5.43,7,47773,14,-10.2,"8d 7h","16s",15944,4711,48305],
+["It spat at me.. 😱😂 #testing #gadget #coo","9 Jul 13:16",24305,22810,289,4.2,3,24424,2,-61.2,"1d 22h","7s",12745,763,24305],
+["Are you splitting the bill down to the pen","8 Jul 13:17",20081,17833,263,2.11,1,20606,11,-56.3,"1d 19h","8s",7281,739,20081],
+["How I prepare an entire tuna 🐟😮 #fishing","13 Jul 20:50",96519,87806,1912,24.33,0,94257,3,-11.9,"21d 21h","21s",52554,12557,96519],
+["Some of these gadgets are a must for the k","13 Jul 18:20",15110,14107,223,2.77,0,15648,3,-82.4,"1d 14h","10s",6638,582,15110],
+["Definitely some questionable choices there","13 Jul 13:16",14220,13034,157,1.46,1,14796,1,-146.5,"22h 30m","6s",5290,333,14220],
+["We had them stumped.. 😅 #challenge #food ","12 Jul 13:16",24276,22830,319,3.24,0,24619,0,-5.7,"2d 11h","9s",10473,0,24276],
+["This salt and pepper share box did not com","11 Jul 13:16",77030,70244,906,10.16,1,77781,10,-3.7,"6d 7h","7s",33662,0,77030],
+["How your chicken fried rice is made! 🥡 #c","14 Jul 20:50",53925,47642,1102,6.99,0,54830,15,-17.2,"6d 7h","11s",24931,3039,53925],
+["Everybody has at least one dream dinner gu","14 Jul 18:18",12514,11119,123,1.22,0,12940,2,-344.8,"22h 47m","7s",4244,113,12514],
+["Dubai Chocolate loaded strawberries 🍓🤤 #","14 Jul 13:17",32685,29475,496,4.39,0,32656,9,-44.5,"3d 16h","10s",15404,1018,32685],
+["Can he wrap a 1kg Chicken Caesar wrap... 🌯","15 Jul 20:50",39092,33828,559,3.66,1,39975,14,-4.8,"3d 5h","8s",15763,0,39092],
+["How much does Panther's raw diet cost per ","15 Jul 18:20",2946975,2530003,291504,585.59,1374,2681281,1748,8.2,"869d 18h","29s",1555672,545314,2946975],
+["These fries were fully loaded with brisket","15 Jul 13:18",56605,50251,848,7.49,0,56832,8,-8.2,"5d 2h","8s",27083,0,56605],
+["What are they uncutting... 🤔 #food","16 Jul 20:50",389638,359663,35115,65.77,2,371058,65,-3.2,"56d 3h","14s",223804,27572,389638],
+["Pretending a toaster is a lunchbox deserve","16 Jul 18:21",14925,12713,234,2.27,1,15427,1,-70.8,"2d 4h","13s",5221,832,14925],
+["One spicy paloma and one spicy watermelon ","16 Jul 13:20",20790,17829,191,0.96,1,21248,3,-96.2,"1d 6h","6s",4885,440,20790],
+["Some of these jokes stink like old cheese ","18 Jul 20:49",10881,9660,122,0.59,0,10916,0,-136.5,"19h 12m","7s",2735,256,10881],
+["These New Orleans BBQ shrimp were packed w","18 Jul 18:18",43496,38352,345,2.56,4,42948,1,-24.1,"2d 2h","5s",14128,0,43496],
+["Everything we ate in a day at Foodies Fest","18 Jul 13:18",16282,14577,186,1.19,0,16266,3,-85.1,"1d 6h","7s",5873,489,16282],
+["Will they guess who the imposter is... 🤔🤔","17 Jul 21:00",13699,11621,195,1.25,1,13437,0,-65,"1d 11h","10s",5262,698,13699],
+["The state of that cheese pull 😳🧀 #cheese","17 Jul 18:18",51293,46548,661,5.89,2,51321,5,-10,"4d 15h","8s",22718,0,51293],
+["These Biscoff-stuffed beignets were like l","17 Jul 13:17",130099,116637,1486,15.07,0,130406,7,-6.2,"9d 11h","7s",62565,0,130099],
+["We challenged Kane to stay silent... 😅 #c","20 Jul 20:49",10157,8839,97,0.36,2,9890,7,-194.3,"14h 56m","6s",2285,183,10157],
+["We didn't give him any clue what these gad","20 Jul 18:20",15515,13799,200,0.85,0,15484,0,-64.6,"1d 12h","9s",7243,562,15515],
+["We had to try them... 🧀 #cheese #cooking ","20 Jul 13:16",91941,88266,1077,3,2,93477,15,-2.6,"6d 16h","7s",35855,0,91941],
+["This rare steak salad tasted so fresh! 🥩🥩","19 Jul 20:49",36165,32039,300,2.43,0,37480,3,-12.2,"1d 18h","4s",11885,0,36165],
+["Italians screaming at their screen with th","19 Jul 13:18",21167,19427,351,2.33,0,21303,2,-37.3,"2d 9h","10s",7245,1480,21167],
+["This one had us all confused.. 😖 #cooking","22 Jul 20:48",15812,14578,169,1.35,0,16303,1,-81.2,"1d 11h","9s",5836,643,15812],
+["They got pretty close... 😅 #challenge #gu","22 Jul 18:16",11393,10674,72,0.35,1,11891,0,-80.1,"23h 47m","8s",2918,474,11393],
+["The way he instantly gave it away 🤣 #impo","21 Jul 20:47",25122,23475,497,2.26,2,25633,0,-14.1,"4d","15s",11571,2434,25122],
+["The secret to our crispy chilli beef... 🤤","21 Jul 18:15",71279,67978,1627,3.93,0,71238,9,-8.6,"11d 6h","14s",36466,6456,71279],
+["I didn't even realise you could deep fry i","21 Jul 13:16",68819,64151,1110,3.42,0,69669,7,-5.5,"6d 9h","8s",32833,0,68819],
+["It took me way too long to figure out what","24 Jul 20:45",209733,190884,13961,10.23,2,201535,47,-14,"28d 19h","13s",130901,6053,209733],
+["We had to find the tornado... 😅 #tornado ","24 Jul 18:16",39699,36016,635,0.79,0,40169,10,-5.4,"2d 15h","6s",15381,0,39699],
+["We found Manchester's best deep dish pizza","24 Jul 13:16",33223,30814,429,0.54,3,33633,5,-6.8,"2d 1h","6s",10060,0,33223],
+["He demolished that raw dinner in record ti","23 Jul 20:48",27291,23207,654,1.16,7,26359,3,-19.2,"4d 9h","16s",10201,3152,27291],
+["Chef vs staff challenge 🙅‍♀️ #chef #chall","23 Jul 18:17",21986,20094,373,1.35,1,22536,2,-49.9,"2d 16h","11s",8675,1059,21986],
+["I'd easily polish this off.. 😋 #wagyu #me","23 Jul 13:15",49498,45313,906,2.5,5,49722,27,-1.7,"3d 23h","7s",22256,0,49498],
+["They challenged me to wrap a 1kg caesar 😱","26 Jul 18:16",45528,41406,1179,7.4,0,46423,3,-20.4,"5d 17h","11s",23134,2535,45528],
+["This was a whole experience... 🧊 #coffee ","26 Jul 13:15",22350,20404,271,1.48,0,22495,4,-7.4,"1d 10h","6s",7667,0,22350],
+["I'd never tried these before... 😱 #cookin","25 Jul 18:15",48625,45417,628,5.56,0,48595,5,-5.8,"3d 8h","6s",21432,0,48625],
+["The stuffing in this was magical ✨ #neworl","25 Jul 13:15",128293,114483,1182,16.09,0,120177,6,-4.9,"7d 11h","6s",64826,0,128293],
+["This late night drive thru hits different.","28 Jul 18:17",19337,17452,217,1.7,1,19532,1,-102.8,"1d 16h","8s",8299,374,19337],
+["We can see why this is so popular... 😱 #b","28 Jul 13:14",22725,20450,245,0.33,0,22782,3,-10.9,"1d 1h","4s",6131,0,22725],
+["I've never seen a vending machine like thi","27 Jul 20:45",57858,48740,783,5.96,3,52710,8,-3.6,"4d 4h","7s",25104,0,57858],
+["The secret sauce to a chicken noodle soup.","27 Jul 18:15",64842,60470,1489,8.8,0,64267,7,-13.6,"8d 14h","12s",33279,3376,64842],
+["This place is so unique.. 😍 #food #unique","27 Jul 13:15",20431,17887,207,1.26,0,20899,0,-3,"1d 1h","5s",6166,0,20431],
+["That is one giant hunk of meat 😳 #meat #p","30 Jul 20:48",142381,133985,2509,22.42,0,139933,11,-2.3,"16d 3h","10s",80930,0,142381],
+["This one took a turn... 😆 #challenge #hea","30 Jul 18:16",7414,6816,53,0.5,0,7438,0,-122.7,"14h 13m","7s",1860,250,7414],
+["This is Lahori Lane’s mango milk cake. The","30 Jul 13:16",43927,40943,394,5.73,0,43674,3,-9.1,"3d 13h","7s",23900,0,43927],
+["We've settled the debate.. Is butcher's me","29 Jul 20:48",126930,111275,10078,58.21,37,131725,33,-2.2,"36d 15h","27s",56673,17098,126930],
+["We never need an excuse to eat chicken win","29 Jul 18:18",28429,25092,207,1.58,0,28099,2,-13.9,"1d 8h","4s",8261,0,28429],
+["I had to give the viral sandwich a try... ","29 Jul 13:15",219923,191403,7184,30.47,4,202630,155,-0.1,"15d 13h","7s",125180,0,219923],
+["That's a whole lot of burger 😱 #burger #c","1 Aug 20:48",27213,23839,389,2.29,0,26878,7,-3.9,"2d 3h","7s",9597,0,27213],
+["Revealing Deano's best sellers... 🤤 #pizz","1 Aug 18:16",16528,14924,290,1.66,1,16694,4,-37,"1d 21h","11s",6821,864,16528],
+["Chef reveals his secret to a banging BBQ t","1 Aug 13:17",72555,65649,3050,22.08,8,71668,44,-3.3,"19d 2h","24s",38770,8762,72555],
+["Loaded crisps are officially having their ","31 Jul 20:49",39256,34997,506,4.1,3,37770,6,-4.3,"2d 15h","6s",18307,0,39256],
+["A solid pizza order never disappoints. 🤌🤌","31 Jul 18:18",158694,140893,3336,28.8,6,151638,46,-2.8,"26d","15s",94446,16434,158694],
+["There ain't nothing beating this cheese pu","31 Jul 13:16",61505,55679,605,4.99,3,59295,7,-4.6,"3d 4h","5s",28188,0,61505],
+["There's no such thing as too much butter 🧈","3 Aug 20:47",119944,118015,1724,18.82,4,118259,20,-1.5,"13d 13h","10s",67044,0,119944],
+["My dog eats better than I do 🫣 #dogs #pet","3 Aug 18:16",41404,36072,1692,5.38,0,42084,17,-9.2,"6d","13s",15506,3471,41404],
+["These were so naughty... 🙈 #dubai #viral ","3 Aug 13:16",21658,19411,203,1.09,2,21414,7,-4.8,"22h 46m","4s",5407,0,21658],
+["This might be the most extra sushi deliver","2 Aug 20:46",51672,44436,408,6.66,0,49150,5,-6.1,"3d","6s",24042,0,51672],
+["That was a messy one... 😆 #funny #jokes #","2 Aug 18:15",8697,7978,102,0.76,4,8882,0,-172,"17h 1m","7s",3721,154,8697],
+["We had to go and try this... 😱 #cooking #","2 Aug 13:15",56987,50364,645,5.05,3,55666,12,-3,"2d 21h","5s",25226,0,56987],
+["We'd never seen so much meat before 😳🥩 #","4 Aug 20:49",17121,15999,250,1.23,6,17721,2,-90.4,"1d 3h","6s",5777,306,17121],
+["This is what happens whilst you're waiting","4 Aug 18:18",71129,67880,2128,17.95,0,71214,3,-9.6,"12d","16s",37354,6917,71129],
+["He calls them Birthday Cake Wings 😲🍗 #ch","4 Aug 13:17",57918,51197,745,6.24,0,56578,23,-4.7,"3d 14h","6s",26549,0,57918],
+["The secret to a gooey cheese pull.. 🧀🤤 #","5 Aug 20:46",23189,20966,251,1.43,3,23401,2,-9.7,"1d 6h","5s",6309,0,23189],
+["The bones are one of the tastiest parts of","5 Aug 18:18",163140,150175,6157,23.83,0,161377,71,-3.8,"21d 12h","12s",100144,6947,163140],
+["They put pasta inside a pizza bowl 🍝🤤 #p","5 Aug 13:17",21100,18889,312,1.54,4,21022,3,-6.3,"1d 17h","8s",6795,0,21100],
+["I love eating tinned fish...  #fish #tinned","5 Aug 13:18",9718,8816,151,0.74,1,10062,1,-109.7,"16h 38m","6s",3222,250,9718],
+["He was so close to chopping his fingers off","5 Aug 18:16",52970,47590,499,6.27,0,51795,3,-7.5,"3d 5h","6s",28803,0,52970],
+["I found the perfect trick...  #hacks #origi","5 Aug 20:47",153066,144154,4776,26.52,0,147571,42,-2.3,"21d 1h","13s",96160,0,153066],
+["This might just be the ultimate toastie...","6 Aug 13:15",17975,16317,250,1.19,0,18109,5,-1,"1d 2h","6s",5531,0,17975],
+["Revealing how we make our pasta...  #pasta ","6 Aug 18:16",211234,179247,1797,29.08,0,184247,2,-1.1,"15d 21h","8s",115469,0,211234],
+["The secret to sticky orange chicken...  #ch","7 Aug 20:47",46579,44154,731,9.07,3,46338,2,0.2,"7d 14h","15s",24548,4544,46579],
+["Are viral trends really worth it...  #viral","8 Aug 13:16",34540,29651,475,4.23,2,32743,6,-0.9,"2d 12h","7s",15843,0,34540],
+["Settling the supermarket vs butcher steak deb","8 Aug 18:16",40957,37941,3500,10.23,11,42315,55,2.4,"9d 1h","21s",17234,5242,40957],
+["I was challenged to find the best sandwich in","8 Aug 20:48",6546,6026,71,0.61,0,6784,2,-10.4,"13h 50m","8s",2011,192,6546],
+["The bone just slipped right out  #food #i","9 Aug 18:19",75845,69033,941,7.47,0,72667,3,-0.7,"5d 21h","7s",36901,0,75845],
+["The ultimate taste test...  #dogs #dinn","9 Aug 20:46",20307,18216,547,2.34,0,20583,9,-1.6,"2d 10h","11s",6397,1349,20307],
+["My lobster was drowned in butter..  #lobste","10 Aug 13:15",59912,51140,554,5.27,0,56489,4,-1.1,"3d 14h","6s",23278,0,59912],
+["I found an Amish BBQ on the side of the road ","10 Aug 18:19",116419,105365,6257,17.5,6,113217,56,1.9,"15d 19h","13s",61414,0,116419],
+["He stuffed it into a croissant and topped it ","10 Aug 20:49",56900,54946,636,5.79,0,53333,5,-0.5,"4d 11h","7s",28650,0,56900],
+["Watch at your own risk  #steak #food #bee","11 Aug 13:16",14254,13495,154,0.44,0,13650,2,-1.7,"13h 30m","4s",3079,0,14254],
+["It keeps your food fresher for longer ","11 Aug 18:17",239861,191248,21626,27.72,0,211628,493,10.2,"19d 2h","8s",115560,0,239861],
+["This is what happens after you order your Chi","11 Aug 20:49",51202,46364,776,5.75,0,50434,2,-1.4,"5d 1h","9s",28160,0,51202],
+["She broke into the winery and dumped thousand","12 Aug 13:17",527992,468931,34696,74.33,0,503816,120,4.5,"76d 23h","14s",356398,0,527992],
+["There's dough flying absolutely everywhere ","12 Aug 18:18",149315,126447,4638,5.83,0,138610,40,1.4,"16d 22h","11s",88466,0,149315],
+["The whole thing weighed almost 4 lbs ","12 Aug 20:47",20296,17917,197,1.09,3,19906,1,-2.3,"1d","5s",7067,0,20296],
+["They dumped our seafood boil onto the table ","13 Aug 13:16",149768,133176,3912,26.14,0,142738,43,1.9,"20d 12h","13s",85937,0,149768],
+["We wanted to find out the difference between ","13 Aug 18:20",76508,66516,5443,17.62,15,75607,20,4,"14d 16h","18s",41918,7652,76508],
+["They showed us how to butcher an entire lamb ","13 Aug 20:48",23952,22195,356,3.2,0,24332,3,-2.4,"2d 8h","9s",14916,418,23952]
+];
+const DEEP_FOOD={
+  7414:[17.7,1222,5701,5,"0:08",997,0.44,4.2,0],
+  8697:[15.4,1196,6583,4,"0:08",1768,0.36,6.7,2],
+  10157:[17.3,1736,8310,3,"0:05",1096,0.32,,2],
+  10881:[10.6,1145,9638,5,"0:07",1415,0.42,,0],
+  11393:[25.1,2827,8458,7,"0:06",1415,0.24,,1],
+  12514:[11.4,1414,10983,11,"0:05",3631,0.33,,0],
+  13699:[9.8,1332,12295,11,"0:04",3419,0.37,11.6,1],
+  14220:[7.5,1057,13107,8,"0:05",4713,0.31,6,1],
+  14600:[14.1,2039,12464,8,"0:05",3725,0.33,,3],
+  14925:[11.2,1661,13176,7,"0:09",3484,0.65,12.2,1],
+  15110:[16.2,2434,12613,5,"0:09",5875,0.47,5.6,-3],
+  15515:[9,1384,14037,10,"0:07",5264,0.16,,-1],
+  15812:[21.6,3394,12304,12,"0:05",3580,0.38,,0],
+  16282:[11.1,1793,14411,8,"0:04",3125,0.38,,-1],
+  16528:[12.9,2023,13636,14,"0:05",4151,0.38,12.8,0],
+  16844:[13.4,2247,14493,6,"0:06",6904,0.4,,7],
+  17121:[8.2,1128,12637,8,"0:06",2371,0.37,7.2,3],
+  18884:[11.5,2172,16634,19,"0:05",6356,0.33,,-3],
+  19337:[12.2,2329,16748,12,"0:05",4642,0.36,8.8,1],
+  20081:[10.5,2110,17909,12,"0:05",6623,0.32,,1],
+  20431:[11.3,2290,17950,12,"0:04",3296,0.38,,-1],
+  20790:[9.4,1940,18773,9,"0:05",2893,0.33,,1],
+  21100:[7.8,1059,12590,16,"0:04",1408,0.35,16.5,2],
+  21167:[9.6,2016,19072,11,"0:05",4071,0.57,11.8,-1],
+  21278:[15.8,3355,17846,11,"0:07",6617,0.33,6.8,-5],
+  21658:[7.4,1389,17375,18,"0:04",2636,0.33,3,1],
+  21827:[16.8,3655,18083,9,"0:07",6989,0.24,5.9,1],
+  21986:[21.1,4603,17187,9,"0:06",5750,0.23,12.1,1],
+  22350:[8.8,1957,20213,16,"0:05",3983,0.37,9.1,-1],
+  22725:[9.1,2044,20420,14,"0:04",3532,0.09,4.9,-3],
+  23189:[4.3,243,5432,16,"0:04",37,0.4,8,0],
+  23191:[15.5,3580,19552,18,"0:05",8454,0.34,7.8,2],
+  24276:[7.8,1879,22336,16,"0:04",9613,0.34,,0],
+  24305:[10.6,2572,21659,8,"0:05",11504,0.36,4.8,3],
+  25122:[14.2,3542,21425,16,"0:05",7820,0.29,15.9,2],
+  27213:[12.1,3117,22729,17,"0:04",5894,0.36,12.5,0],
+  27291:[29,7767,19061,20,"0:04",7248,0.16,,7],
+  28429:[4.7,1314,26740,19,"0:04",4518,0.34,2.7,-2],
+  29875:[7,2093,27714,6,"0:04",16097,0.32,,3],
+  32685:[8.5,2773,29702,15,"0:05",13353,0.33,12.2,-1],
+  33223:[39.7,13046,19782,14,"0:04",6217,0.09,6.9,2],
+  34708:[8.5,2932,31670,20,"0:05",14255,0.32,15.7,4],
+  36165:[4.3,1534,34512,13,"0:06",6839,0.36,,-2],
+  39092:[7.7,3000,35992,13,"0:04",11726,0.31,6.2,1],
+  39256:[6.5,2474,35837,22,"0:04",11427,0.35,8.6,2],
+  39699:[6.8,2682,36824,20,"0:04",8355,0.09,,-1],
+  40637:[12.2,4961,35585,13,"0:05",16354,0.3,6.3,12],
+  41404:[14.7,3966,22954,11,"0:05",5336,0.5,12.2,-3],
+  43496:[7.1,3101,40289,20,"0:06",7607,0.34,4.2,3],
+  43927:[6.6,2857,40481,16,"0:05",14758,0.38,,-1],
+  45528:[11.9,5408,39875,12,"0:05",13591,0.54,13.4,-3],
+  47456:[7.4,3526,43832,25,"0:04",19957,0.31,,1],
+  48305:[22,10574,37478,12,"0:07",14030,0.39,9.9,7],
+  48625:[5.1,2489,45956,16,"0:06",14497,0.38,4.7,0],
+  49498:[11.1,5448,43805,13,"0:04",12946,0.19,8.3,5],
+  51293:[4.8,2455,48730,20,"0:04",15259,0.39,13,2],
+  51672:[4.2,2040,47071,33,"0:06",16612,0.37,,-3],
+  53925:[8.6,4600,49093,14,"0:06",21549,0.32,10.9,-7],
+  56605:[8.2,4613,51885,20,"0:04",23107,0.32,8.1,0],
+  56987:[5.8,3129,50666,24,"0:04",12959,0.36,,3],
+  57858:[4.1,2377,55213,31,"0:05",15228,0.39,14.8,2],
+  57918:[3.5,1856,50953,27,"0:04",15112,0.36,6.9,-2],
+  61505:[6,3649,56997,29,"0:04",14560,0.34,,3],
+  64842:[4,2600,61972,19,"0:05",22688,0.39,12,0],
+  68819:[3.8,2607,66021,22,"0:04",21099,0.16,13.5,-2],
+  71129:[10.2,6499,57139,17,"0:05",21802,0.68,9.3,-3],
+  71279:[9.1,6434,64647,16,"0:07",26246,0.15,,-2],
+  72555:[16.6,11685,58617,12,"0:05",25955,0.82,16,4],
+  77030:[9.8,7508,69432,16,"0:05",31287,0.32,5.3,0],
+  83980:[14,11675,71910,16,"0:05",42554,0.53,,1],
+  91941:[27.4,25167,66562,13,"0:05",18984,0.16,,2],
+  96519:[15.9,14214,75331,21,"0:05",44452,0.51,,0],
+  105534:[7.8,8168,97202,19,"0:04",51186,0.32,6.3,2],
+  119944:[2.3,2282,96312,25,"0:04",38343,0.36,14.7,2],
+  126930:[66.7,73876,36870,15,"0:05",35168,1.43,14.1,31],
+  128293:[2.3,2920,124979,35,"0:08",41191,0.39,,-2],
+  130099:[11.9,15504,114488,20,"0:06",39661,0.38,5.7,-1],
+  142381:[1.9,2690,138035,32,"0:06",58689,0.38,,-2],
+  158694:[2.1,3318,153431,25,"0:06",75520,0.38,16.7,6],
+  163140:[3.6,2069,55797,19,"0:05",7796,0.36,12.8,-2],
+  163514:[16.2,26498,136674,26,"0:05",83921,0.33,18.5,9],
+  202786:[70.8,139414,57516,18,"0:09",99666,1.18,,148],
+  209733:[1.7,3621,205344,20,"0:05",101199,0.1,4,2],
+  219923:[1.5,3266,215641,35,"0:04",77412,0.39,,4],
+  257190:[9.4,24028,232581,26,"0:05",147651,0.09,17.7,2],
+  389638:[27.9,107789,278446,21,"0:05",186604,0.35,2.9,2],
+  508547:[12.4,63019,444871,42,"0:04",309106,0.32,26.5,15],
+  661099:[70.8,464684,191908,18,"0:09",319711,1.2,,373],
+  663425:[70.9,465662,191411,26,"0:09",377022,1.32,,613],
+  696977:[78.6,512969,139251,18,"0:09",314497,1.19,26,519],
+  1029236:[30.8,316817,711572,53,"0:04",462593,0.25,,238],
+  2946975:[81.9,2258534,497950,27,"0:05",1129009,0.5,30,1295],
+  6965591:[89.1,5985209,732984,35,"0:06",3209869,0.54,35.1,5040]
+};
+const DUR_FOOD={7414:154.112,8697:157.376,10157:199.266,10881:143.633,11393:112.733,12514:62.833,13699:86.466,14220:71.445,14600:70.866,14925:184.7,15110:181.12,15515:87.433,15812:71.533,16282:85.5,16528:72.938,16844:127.5,17121:75.882,18884:45.833,19337:65.566,20081:70.57,20431:39.666,20790:63.2,21100:43.605,21167:91.733,21278:70.033,21658:21.738,21827:71.333,21986:126.1,22350:37.033,22725:30.633,23189:31.082,23191:46.6,24276:58.837,24305:94.4,25122:91.633,27213:42.24,27291:76.4,28429:22.266,29875:88.576,32685:68.933,33223:39.433,34708:61.4,36165:34.866,39092:56.833,39256:28.437,39699:30.7,40637:62.133,41404:104.042,43496:22.6,43927:46.805,45528:97.033,47456:37.4,48305:135.616,48625:37.566,49498:58.833,51293:41.2,51672:16.384,53925:78.3,56605:41.866,56987:19.178,57858:22.433,57918:21.738,61505:16.682,64842:63.1,68819:38.7,71129:92.266,71279:89.1,72555:199.04,77030:45.568,83980:109.4,91941:49.833,96519:100.01,105534:35.166,119944:41.77,126930:186.8,128293:15.266,130099:32.766,142381:32.938,158694:60.117,163140:62.869,163514:67.933,202786:181.5,209733:62.4,219923:19.5,257190:52.433,389638:64.9,508547:34.933,661099:181,663425:188.2,696977:181.1,1029236:25.566,2946975:107.266,6965591:125.033};
+const CID_FOOD={"6546":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDcyODIyMTY4NDI1NzQ1OjEwNzI4MjIxNjg0MjU3NDU=","7414":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDY0OTQwNDI5MjEzOTE5OjEwNjQ5NDA0MjkyMTM5MTk=","8697":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDY3NTUxNzI4OTUyNzg5OjEwNjc1NTE3Mjg5NTI3ODk=","9718":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDcwODEzNzE4NjI2NTkwOjEwNzA4MTM3MTg2MjY1OTA=","10157":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDU2Njc5MjEwMDQwMDQxOjEwNTY2NzkyMTAwNDAwNDE=","10881":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDU1MTA5ODczNTMwMzA4OjEwNTUxMDk4NzM1MzAzMDg=","11393":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDU4MTk2OTY5ODg4MjY1OjEwNTgxOTY5Njk4ODgyNjU=","12514":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDUxNzEyNDAzODcwMDU1OjEwNTE3MTI0MDM4NzAwNTU=","13699":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDU0MzIxMDczNjA5MTg4OjEwNTQzMjEwNzM2MDkxODg=","14220":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDUwNzI0Njc3MzAyMTYxOjEwNTA3MjQ2NzczMDIxNjE=","14254":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDc1MDM1Mjg0ODcxMTAwOjEwNzUwMzUyODQ4NzExMDA=","14600":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDQxNjkwNzIxNTM4ODkwOjEwNDE2OTA3MjE1Mzg4OTA=","14925":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDUzNDEyMzE3MDMzMzk3OjEwNTM0MTIzMTcwMzMzOTc=","15110":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDUwOTE5MDczOTQ5Mzg4OjEwNTA5MTkwNzM5NDkzODg=","15515":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDU2NTk0NjMzMzgxODMyOjEwNTY1OTQ2MzMzODE4MzI=","15812":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDU4Mjg2Mjc2NTQ2MDAxOjEwNTgyODYyNzY1NDYwMDE=","16282":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDU0ODI2MTYwMjI1MzQ2OjEwNTQ4MjYxNjAyMjUzNDY=","16528":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDY2Njk1NzU5MDM4Mzg2OjEwNjY2OTU3NTkwMzgzODY=","16844":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDQyMzk1ODAxNDY4MzgyOjEwNDIzOTU4MDE0NjgzODI=","17121":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDY5MzYwMzI4NzcxOTI5OjEwNjkzNjAzMjg3NzE5Mjk=","17975":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDcxNjkzNjc4NTM4NTk0OjEwNzE2OTM2Nzg1Mzg1OTQ=","18884":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDQzMjg3MzExMzc5MjMxOjEwNDMyODczMTEzNzkyMzE=","19337":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDYzMTcyNjg2MDU3MzYwOjEwNjMxNzI2ODYwNTczNjA=","20081":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDQ2ODAzMzcxMDI3NjI1OjEwNDY4MDMzNzEwMjc2MjU=","20296":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDc2MjM0NDU0NzUxMTgzOjEwNzYyMzQ0NTQ3NTExODM=","20307":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDczNjYwMDM1MDA4NjI1OjEwNzM2NjAwMzUwMDg2MjU=","20431":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDYyMDY2NjUyODM0NjMwOjEwNjIwNjY2NTI4MzQ2MzA=","20790":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDUzMjAwNzM3MDU0NTU1OjEwNTMyMDA3MzcwNTQ1NTU=","21100":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDY5OTMyMjA1MzgxNDA4OjEwNjk5MzIyMDUzODE0MDg=","21167":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDU1NTkwMTg2ODE1NjEwOjEwNTU1OTAxODY4MTU2MTA=","21278":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDQ1MDQ1OTk0NTM2Njk2OjEwNDUwNDU5OTQ1MzY2OTY=","21658":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDY4MTkyNTQ4ODg4NzA3OjEwNjgxOTI1NDg4ODg3MDc=","21827":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDM5OTUzMzU1MDQ1OTYwOjEwMzk5NTMzNTUwNDU5NjA=","21986":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDU5MDAyNjQ5ODA3Njk3OjEwNTkwMDI2NDk4MDc2OTc=","22350":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDYxMjUwNzEyOTE2MjI0OjEwNjEyNTA3MTI5MTYyMjQ=","22725":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDYyOTU5MzQ2MDc4Njk0OjEwNjI5NTkzNDYwNzg2OTQ=","23189":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDcwMjU1MTEyMDE1Nzg0OjEwNzAyNTUxMTIwMTU3ODQ=","23191":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDM0NDk4NzQ1NTkxNDIxOjEwMzQ0OTg3NDU1OTE0MjE=","23952":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDc3MTAyMjAxMzMxMDc1OjEwNzcxMDIyMDEzMzEwNzU=","24276":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDQ5OTU3NTU0MDQ1NTQwOjEwNDk5NTc1NTQwNDU1NDA=","24305":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDQ3NTk5ODUwOTQ3OTc3OjEwNDc1OTk4NTA5NDc5Nzc=","25122":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDU3NDkxNjIzMjkyMTMzOjEwNTc0OTE2MjMyOTIxMzM=","27213":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDY2NzkyODkyMzYyMDA2OjEwNjY3OTI4OTIzNjIwMDY=","27291":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDU5MDkwMTUzMTMyMjgwOjEwNTkwOTAxNTMxMzIyODA=","28429":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDY0MDcwNDMyNjM0MjUyOjEwNjQwNzA0MzI2MzQyNTI=","29875":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDQ4Mzk0MDA3NTM1MjI4OjEwNDgzOTQwMDc1MzUyMjg=","32685":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDUxNTExNjQ3MjIzNDY0OjEwNTE1MTE2NDcyMjM0NjQ=","33223":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDU5NjA2MjU2NDE0MDAzOjEwNTk2MDYyNTY0MTQwMDM=","34540":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDcyNTI2MDcxNzg4Njg4OjEwNzI1MjYwNzE3ODg2ODg=","34708":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDQ2MTQ0NjUxMDkzNDk3OjEwNDYxNDQ2NTEwOTM0OTc=","36165":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDU1ODcxMzI2Nzg3NDk2OjEwNTU4NzEzMjY3ODc0OTY=","39092":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDUyNjU0ODYwNDQyNDc2OjEwNTI2NTQ4NjA0NDI0NzY=","39256":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDY1OTE4OTM1NzgyNzM1OjEwNjU5MTg5MzU3ODI3MzU=","39699":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDU5ODEzMjk2MzkzMjk5OjEwNTk4MTMyOTYzOTMyOTk=","40637":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDM1NDc0MTU1NDkzODgwOjEwMzU0NzQxNTU0OTM4ODA=","40957":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDcyNzI5OTcxNzY4Mjk4OjEwNzI3Mjk5NzE3NjgyOTg=","41404":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDY4Mzk3MjcyMjAxNTY4OjEwNjgzOTcyNzIyMDE1Njg=","43496":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDU1MDE5NzAzNTM5MzI1OjEwNTUwMTk3MDM1MzkzMjU=","43927":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDY0NzI1OTA1OTAyMDM4OjEwNjQ3MjU5MDU5MDIwMzg=","45528":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDYxNDUyMTQyODk2MDgxOjEwNjE0NTIxNDI4OTYwODE=","46579":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDcxOTkzNjE4NTA4NjAwOjEwNzE5OTM2MTg1MDg2MDA=","47456":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDQ1OTI3MTAxMTE1MjUyOjEwNDU5MjcxMDExMTUyNTI=","48305":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDQ3ODAyNjg3NTk0MzYwOjEwNDc4MDI2ODc1OTQzNjA=","48625":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDYwNjI2ODUyOTc4NjEwOjEwNjA2MjY4NTI5Nzg2MTA=","49498":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDU4ODA0OTQ5ODI3NDY3OjEwNTg4MDQ5NDk4Mjc0Njc=","51202":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDc1MzM3NTQxNTA3NTQxOjEwNzUzMzc1NDE1MDc1NDE=","51293":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDU0MjI2MjAzNjE4Njc1OjEwNTQyMjYyMDM2MTg2NzU=","51672":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDY3NjQxNTg1NjEwNDcwOjEwNjc2NDE1ODU2MTA0NzA=","52970":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDcxMDI3MzU1MjcxODkzOjEwNzEwMjczNTUyNzE4OTM=","53925":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDUxODA2MTk3MTk0MDA5OjEwNTE4MDYxOTcxOTQwMDk=","56605":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDUyMzQ1MjU3MTQwMTAzOjEwNTIzNDUyNTcxNDAxMDM=","56900":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDc0NDk0OTkxNTkxNzk2OjEwNzQ0OTQ5OTE1OTE3OTY=","56987":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDY3MzQ1NDE1NjQwMDg3OjEwNjczNDU0MTU2NDAwODc=","57858":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDYyMzcyNDE5NDcwNzIwOjEwNjIzNzI0MTk0NzA3MjA=","57918":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDY5MDU1NzU4ODAyMzg2OjEwNjkwNTU3NTg4MDIzODY=","59912":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDc0MTk3ODk0OTU0ODM5OjEwNzQxOTc4OTQ5NTQ4Mzk=","61505":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDY1NjE1NDQyNDc5NzUxOjEwNjU2MTU0NDI0Nzk3NTE=","64842":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDYyMjc3NjAyODEzNTM1OjEwNjIyNzc2MDI4MTM1MzU=","68819":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDU3MjA2NTE5OTg3MzEwOjEwNTcyMDY1MTk5ODczMTA=","71129":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDY5MjcwMzIyMTE0MjYzOjEwNjkyNzAzMjIxMTQyNjM=","71279":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDU3NDA2MjkzMzAwNjY2OjEwNTc0MDYyOTMzMDA2NjY=","72555":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDY2NDg1NjA1NzI2MDY4OjEwNjY0ODU2MDU3MjYwNjg=","75845":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDczNTcxMjA1MDE3NTA4OjEwNzM1NzEyMDUwMTc1MDg=","76508":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDc2OTk5NjY4MDA3OTk1OjEwNzY5OTk2NjgwMDc5OTU=","77030":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDQ5MTcwMjQ3NDU3NjA0OjEwNDkxNzAyNDc0NTc2MDQ=","83980":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDQzNDkzNjQxMzU4NTk4OjEwNDM0OTM2NDEzNTg1OTg=","91941":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDU2Mzk2MDcwMDY4MzU1OjEwNTYzOTYwNzAwNjgzNTU=","96519":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDUxMDAzMDc3Mjc0MzIxOjEwNTEwMDMwNzcyNzQzMjE=","105534":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDQwNzE0MTkxNjM2NTQzOjEwNDA3MTQxOTE2MzY1NDM=","116419":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDc0Mzk5OTQxNjAxMzAxOjEwNzQzOTk5NDE2MDEzMDE=","119944":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDY4NDk1NjUyMTkxNzMwOjEwNjg0OTU2NTIxOTE3MzA=","126930":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDY0MTY1MTk5MjkxNDQyOjEwNjQxNjUxOTkyOTE0NDI=","128293":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDYwNDMxMjg5NjY0ODMzOjEwNjA0MzEyODk2NjQ4MzM=","130099":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDU0MDI2NzMwMzA1Mjg5OjEwNTQwMjY3MzAzMDUyODk=","142381":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDY1MDM4MzgyNTM3NDU3OjEwNjUwMzgzODI1Mzc0NTc=","149315":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDc2MTQyMjY0NzYwNDAyOjEwNzYxNDIyNjQ3NjA0MDI=","149768":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDc2Nzg5Njk4MDI4OTkyOjEwNzY3ODk2OTgwMjg5OTI=","153066":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDcxMTIzOTk1MjYyMjI5OjEwNzExMjM5OTUyNjIyMjk=","158694":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDY1ODI3MDkyNDU4NTg2OjEwNjU4MjcwOTI0NTg1ODY=","163140":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDcwMTU0ODg1MzU5MTQwOjEwNzAxNTQ4ODUzNTkxNDA=","163514":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDM2MzI2NjQ4NzQxOTY0OjEwMzYzMjY2NDg3NDE5NjQ=","202786":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDM0NTk2ODgyMjQ4Mjc0OjEwMzQ1OTY4ODIyNDgyNzQ=","209733":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDU5ODk5MTE5NzE4MDUwOjEwNTk4OTkxMTk3MTgwNTA=","211234":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDcxODk5OTc1MTg0NjMxOjEwNzE4OTk5NzUxODQ2MzE=","219923":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDYzODUxNzcyNjU2MTE4OjEwNjM4NTE3NzI2NTYxMTg=","239861":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDc1MjM2MDA4MTg0MzYxOjEwNzUyMzYwMDgxODQzNjE=","257190":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDM5MDc4NDA4NDY2Nzg4OjEwMzkwNzg0MDg0NjY3ODg=","389638":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDUzNTAxMDE3MDI0NTI3OjEwNTM1MDEwMTcwMjQ1Mjc=","508547":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDQ0MzY5NDIxMjcxMDIwOjEwNDQzNjk0MjEyNzEwMjA=","527992":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDc1OTMyNzcxNDQ4MDE4OjEwNzU5MzI3NzE0NDgwMTg=","661099":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDQyNjIwMjA0Nzc5Mjc1OjEwNDI2MjAyMDQ3NzkyNzU=","663425":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDM3MTk3MDg1MzIxNTg3OjEwMzcxOTcwODUzMjE1ODc=","696977":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDQ1MjU3NzU0NTE1NTIwOjEwNDUyNTc3NTQ1MTU1MjA=","1029236":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDQ0MTUyNDY0NjI2MDQ5OjEwNDQxNTI0NjQ2MjYwNDk=","2946975":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDUyNTU5NjIzNzg1MzMzOjEwNTI1NTk2MjM3ODUzMzM=","6965591":"UzpfSTEwMDA3MDkzOTE2MTgwMToxMDQwODQ2NTU4Mjg5OTczOjEwNDA4NDY1NTgyODk5NzM="};
+/* ---------- brand registry + boot ---------- */
+/* ---------- UNILAD data (filled by data pull) ---------- */
+const META_UNI={ range:"24 Jun – 14 Aug 2026", pulled:"14 Aug 2026, 08:36", source:"Facebook Professional Dashboard" };
+const RAW_UNI=[
+["They caused quite the commotion on the sub","24 Jun 23:30",109893,104167,2767,15.84,3,111435,10,-3.9,"9d 3h","8s",57363,,109893],
+["I wanted something that was going to last ","24 Jun 22:00",247614,223977,5993,42.29,1,245687,25,-2.1,"34d 3h","13s",136694,,247614],
+["Now that is some news to be celebrating 👏","24 Jun 19:01",65120,61011,1121,7.99,5,66801,2,-15.5,"4d 19h","7s",27832,,65120],
+["There's never a calm day at the office 😅 ","24 Jun 17:02",1178508,1039166,55876,176.31,8,1133959,139,-0.1,"177d 23h","15s",763456,,1178508],
+["She told me she could handle the pain 😬 #","24 Jun 15:42",1629385,1377983,66053,242.08,0,1637662,364,0.6,"218d 2h","13s",1161731,,1629385],
+["My BF is so good with his hands 😲 #intere","24 Jun 14:15",37193113,28822629,452724,1909.75,19307,32806202,1358,10.8,"5796d 14h","17s",20636999,,37193113],
+["I wonder what it's gonna take for her to s","24 Jun 12:45",467020,421663,22412,77.5,11,463750,197,0.3,"68d 17h","14s",294617,,467020],
+["Why does everything remind me of him 😅 #s","24 Jun 09:46",76556797,49525497,980804,2037.19,14475,73814925,6545,11.1,"6327d 21h","7s",23318689,,76556797],
+["My client's come to me just to have this d","24 Jun 08:15",460804,415546,10754,74.06,8,455875,28,-1.9,"61d 6h","11s",281910,,460804],
+["We weren't expecting to find this 😳 #inte","24 Jun 04:30",541133,481624,19572,168.91,8,539470,63,0.5,"169d","27s",389517,,541133],
+["It just kept getting better and better for","25 Jun 23:30",219712,200301,6434,36.3,8,219544,33,-1.9,"26d 19h","11s",124095,,219712],
+["I was panicking so bad and didn't know wha","25 Jun 22:00",4566148,3036817,107127,594.03,151,3338973,644,1.5,"624d 4h","12s",2195425,,4566148],
+["I can't believe he turned up to the game i","25 Jun 19:01",476666,427364,20724,106.86,6,473936,22,-2.4,"56d 2h","10s",322231,,476666],
+["Seeing the smiles on these girls faces mak","25 Jun 17:00",253909,230031,6129,32.64,9,253602,31,-1.6,"25d 10h","9s",126435,,253909],
+["I can't believe this is the same pitch the","25 Jun 15:45",595639,491042,15665,79.83,12,524471,64,-0.7,"65d 1h","9s",299226,,595639],
+["The removal is my favourite part of the se","25 Jun 14:15",687919,624427,16685,117,14,688777,19,-2.2,"78d 9h","11s",471376,,687919],
+["Team work really makes the dream work 💪 #","25 Jun 13:01",433100,392606,11275,47.81,25,439604,38,-0.6,"56d 5h","12s",213772,,433100],
+["My GF will never know what happened 😅 #ca","25 Jun 09:58",458933,413711,7224,66.76,29,452672,22,-2.4,"57d 14h","11s",262960,,458933],
+["He makes this look too easy 😲 #satisfying","25 Jun 08:15",3144032,2417504,87260,340.48,159,2655901,169,0,"446d 9h","12s",1722818,,3144032],
+["My husband is going to be so happy with ho","25 Jun 04:30",206003,195326,8224,88.29,34,207083,28,-2.3,"70d 16h","30s",119587,,206003],
+["I wouldn't last two seconds in there 😳 #i","25 Jun 03:45",219113,179030,3825,33,6,186465,31,-2.2,"24d 14h","10s",114035,,219113],
+["It's almost as bad as what I pull from my ","25 Jun 02:30",1136504,1032728,23212,173.12,0,1112166,55,-0.9,"158d 1h","12s",689202,,1136504],
+["Doing this has completely transformed my c","26 Jun 23:30",1059661,935220,23470,208.6,10,1034613,39,-1.5,"165d 5h","13s",720242,,1059661],
+["I'm so pleased with the final results 👏 #","26 Jun 22:00",254367,190980,8272,34.89,13,218992,23,-2.9,"25d 3h","9s",125311,,254367],
+["I wonder if Haaland will score in tonight'","26 Jun 19:00",1488742,1025936,23028,126.97,47,1295598,64,-0.2,"138d 20h","8s",485681,,1488742],
+["I had no idea this is what the paint meant","26 Jun 17:00",144026,123341,1944,18.84,22,135401,15,-3.9,"12d 19h","8s",77172,,144026],
+["They immediately knew what to do to help m","26 Jun 15:46",775654,685847,22409,131.04,10,752907,79,-0.6,"100d 14h","11s",495166,,775654],
+["I always thought they were picked one at a","26 Jun 14:15",5402007,3681820,79149,321.88,1703,3947820,232,1.2,"812d 19h","18s",3007758,,5402007],
+["I love when I get to see him go drive past","26 Jun 13:00",944184,809218,22565,129.08,21,872149,94,0.1,"113d 16h","12s",510046,,944184],
+["I'm so happy that I finally decided to get","26 Jun 09:49",7635077,5469353,266801,582.62,795,8378911,997,1.8,"952d 20h","11s",2755520,,7635077],
+["I wasn't expecting them to do this to my t","26 Jun 08:15",584413,508540,10439,90.3,17,574106,46,-1.1,"70d 4h","10s",371698,,584413],
+["This cowboy's boots are rodeo ready and lo","26 Jun 04:30",651757,553218,24440,270.38,22,624689,61,1.1,"271d 14h","36s",412541,,651757],
+["It surprised me how much grime came out of","27 Jun 23:30",740726,679167,13411,133.4,1,724625,17,-2.8,"97d 16h","11s",501251,,740726],
+["Everyone asks me how this is done so here'","27 Jun 22:00",94426,79809,1039,14.73,0,89646,1,-51.6,"7d 7h","7s",48400,,94426],
+["I had no idea why they were running toward","27 Jun 19:00",401837,302410,7822,61.19,3,340917,23,-5.4,"39d 15h","9s",203064,,401837],
+["My job is the tastiest of them all 🤤 #foo","27 Jun 17:02",283564,256083,3964,42.45,7,288578,7,-8.8,"23d 5h","7s",162311,,283564],
+["It's so important that I don't forget to d","27 Jun 15:45",498899,390388,7343,76.58,2,432715,14,-5.4,"45d 22h","8s",282112,,498899],
+["I can't believe this was how he created th","28 Jun 23:30",746117,682230,16424,105.75,12,739327,106,0.1,"83d 9h","10s",469040,,746117],
+["My first instinct would be to run yet I'm ","28 Jun 22:00",2279696,1754729,38125,153.67,1315,1797516,328,1.3,"284d 9h","11s",1367797,,2279696],
+["My wife knows I've been waiting all my lif","28 Jun 19:00",1131668,1013356,53413,198.4,5,1107317,191,0.6,"198d 9h","15s",747157,,1131668],
+["So glad my sofa delivery showed up as flat","28 Jun 17:01",250636,226465,2997,34.95,1,250005,6,-10,"27d 12h","9s",134715,,250636],
+["I’d enjoy mowing if my lawn looked like th","28 Jun 15:45",517240,476588,9659,82.38,0,520225,17,-3.3,"64d 5h","11s",311178,,517240],
+["It's time to call her after being at work ","28 Jun 14:15",547629,410874,5320,67.26,0,456498,6,-6.5,"47d 21h","10s",258249,,547629],
+["I finally have a new finger after she did ","28 Jun 13:02",259292,239893,4326,46.96,0,260397,13,-7,"33d 5h","11s",156178,,259292],
+["I had no idea this was how fences were mad","28 Jun 09:00",578545,443391,6018,75.16,10,485611,14,-3.8,"68d 6h","10s",304161,,578545],
+["I wasn't expecting it to work like that 😆","28 Jun 04:30",85312,79399,1380,10.99,4,86487,12,-11.1,"13d 8h","14s",44675,,85312],
+["I thought I could feel something funny on ","28 Jun 03:45",3356302,2353480,65255,439.1,66,2984428,772,1.7,"337d","9s",1587252,,3356302],
+["These robots really are everywhere 😲 #rob","29 Jun 23:30",388819,334847,5422,52.39,4,355169,46,-1.2,"43d 17h","10s",223885,,388819],
+["I'm never letting my GF drive the car afte","29 Jun 22:00",657808,485889,7685,21.74,3,525556,24,-3.3,"76d 20h","10s",292024,,657808],
+["Only Harry Styles would attract this big o","29 Jun 19:00",334782,270574,10277,34.32,3,312823,27,-3.7,"32d 7h","8s",185558,,334782],
+["I really hope my GF likes my new hair 🤩 #","29 Jun 17:00",3527336,2642114,107442,368.43,92,2714549,5117,6.7,"447d 16h","11s",1637655,,3527336],
+["This part of the job is so important 😲 #b","29 Jun 15:45",1667741,1532438,30325,66.33,0,1620978,56,-0.9,"229d 1h","12s",1135574,,1667741],
+["This must have been the best surprise 🥹 #","30 Jun 23:30",338524,272021,8433,49.04,0,303286,12,-4.6,"35d 12h","9s",194390,,338524],
+["It's like something from a sci-fi movie 😲","30 Jun 22:00",899603,707872,11959,127.49,0,781308,43,-1.8,"105d 8h","10s",537008,,899603],
+["There is nobody cooler than Snoop Dogg 😎 ","30 Jun 19:00",198718,170788,5447,28.54,0,193895,18,-3.4,"18d","8s",109662,,198718],
+["I would never have guessed this is what ca","30 Jun 17:00",595922,540169,7922,82.09,0,601777,19,-2.8,"65d 16h","10s",348240,,595922],
+["How they managed to do this blew my mind ","30 Jun 16:14",884585,790297,13729,120.77,2,875022,9,-5.2,"119d 3h","12s",569331,,884585],
+["I ran over to try and stop them ruining th","30 Jun 14:15",10500768,6979114,116705,271.34,864,9262073,133,0.5,"972d 21h","12s",3368935,,10500768],
+["I had no idea they could make this from co","30 Jun 13:01",611489,491004,8979,46.5,33,520656,23,-1,"56d 1h","10s",328889,,611489],
+["There was was no time to waste 😰 #pregnan","30 Jun 09:45",666129,606769,24892,34.63,1,670031,218,-0.1,"80d","10s",448903,,666129],
+["This was the last way I thought it was don","30 Jun 08:15",283161,221702,5324,8.96,1,251349,42,-1.4,"24d 14h","8s",138711,,283161],
+["This job found her when she needed it the ","30 Jun 04:30",474335,426203,13349,119.81,6,467742,63,-1.5,"125d 16h","23s",315118,,474335],
+["Practicing these skills could save someone","1 Jul 23:30",732873,586025,13599,123.26,0,639396,70,-2.2,"74d 3h","9s",453562,,732873],
+["I don't know why they wouldn't jsut buy a ","1 Jul 22:00",290040,271932,4943,34.48,6,285996,13,-5.5,"39d 11h","12s",151443,,290040],
+["She clearly is a big The Rock fan 😅 #cele","1 Jul 19:00",181721,159615,4716,27.03,0,189586,7,-8.5,"21d 8h","10s",106035,,181721],
+["I don't know why they thought this was a g","1 Jul 17:01",1307806,986918,28330,147.24,99,1085338,192,-0.1,"163d 19h","11s",637274,,1307806],
+["The process takes an extreme amount of det","1 Jul 15:47",927238,859839,17251,127.42,4,910955,31,-1.5,"130d 14h","12s",620348,,927238],
+["I've never seen so many apples 😲 #fruit #","2 Jul 23:30",122390,106542,1348,14.1,0,116408,8,-8.3,"9d 13h","7s",54006,,122390],
+["All the neighbours are knocking on our doo","2 Jul 22:00",214051,187328,3158,22.98,3,205346,9,-7.1,"18d 19h","8s",100907,,214051],
+["It happened right in the middle of one of ","2 Jul 19:00",448643,359772,14494,63.97,1,388757,12,-5.6,"52d 17h","10s",236464,,448643],
+["This is the best hack to not waste any mat","2 Jul 17:00",1350073,987382,26684,128.4,20,1055215,149,-0.1,"157d 17h","10s",697210,,1350073],
+["Surely this doesn't actually work 😅 #inte","2 Jul 15:45",886671,661783,22152,81.42,2,769234,133,-0.5,"81d 19h","8s",429468,,886671],
+["Nobody ever expects them to be grown like ","2 Jul 14:16",310311,264763,3866,36.06,6,289806,16,-2.3,"23d 3h","7s",169587,,310311],
+["His accuracy skills are next level 🤯 #con","2 Jul 13:00",3463669,2537787,83084,425.04,14,2923626,169,0.6,"399d 23h","13s",1989439,,3463669],
+["I'm not sure how I would react if my guest","2 Jul 09:58",940857,801966,49116,137.76,0,894854,440,0.4,"106d 23h","10s",558475,,940857],
+["My dog could finally walk after trying thi","2 Jul 08:15",208006,193116,3365,28.75,1,207315,8,-6.2,"25d 1h","10s",126151,,208006],
+["Found a way to add 24k gold leaf on walnut","2 Jul 04:30",587228,535553,16747,188.52,2,570792,19,-1.3,"199d 8h","29s",389024,,587228],
+["Nothing was going to stop this fan 😲 #soc","3 Jul 23:30",269285,228032,4764,44.04,3,244495,31,-5,"32d 18h","11s",159052,,269285],
+["We need to be so careful moving it 😅🌵 #p","3 Jul 22:00",392188,364600,6644,73.52,0,389305,29,-1.8,"48d","11s",243681,,392188],
+["We were not expecting to see her at the sh","3 Jul 19:00",409183,299202,20664,66.06,0,330141,579,-5.2,"46d 20h","10s",222426,,409183],
+["The precision in this technique is next le","3 Jul 17:01",1963794,1535893,32669,223.41,3,1666009,78,-0.8,"232d 17h","10s",1173730,,1963794],
+["He just came over and cut the rope 😱 #boa","3 Jul 15:45",1412051,969707,25867,131.03,0,1136527,31,-1.6,"140d 12h","9s",708577,,1412051],
+["It’s so satisfying to unclog a pipe this b","4 Jul 23:30",1012088,800508,13074,161.24,0,861526,31,-2.1,"108d","9s",590401,,1012088],
+["He's never going to forget this moment 🥹 ","4 Jul 22:00",544981,410719,17518,82.43,50,461027,56,-0.6,"65d 11h","10s",284867,,544981],
+["This machine sorts the hair out so fast 😲","4 Jul 19:00",561013,427506,6465,76.75,3,470769,21,-2.7,"58d 13h","9s",275015,,561013],
+["I'm not sure I'd be capable of doing this ","4 Jul 17:00",553888,505808,8313,100.37,0,544359,13,-4.1,"78d 18h","12s",351467,,553888],
+["My hair started coming straight off 😳 #ha","4 Jul 15:45",418136,318693,8116,46.17,0,344660,17,-3.2,"41d 18h","9s",196533,,418136],
+["I can't believe how fast they are going 😲","4 Jul 14:15",599161,497165,9483,73.28,6,535451,11,-2.6,"62d 6h","11s",347127,,599161],
+["We had to sit on the tarmac for so long wa","4 Jul 13:01",837884,609035,15550,22.29,0,671583,55,-0.5,"91d 1h","12s",401816,,837884],
+["My girlfriend would want to ride this boar","4 Jul 09:01",605211,455166,5695,70.62,0,493626,11,-5,"65d 14h","9s",297743,,605211],
+["Something always goes wrong everytime I tr","4 Jul 08:15",272782,227222,4368,41.25,5,254203,9,-6.5,"22d","7s",165755,,272782],
+["My neighbor went all out for 4th of July t","4 Jul 04:30",105010,97028,4542,32.84,8,105395,29,-3.7,"25d 19h","21s",61878,,105010],
+["It's so satisfying when it comes out of th","5 Jul 23:30",205696,167984,2955,17.33,1,186077,26,-3.1,"18d 22h","8s",84659,,205696],
+["It looks brand new after I tried this hack","5 Jul 22:00",809479,644067,11373,130.56,1,689978,7,-6.6,"80d 14h","9s",428544,,809479],
+["I never realized how much repair is needed","5 Jul 19:00",322905,260562,2903,46.37,0,284706,4,-17.5,"26d","7s",153536,,322905],
+["They asked my son to speak to one of us 😰","5 Jul 17:01",1547766,1110069,63203,237.85,9,1240232,1613,2,"187d","10s",757445,,1547766],
+["Finally I can block out strangers looking ","5 Jul 15:45",1120004,918456,12117,120.23,72,945623,84,-0.5,"125d 6h","10s",554101,,1120004],
+["I proved every single person wrong today ","6 Jul 23:30",1170184,920788,16836,163.73,21,944751,24,-1.7,"147d 6h","11s",669485,,1170184],
+["My husband is going to love this bespoke p","6 Jul 22:00",697059,613201,8428,133.6,2,676268,3,-16.5,"87d 4h","11s",483772,,697059],
+["There have still been no confirmations on ","6 Jul 19:00",47431,43760,893,7,0,49117,21,-7.4,"4d 8h","8s",23183,,47431],
+["I had no idea this is what happens to your","6 Jul 17:01",4363366,2962417,62820,484.77,149,3415372,277,1,"506d 19h","10s",1997587,,4363366],
+["Bro scared me when he first started doing ","6 Jul 16:00",2334233,1617725,40403,285.95,0,1803703,42,-1.1,"261d 21h","10s",1231207,,2334233],
+["I wasn't expecting it to go so far down 😅","6 Jul 14:15",1113492,794530,20717,127.71,0,934923,54,-0.6,"101d 23h","10s",578045,,1113492],
+["It is so rewarding getting to help people ","6 Jul 13:00",1901616,1456935,23055,212.16,0,1618256,31,-0.8,"212d 17h","12s",1066305,,1901616],
+["I love to stand out from the crowd 🤩 #bod","6 Jul 09:45",1730222,1223941,148370,137.33,0,1603890,1806,2.6,"186d 20h","9s",854582,,1730222],
+["I really hope I never have to remove this ","6 Jul 08:15",383748,360210,4517,50.03,1,387839,31,-3.6,"38d 8h","9s",209884,,383748],
+["I’m shocked by how many ticks I find on th","6 Jul 04:30",3606919,3280555,62214,385.88,908,3498908,97,3.5,"867d 20h","21s",2636304,,3606919],
+["I was confused as to why they were doing t","7 Jul 23:30",742294,607821,28332,144.52,2,678065,120,-0.4,"92d 9h","11s",434328,,742294],
+["Some traditions are meant to be broken 🚜 ","7 Jul 22:00",106690,91858,1223,6.6,4,102953,8,-6.7,"8d 15h","7s",47455,,106690],
+["He was overcome with emotion at the end of","7 Jul 19:00",259783,210378,11873,34.13,1,241151,176,-1.3,"20d 12h","7s",131171,,259783],
+["They didn't even ask if I wanted this put ","7 Jul 17:01",1216200,956879,15366,173.7,0,1077066,13,-3.8,"139d 20h","10s",717139,,1216200],
+["I had to do a double take when I saw it 😳","7 Jul 15:45",1016811,823564,22795,144.91,0,884577,111,-0.9,"102d 5h","9s",595243,,1016811],
+["Finally an easy way to slice my watermelon","8 Jul 23:30",524827,393156,4980,71.89,1,422454,35,-2.6,"48d 11h","8s",263241,,524827],
+["So glad he was able to remove my lump 🫣 #","8 Jul 22:00",434731,342109,14433,57.65,0,398868,18,-3.6,"38d 5h","8s",214122,,434731],
+["I'm shook they one upped me 🤪 #gymnastics","8 Jul 21:30",1275359,942887,23622,179.17,0,1008393,54,-0.7,"145d 19h","10s",651565,,1275359],
+["Finally inviting my GF over to dinner 😏🦑","8 Jul 19:00",896258,695732,11764,117.52,0,763006,8,-6.1,"99d 20h","10s",458462,,896258],
+["It's so satisfying to make these at my wor","8 Jul 17:01",1264151,1004371,14552,184.35,0,1086972,47,-0.9,"134d 9h","9s",688044,,1264151],
+["I can't believe bro snapped his toe back i","8 Jul 15:45",876776,694298,17696,100.28,24,748007,105,0.2,"89d 17h","11s",442948,,876776],
+["I'm stitching on all my tattoos from now o","8 Jul 14:15",1751953,1319945,66600,192.89,240,1449894,804,2,"186d 18h","12s",814817,,1751953],
+["My husband's glasses end up looking really","8 Jul 13:13",791351,627015,8187,113.54,2,681418,31,-1.5,"83d 15h","11s",431222,,791351],
+["I wasn't expecting sausages to get this gi","8 Jul 10:59",2069555,1633065,27371,248.69,0,1763841,87,-0.7,"218d 3h","9s",1117724,,2069555],
+["I've never seen someone react like this 😲","8 Jul 08:15",568329,446007,13150,77.61,0,509999,89,-0.8,"53d 15h","8s",303837,,568329],
+["Had to take my gecko to the vet because of","9 Jul 23:30",914877,666526,22736,118.55,8,726069,59,-1.1,"88d 13h","8s",452372,,914877],
+["I had no idea old cables were worth THIS m","9 Jul 22:00",531397,445681,10613,83.03,1,494877,18,-3.6,"47d 11h","8s",304590,,531397],
+["Getting unstuck is easier than I thought ","9 Jul 21:30",68207343,43619346,634048,1346.15,20635,45828156,1783,16,"8212d 10h","10s",34974619,,68207343],
+["First day on the job and he's gone rogue ","9 Jul 19:00",519084,410902,15036,72.7,0,466528,178,0.1,"51d 7h","9s",278223,,519084],
+["Bro ended up bald after this haircut 😅🔥 ","9 Jul 17:00",781307,607679,17857,89.76,0,638395,138,-0.5,"92d 22h","10s",383360,,781307],
+["Finally found a hack to cover my roots 😲","10 Jul 23:30",188699,157994,2182,18.09,0,173059,9,-7.7,"17d 21h","8s",91729,,188699],
+["I'm amazed at how fast he slid off the lad","10 Jul 22:00",470144,387411,8915,43.71,0,417617,41,-1.5,"42d 9h","8s",234785,,470144],
+["Wish my graduation party looked like this ","10 Jul 21:30",212437,173805,2716,21.59,0,190755,8,-6.7,"18d 19h","8s",111206,,212437],
+["If only this could be my job 😅💥 #work #m","10 Jul 19:00",329658,271179,3922,26.45,1,292078,8,-6.3,"31d 3h","8s",188918,,329658],
+["I never knew queen bees can be marked like","10 Jul 17:01",521492,396959,6220,40.85,1,433761,13,-4,"52d","9s",256635,,521492],
+["Hair loss was winning until I tried this h","10 Jul 15:45",836224,638979,22072,78.26,0,718292,33,-3.1,"76d 1h","10s",512309,,836224],
+["My dog had a blocked ear so the vet did th","10 Jul 14:15",4823366,3366579,76773,289.1,223,4256610,454,1.4,"496d","12s",1906356,,4823366],
+["I was sure I’d lose my truck to this mud ","10 Jul 13:01",2916487,2103338,71254,194.49,196,2175834,642,2.4,"341d 13h","14s",1481094,,2916487],
+["I guess our beach trip is over now 😅💦🦭 ","10 Jul 11:00",1156061,910246,32331,137.89,0,981018,159,0.6,"108d 7h","10s",628063,,1156061],
+["Can't believe how easy this hack is 😌💦🚗","10 Jul 08:15",199862,170923,2648,13.7,1,177971,10,-5.3,"18d 22h","8s",90228,,199862],
+["I've never heard of vacuum bricks before ","11 Jul 23:30",677675,531186,8177,62.37,0,571213,22,-2.1,"64d 2h","8s",369129,,677675],
+["I'm glad I only have to do this once 🫣👂 ","11 Jul 22:00",753694,547905,8963,62.89,0,603227,9,-7.8,"78d 11h","9s",351674,,753694],
+["My girlfriend may have started a new trend","11 Jul 21:30",507928,472964,10497,66.28,0,509703,9,-5.3,"67d 14h","11s",339250,,507928],
+["My sons wondered how long this lasts 😅🇺","11 Jul 19:00",784560,627726,13181,82.05,0,677297,46,-3.8,"77d 13h","9s",425333,,784560],
+["Bro's got such an incredible six-pack 💪😲","11 Jul 17:01",687185,598477,46663,68.35,0,651882,277,-1.2,"58d 11h","7s",391078,,687185],
+["Got absolutely splashed at this event 😅💦","12 Jul 23:30",348407,323765,5887,40.57,0,348831,26,-2,"39d 21h","10s",228745,,348407],
+["I'm not sure why it's falling all over the","12 Jul 22:00",661423,546151,16143,62.46,1,599261,41,-2,"71d 17h","9s",407544,,661423],
+["Bro really got a tractor out to sea for th","12 Jul 21:30",150586,143645,3137,18.86,1,153082,9,-7.6,"23d 20h","14s",95598,,150586],
+["It's a venemous snake we found on the cour","12 Jul 19:00",1334909,978504,31393,104.39,10,1058523,70,-0.2,"133d 14h","9s",749779,,1334909],
+["I've only got six seconds to get this righ","12 Jul 17:01",954625,734822,19844,92.23,0,827094,28,-2.1,"107d 5h","10s",555500,,954625],
+["Somehow I still want to pour more 😳💦🍯 #","12 Jul 15:45",1268492,988418,19476,116.64,2,1099390,66,-0.4,"120d 10h","10s",728792,,1268492],
+["I've just unlocked a new fear of heights ","12 Jul 14:15",450514,356484,4778,35.72,0,386773,29,-1.3,"49d 21h","12s",234213,,450514],
+["Bro disappeared in a split second 💀🕷️⚡ #","12 Jul 13:01",409754,318613,6347,35.8,0,358288,31,-1.1,"37d 12h","10s",224505,,409754],
+["I've never heard of this type of cream bef","12 Jul 11:00",391406,325113,10382,34.42,0,342722,20,-2.3,"45d 3h","12s",196169,,391406],
+["I'd be so excited to try it out when it's ","12 Jul 08:15",443624,363113,4862,34.92,0,394657,3,-16.8,"35d 13h","7s",251066,,443624],
+["It hadn’t been washed in ages so I did thi","13 Jul 23:30",736213,669568,23018,141.4,1,716017,46,0.6,"239d 2h","28s",461991,,736213],
+["It felt really sus to get this done on my ","13 Jul 22:00",584850,460157,12865,59.16,0,509306,43,-3.1,"52d 23h","8s",315115,,584850],
+["Not sure if my phone case has one of these","13 Jul 19:00",788933,625562,11292,67.32,2,718164,19,-3,"84d 1h","9s",455162,,788933],
+["My massage got even wilder this time 😅🔥 ","13 Jul 17:01",1213269,901306,17164,102.77,0,1023880,42,-1.4,"127d","9s",606153,,1213269],
+["I'm not sure what she used on my face 🫣💦","13 Jul 15:44",1197332,950196,34434,118.09,0,1055897,358,0.3,"118d 20h","9s",698475,,1197332],
+["I have a long day of doing nails ahead of ","14 Jul 23:30",2866736,2166817,140812,1.36,0,2508110,425,1.2,"297d 23h","9s",1552553,,2866736],
+["I've never had a tattoo done like this bef","14 Jul 22:00",242314,196922,3549,21.75,1,222991,41,-2.5,"21d 3h","8s",123769,,242314],
+["You would never guess where he got these t","14 Jul 21:30",1015172,775882,11113,78.73,1,850441,9,-5.4,"117d 16h","10s",580993,,1015172],
+["I was so cold but it was so worth it 🥶 #i","14 Jul 19:00",1814566,1307076,51876,192.48,0,1472659,100,-0.9,"203d 12h","10s",1100965,,1814566],
+["He threw it at me so hard 😰 #fruit #inter","14 Jul 17:00",1106921,800667,19097,72.18,8,862681,79,-0.4,"129d 6h","10s",605342,,1106921],
+["I've never had a client react like this 😳","14 Jul 15:45",3360738,2428620,77792,275.11,0,2646808,304,0.8,"380d 6h","13s",1845376,,3360738],
+["You have to have serious skills to make it","14 Jul 14:16",1592354,1364876,44291,144.8,0,1478233,67,0,"190d 14h","12s",997817,,1592354],
+["My car looks completely different 😲 #cars","14 Jul 13:00",675342,482160,6227,43.13,0,521000,12,-3.1,"73d 21h","13s",295204,,675342],
+["I have to concentrate so hard everytime I ","14 Jul 11:00",1453781,1043961,23955,110.74,24,1239458,61,-0.9,"161d 15h","10s",711759,,1453781],
+["It is so awesome to make these for my clie","14 Jul 08:15",429529,381846,4862,14.79,0,417571,5,-10.4,"52d 9h","11s",262732,,429529],
+["I love getting to go to work every day and","15 Jul 23:30",861103,654771,9113,67.82,2,719384,15,-4.6,"89d 18h","9s",448481,,861103],
+["You best believe I won't be doing this aga","15 Jul 22:00",133500,112779,3040,4.78,1,127843,22,-3,"11d 18h","8s",68283,,133500],
+["I'm living for this celeb couple 🤩 #celeb","15 Jul 21:30",52379,44017,603,1.77,1,50901,6,-11.5,"2d 22h","5s",16653,,52379],
+["This client was in desperate need of my he","15 Jul 19:00",1720692,1225113,33418,162.01,16,1328168,99,-0.4,"179d 3h","9s",907287,,1720692],
+["I have to admit I made that look too easy ","15 Jul 17:00",1678125,1257863,24559,82.66,0,1377767,43,-1.2,"191d 6h","10s",865981,,1678125],
+["I can't believe it changes just like that ","16 Jul 23:30",1085452,982904,18013,96.02,4,1041266,18,-2.9,"149d 7h","12s",688584,,1085452],
+["There is no room for mistakes in this job ","16 Jul 22:00",208775,194783,1957,13.68,3,208342,6,-10.2,"19d 4h","8s",110514,,208775],
+["I don't know what I would hae done if my w","16 Jul 19:00",470715,417916,11204,43.25,2,474314,10,-6.7,"50d 11h","9s",257022,,470715],
+["I have no idea how this works 😂 #diy #uni","16 Jul 17:00",1412022,1186180,75971,42.52,8,1283131,305,1.2,"196d 5h","12s",858308,,1412022],
+["All of these plants were covered in these ","16 Jul 15:48",1334021,1198315,23926,49.49,5,1301537,94,0.1,"178d 9h","12s",830915,,1334021],
+["I'm not sure I want to eat them after this","16 Jul 14:17",578039,515814,17007,50.69,0,569250,89,-0.5,"65d 16h","11s",361704,,578039],
+["He just started poking me with a red hot m","16 Jul 13:00",6252893,4544607,179053,463.13,147,5544243,1304,2.7,"774d 3h","14s",3383915,,6252893],
+["There's no way that is a fish 😅 #fish #be","16 Jul 11:12",959310,699435,20395,66.66,0,760360,87,-0.7,"89d 3h","8s",450939,,959310],
+["I wasn't expecting there to be so many 😳 ","16 Jul 08:15",1330377,951858,11642,106.8,350,966807,104,-0.7,"157d 5h","10s",695767,,1330377],
+["No better feeling than a fresh club 😮‍💨 ","16 Jul 04:30",158392,141226,2622,17.59,1,155984,3,-17.5,"35d 20h","20s",94054,,158392],
+["It was literally hanging off 😱 #tattoos #","17 Jul 23:30",906680,723718,18686,87.79,3,777010,98,-1.4,"86d 18h","8s",510646,,906680],
+["I need the holes to be extra large 🎳 #bow","17 Jul 22:00",447568,340955,3613,30.52,2,363767,0,-3,"44d 11h","9s",214774,,447568],
+["Everyone at the wedding was wondering wher","17 Jul 19:00",890136,775376,47522,113.97,1,855741,215,1.2,"191d","19s",627245,,890136],
+["My hair was completely transformed 😲 #hai","17 Jul 17:00",245424,212600,4716,17.09,15,225026,30,-2.8,"18d 22h","7s",111041,,245424],
+["I think I've found my dream job 🤩 #constr","17 Jul 15:45",1004790,891363,18355,112.74,14,989095,24,-2.4,"154d 6h","13s",654391,,1004790],
+["No one believed me when I told them 😭 #ho","18 Jul 23:30",965782,733067,15070,15.99,250,788071,74,-0.5,"105d 1h","9s",549251,,965782],
+["I know exactly where this is going to go i","18 Jul 22:00",769414,703883,10453,79.07,0,756735,28,-2.4,"112d 15h","13s",481780,,769414],
+["Regular methods were not going to cut it t","18 Jul 19:01",1376522,1092808,16763,110.85,110,1154971,38,-1.3,"151d 2h","9s",814576,,1376522],
+["I would hate to have been that security gu","18 Jul 17:01",149406,135126,2427,4.88,3,146493,11,-5.1,"14d 22h","9s",79451,,149406],
+["This process is not as easy as it look 😲 ","18 Jul 15:45",198754,177392,2484,13.19,14,199057,5,-11.9,"18d 14h","8s",96588,,198754],
+["My husband has been spending so much time ","18 Jul 14:15",3565679,2567293,57594,274.94,589,2931056,260,1.2,"526d 4h","17s",1926126,,3565679],
+["What my husband wants, my husband gets 😉 ","18 Jul 13:00",1612562,1325961,111158,158.9,16,1471682,492,0.8,"224d 9h","14s",900122,,1612562],
+["I thought this was something I could eat ","18 Jul 09:00",205260,181630,2200,14.6,0,204933,4,-15.3,"19d 14h","8s",127896,,205260],
+["You could feel how important this was to e","18 Jul 08:15",12819551,9301868,411283,296.11,4579,10293373,3371,5.8,"1862d 16h","13s",6777088,,12819551],
+["The juices were squirting everywhere 😲💦 ","18 Jul 04:30",788795,618130,20353,57.95,84,825877,191,-0.5,"110d 8h","12s",377697,,788795],
+["This requires next level attention to deta","19 Jul 23:30",184215,149515,2023,9.96,0,168723,3,-15.7,"15d 18h","7s",84091,,184215],
+["You need a steady hand to do this job 😅 #","19 Jul 22:00",483754,373304,5429,28.86,1,407028,14,-4.1,"49d 8h","9s",228148,,483754],
+["I love watching him work with the machines","19 Jul 19:01",333301,298893,7091,0,6,332800,20,-2.8,"55d 10h","14s",166737,,333301],
+["We love trying new ways to grow the best t","19 Jul 17:03",407477,393557,4173,28.91,0,409028,17,-3.7,"38d 21h","8s",263640,,407477],
+["The panic immediately set in 😰 #shocking ","19 Jul 15:45",1776731,1618601,47776,190.53,0,1749586,104,-0.5,"275d 8h","13s",1212458,,1776731],
+["It's definitely a one of a kind look 🤩 #b","20 Jul 23:30",249047,233267,5591,13.82,0,247998,215,-0.5,"27d 22h","10s",142620,,249047],
+["The trash was all over the road 😱 #caught","20 Jul 22:00",505132,450301,13390,30.85,4,490401,82,-0.6,"64d 8h","11s",311365,,505132],
+["This takes counting sheep to a whole new l","20 Jul 21:30",958075,840882,30429,63.01,15,934777,23,-0.5,"201d 18h","18s",583631,,958075],
+["I don't think she wants us to come here ag","20 Jul 19:00",1056739,903837,41168,78.63,0,1030347,316,0.3,"161d 18h","13s",654093,,1056739],
+["I really hope this works 😰 #teeth #intere","20 Jul 17:00",623257,573624,8633,34.51,4,605318,14,-4.1,"86d 15h","12s",379385,,623257],
+["I didn't know this was how wine was made ","20 Jul 15:45",745497,576920,9878,18.84,6,639416,37,-1.2,"65d 1h","9s",309431,,745497],
+["I'm not sure what kind of massage I signed","20 Jul 14:16",273851,255853,5732,6.43,0,278469,37,-2.1,"21d 15h","7s",147525,,273851],
+["I wasn't expecting it to look like that in","20 Jul 13:01",1177917,1031831,24604,43.92,3,1165201,115,-0.3,"144d 15h","11s",747531,,1177917],
+["I did not know they grew on trees 😲 #frui","20 Jul 08:15",159925,139038,2040,4.91,12,149835,11,-5.2,"13d 2h","7s",74581,,159925],
+["No one is going to have a mustache quite l","20 Jul 04:31",199835,173602,5715,4.86,11,193997,33,-2.4,"20d","9s",93511,,199835],
+["My job is hot to touch 😉 #welding #metal ","21 Jul 23:30",491703,451811,6405,20.14,11,479833,12,-4.3,"69d 12h","12s",272022,,491703],
+["None of my friends can believe this is my ","21 Jul 22:00",182961,143888,2568,4.89,12,162682,15,-4.1,"16d 7h","8s",74714,,182961],
+["There is no room for mistakes 😰 #satisfyi","21 Jul 21:30",1384836,1291364,22450,76.77,10,1359417,36,0.1,"302d 1h","19s",863137,,1384836],
+["Bro is laying it on thick 😅 #bodybuilding","21 Jul 19:01",4943587,3869616,111071,414.6,164,4575662,697,1.1,"694d 14h","12s",2534880,,4943587],
+["I was fascinated when I found out what it ","21 Jul 17:00",616649,448104,8001,17.32,8,502081,14,-3.6,"52d 13h","7s",320601,,616649],
+["No-one is as brave as me 💪 #shocking #cra","22 Jul 23:30",36131,32462,491,1.22,9,37087,9,-16.8,"4d 17h","11s",14624,,36131],
+["I didn't know if they were going to be abl","22 Jul 22:00",344964,278932,4383,9.56,1,302597,22,-3.7,"29d 19h","7s",139843,,344964],
+["I'll never make this mistake again 😅 #woo","22 Jul 19:00",537685,506030,15606,24.24,9,530698,64,-1.6,"72d 17h","12s",316511,,537685],
+["I had no idea what he was doing to my car ","22 Jul 17:00",1552920,1354683,30849,57.03,30,1507468,47,-0.9,"209d 10h","12s",882028,,1552920],
+["I was so glad that the vet could help him ","22 Jul 15:47",86222106,49713738,1072081,1985.4,22497,61402501,1812,5.5,"9294d 14h","9s",36066079,,86222106],
+["She was taking her time doing it 🙄 #weddi","22 Jul 14:18",75639596,49961705,739170,996.53,21390,78787282,3591,9.1,"7544d 3h","12s",23201099,,75639596],
+["I think my grandma needs to do this 😅 #pa","22 Jul 13:00",1426544,1314568,29157,51.09,35,1413342,481,1.4,"153d 20h","10s",902040,,1426544],
+["I'm not sure I'm ever going to have this d","22 Jul 11:00",2178557,1562571,55848,57.08,0,1750312,421,0.8,"214d 13h","9s",1057212,,2178557],
+["I work smarter not harder 😉 #gardening #i","22 Jul 08:15",520710,428022,7300,14.19,1,471287,90,-0.9,"47d 10h","8s",252459,,520710],
+["I know which one I would have picked 🤔 #h","22 Jul 04:30",125152,112188,2387,7.18,0,127153,9,-8.5,"22d 15h","16s",75425,,125152],
+["There is no room for error 😰 #money #sati","23 Jul 23:30",858591,791814,21784,83.57,22,839611,60,-0.2,"178d 15h","18s",551685,,858591],
+["My boss is not going to be happy with me ","23 Jul 22:00",2539401,1864008,52131,90.68,40,2069905,55,-0.4,"292d 7h","10s",1376162,,2539401],
+["I didn't wnat my car to look like everyone","23 Jul 19:00",282667,266832,3514,14.12,30,283289,10,-5.9,"26d 6h","8s",174321,,282667],
+["I can't believe this happened to me 😱 #ca","23 Jul 17:00",369993,314459,7599,14.42,13,340918,55,-1.2,"31d 22h","7s",197468,,369993],
+["I'm not going to complain about this view ","23 Jul 15:57",1904370,1696675,34629,75.7,15,1804204,128,0.2,"224d 7h","10s",1316109,,1904370],
+["I've never seen so many in one place 😱 #f","24 Jul 23:30",1286143,1156581,38890,62.17,17,1243208,94,-0.8,"160d","11s",885387,,1286143],
+["I can watch them make me my own bespoke pa","24 Jul 22:00",2079279,1690520,45457,75.65,56,1940308,144,0.2,"269d","11s",1148205,,2079279],
+["This plan was our last resort 😅 #film #fu","24 Jul 19:00",150632,133151,2299,3.66,23,145481,5,-11.1,"17d 7h","10s",70157,,150632],
+["I love my birds extra juicy 😉 #meat #cook","24 Jul 17:00",412846,376264,8875,14.08,46,413548,22,-3.4,"60d 2h","13s",211307,,412846],
+["I didn't know they made my car fluffy 😲 #","24 Jul 15:45",1040852,937724,17381,89.51,31,1021712,13,-4.1,"122d 11h","10s",609559,,1040852],
+["I hope I put my trust in the right person ","24 Jul 14:15",5721873,4398494,268950,390.32,216,5426121,1294,2.9,"630d 6h","12s",2585387,,5721873],
+["I get soaked every single day 💦 #trees #n","24 Jul 13:01",2572215,1913770,61747,90.86,73,2078439,154,0.9,"371d 13h","16s",1523173,,2572215],
+["I had no idea what they were going to brin","24 Jul 11:14",859976,650098,13793,26.96,41,719231,50,-1,"100d 1h","10s",476624,,859976],
+["I thought they were cutting into bread 😂 ","24 Jul 08:15",518880,473598,7554,17.22,45,515093,13,-3.6,"57d 9h","10s",330457,,518880],
+["I surprised everyone with the end product ","24 Jul 04:30",964663,875515,26096,73.08,21,938701,25,-2,"134d 3h","12s",633082,,964663],
+["Everyone was desperate for a taste of it ","25 Jul 22:00",409730,362804,5171,11.86,12,402945,8,-7.2,"29d 10h","6s",245710,,409730],
+["There was so much coming out of it 😰 #coo","25 Jul 19:00",479617,423930,9653,16.37,18,466116,47,-1.3,"57d 17h","10s",287909,,479617],
+["It's good job I realised it wasn't a cooki","25 Jul 17:00",2930992,1988327,78290,106.56,20,2265011,1157,2.3,"269d 1h","8s",1380711,,2930992],
+["I'm not sure the equipment is supposed to ","25 Jul 15:45",7794102,5161274,116584,391.72,995,6494196,900,1.7,"797d 12h","9s",3133680,,7794102],
+["I thought they were beyond fixing 😲 #shoe","25 Jul 14:15",573702,534237,13246,31.43,35,563128,34,-0.6,"127d 15h","19s",310970,,573702],
+["This was such a special moment for me 🥹 #","26 Jul 22:00",347023,295285,6038,11.62,0,316592,12,-4.9,"32d 22h","8s",189808,,347023],
+["I can't belive all these people would do t","26 Jul 19:00",1068017,883005,47183,45.17,7,925296,252,0.1,"112d 3h","9s",589548,,1068017],
+["We had no idea how we were going to get ou","26 Jul 17:00",3091559,2032287,36595,95.89,40,2215562,71,-0.6,"355d 13h","10s",1547893,,3091559],
+["I have no idea how I'm going to get this o","26 Jul 15:45",638976,494425,21575,29.61,25,524316,90,-1.1,"59d 17h","8s",331716,,638976],
+["I'm so proud of my daughter 🥰 #parenting ","26 Jul 14:15",387321,359160,4219,16.34,9,390403,4,-12.3,"38d 9h","9s",235260,,387321],
+["Getting this made is not an easy process ","26 Jul 13:00",480363,390900,4159,14.48,2,432503,2,-24.6,"41d 22h","8s",267541,,480363],
+["They don't even need to look to do it 😲 #","26 Jul 09:01",258573,237996,3813,7.05,5,256319,5,-9.7,"25d 14h","9s",140952,,258573],
+["No one else will have one like this 😮‍💨 ","26 Jul 04:30",4877497,4179656,83664,349.57,705,4717689,102,3.1,"1043d 7h","18s",2608157,,4877497],
+["He has overcome so much to be where he is ","26 Jul 03:46",1518001,1267163,31306,53.68,22,1365405,54,-0.6,"163d 15h","9s",859617,,1518001],
+["I've never had a discovery this good befor","26 Jul 02:30",129803,121824,3086,4.65,24,129358,7,-9.6,"23d 15h","16s",66909,,129803],
+["She knows exactly how I like it 😉 #food #","27 Jul 23:31",517430,482426,27883,18.04,8,505094,336,-0.3,"57d 12h","10s",322099,,517430],
+["We were all starting to panic 😱 #travel #","27 Jul 22:00",2980324,2216492,56441,104.13,96,2489823,290,0.7,"324d 17h","9s",1596315,,2980324],
+["Everyone was so shocked when they found ou","27 Jul 21:30",2482762,2087179,182215,182.2,105,2279811,209,1,"391d 12h","14s",1359056,,2482762],
+["Now my favourite table is husband proof 😉","27 Jul 19:00",1367101,1137632,15455,47.04,3,1197736,24,-2.2,"168d 10h","11s",753712,,1367101],
+["I didn't realise this was the reason why t","27 Jul 17:00",214521,194332,4368,7.19,4,216535,27,-2.2,"22d 23h","9s",106097,,214521],
+["This all happened during the performance ","28 Jul 23:30",4963401,3302063,611837,169.65,0,3612686,1619,2.1,"634d 1h","11s",2408045,,4963401],
+["I really didn't want to buy a new seat 😰 ","28 Jul 22:00",419885,395124,10335,40.92,19,415359,23,-1.5,"90d 13h","19s",237985,,419885],
+["It's not made how you think it is 😲 #farm","28 Jul 19:00",191125,181421,2354,4.45,16,192153,2,-23.6,"15d 19h","7s",98757,,191125],
+["I didn't know this was how it was made 😱 ","28 Jul 17:00",810044,756787,11322,44.54,19,797868,8,-7.1,"93d 11h","10s",499550,,810044],
+["I could stand and do this for hours 😮‍💨 ","28 Jul 16:00",608102,556781,12596,22.27,19,594977,40,-1.4,"79d 16h","11s",365500,,608102],
+["I've had plenty of experience with bricks ","28 Jul 14:26",1153595,1063465,36564,40.57,14,1123502,243,1.1,"155d 2h","13s",664194,,1153595],
+["I've never seen anything like this before ","28 Jul 13:00",2037397,1651489,41908,73.34,76,1789564,253,1.1,"190d 1h","10s",1198432,,2037397],
+["Without this we would never have known 😱 ","28 Jul 11:00",1172270,869411,22445,37.71,23,945621,123,-0.1,"119d 3h","9s",593132,,1172270],
+["What a special moment we will never forget","28 Jul 08:16",2326519,1640123,45740,80.36,510,1670941,264,1.3,"298d 12h","11s",1254822,,2326519],
+["I had to hold on tight 😰 #travel #watersp","28 Jul 04:30",2578017,1906321,45007,100.96,6,2123218,102,0,"295d 19h","10s",1385236,,2578017],
+["This will be the last time I do what my bo","29 Jul 22:00",506687,439629,7536,57.45,1,473759,34,-2.5,"50d 9h","9s",329853,,506687],
+["I love doing this all day, every day 😮‍💨","29 Jul 19:00",854057,670381,8130,66.83,4,721779,1,-46.8,"80d 3h","8s",441378,,854057],
+["There is so much smoke coming off these je","29 Jul 17:10",372814,297422,3398,28.55,10,326187,20,-3.6,"33d 22h","8s",183385,,372814],
+["So much time goes into this process 😲 #ha","29 Jul 15:45",632135,577403,13580,46.26,9,628948,34,-1.4,"79d 23h","11s",317676,,632135],
+["They have to work together like a well oil","29 Jul 14:15",2063310,1511485,54562,77.18,0,1676907,124,-0.4,"209d","9s",1154157,,2063310],
+["Ever stamp has to be so precise 😮‍💨 #tex","30 Jul 22:00",927265,695826,12241,77.22,0,754780,11,-4.2,"105d 17h","10s",478810,,927265],
+["That's the last time I let her drive the c","30 Jul 19:01",971529,886986,16940,98.95,6,942250,11,-5.5,"153d 8h","14s",602191,,971529],
+["It came out of no where 😱 #shocking #caug","30 Jul 17:01",1353294,1025744,39474,48.43,0,1133522,61,-1.1,"134d 15h","9s",727789,,1353294],
+["I wish more airports handled my luggage li","30 Jul 15:48",3690092,2910510,110547,124.07,9,3179972,458,0.9,"399d 8h","9s",2222210,,3690092],
+["This looks like a recipe for disaster 🫣 #","30 Jul 14:18",2286911,2081372,49587,218.53,7,2213973,46,-1.3,"363d 12h","14s",1624714,,2286911],
+["I'll definitely be doing this again 🤯 #in","30 Jul 13:00",1240527,903915,18994,95.46,5,990079,47,-1.1,"125d 17h","12s",650338,,1240527],
+["He makes this look so easy 👏 #interesting","30 Jul 11:15",605404,565903,8442,42.49,6,599045,6,-7.8,"79d 6h","11s",368132,,605404],
+["My friend needed my help 😱 #diving #rescu","30 Jul 08:15",465553,419826,6716,18.15,2,469952,23,-2.6,"54d 17h","10s",289851,,465553],
+["There was no time to panic, we had to get ","30 Jul 04:30",130041,119748,4549,5.61,12,130309,7,-9.2,"27d 1h","18s",72467,,130041],
+["I'm not sure if he is supposed to be doing","30 Jul 03:45",455133,344340,4491,30.74,8,382391,22,-4.3,"44d 13h","8s",211342,,455133],
+["He had me nervous for a second 😅 #tattoos","31 Jul 22:00",902989,711612,29068,97.79,9,779772,211,-0.6,"101d 13h","10s",502708,,902989],
+["He said he wanted to make something just f","31 Jul 19:00",2269774,1445650,34132,71.4,39,1692598,162,-0.2,"238d 2h","9s",979382,,2269774],
+["This is my go to hair cut from now on 🤩 #","31 Jul 17:01",2520120,1698288,36027,221.18,13,1831081,230,0.1,"252d 12h","9s",1257534,,2520120],
+["What does he think he is doing 😱 #husband","31 Jul 15:46",1641387,1177375,39534,139.4,1,1254550,172,-0.3,"163d 19h","9s",840870,,1641387],
+["Now I can work so much easier 💪 #hack #ga","31 Jul 14:18",783171,645479,25033,69.01,0,705398,251,0.5,"87d 15h","10s",443921,,783171],
+["Everything just fell from the tree 😲 #far","1 Aug 22:00",112340,94197,1039,7.25,2,105577,2,-26.4,"8d 17h","7s",52340,,112340],
+["There is an important reason as to why the","1 Aug 19:00",148156,130758,1886,10.76,0,149484,3,-16.4,"14d 20h","9s",66449,,148156],
+["The truck came out of nowhere 😱 #stunts #","1 Aug 17:00",149607,124848,2198,8.85,7,141329,10,-6.6,"13d 2h","8s",72323,,149607],
+["I can't believe how much dirt came out 🤢 ","1 Aug 15:45",186215,177756,2381,15.25,5,184201,6,-11.4,"17d 17h","8s",100986,,186215],
+["I've never seen a coffee made like this be","1 Aug 14:15",3084529,2238644,61660,249.23,45,2401854,197,0.3,"415d 5h","12s",1558918,,3084529],
+["I think I've seen this film before 😅 #hai","1 Aug 13:00",758063,603437,16656,71.23,0,665797,94,-0.7,"89d 11h","10s",457931,,758063],
+["He has some upper body strength to keep th","1 Aug 09:01",922821,716866,17464,78.3,0,788233,17,-3.6,"94d 9h","9s",542601,,922821],
+["My mom has done so much for us, so I wante","1 Aug 04:30",143127,132715,3097,14.21,1,148220,6,-13.8,"18d 2h","11s",87922,,143127],
+["I wonder what they are going to be used fo","1 Aug 03:45",591982,478189,6360,52.66,10,504200,14,-4.3,"60d 11h","9s",336444,,591982],
+["I never knew cans were made this way 😲 #m","1 Aug 02:30",274014,259761,6388,32.34,15,272077,31,-2.7,"68d 2h","21s",177972,,274014],
+["We drove all the way home without knowing ","2 Aug 22:00",572111,492009,15793,73.31,0,549516,35,-1.3,"83d 16h","13s",341070,,572111],
+["I can't wait to wear these on date night ","2 Aug 19:00",720335,674247,9320,29.94,1,710125,9,-5.6,"98d 13h","12s",451242,,720335],
+["This application is so smooth 😮‍💨 #satis","2 Aug 17:00",432422,392752,6138,52.99,10,434170,22,-3.2,"84d 4h","17s",255632,,432422],
+["I could do this job all day 😮‍💨 #satisfy","2 Aug 15:45",1315860,1256556,10684,131.33,10,685028,59,-1.4,"166d 8h","11s",766868,,1315860],
+["Now I've used this I would never go back ","2 Aug 14:15",1973792,1610155,44530,179.07,18,1756144,178,0.2,"238d 9h","10s",1143998,,1973792],
+["Everyone is so jealous of my bike 🤩 #bike","3 Aug 22:00",776064,590194,16135,58.36,16,629757,230,0.7,"86d","10s",353980,,776064],
+["This is not how we expected our evening to","3 Aug 19:00",1040102,841493,22605,97.89,6,880308,61,-1.2,"107d 17h","9s",579727,,1040102],
+["This is the best way to show them what to ","3 Aug 17:00",1084836,806318,22300,89.92,34,833276,79,0,"134d","11s",505151,,1084836],
+["This has helped my clients and I so much ","3 Aug 15:58",1743559,1496024,26036,161.46,0,1548822,102,-1,"173d 7h","9s",1084431,,1743559],
+["I had no idea they could do this 🤯 #tatto","3 Aug 14:18",554236,445827,11459,48.85,6,487576,52,-1.4,"51d 11h","8s",285929,,554236],
+["I've never felt more confident 😍 #date #h","3 Aug 13:00",1812877,1352712,60155,158.62,0,1471025,616,1.1,"214d 16h","13s",1003495,,1812877],
+["I need it to be just right for my big comp","3 Aug 11:02",1285641,980584,11893,91.83,18,1027956,12,-5.7,"153d 14h","10s",620574,,1285641],
+["We all had to chip in to help 😳 #parentin","3 Aug 08:15",703825,500176,12193,24.29,0,558378,21,-3.2,"68d 21h","8s",320890,,703825],
+["They said no tattoos allowed in the photos","3 Aug 04:30",92293,84484,1577,2.91,1,95200,11,-11.7,"8d","7s",39521,,92293],
+["Now we can get all our work done in a day ","3 Aug 03:45",1186665,1105298,40050,209.12,8,1164539,125,0.9,"358d 12h","26s",794382,,1186665],
+["I had no idea what to do ","4 Aug 22:00",790802,583618,9066,32.72,0,644425,5,-11.6,"85d 20h","9s",376376,,790802],
+["Now I don't even break a sweat ","4 Aug 19:00",485748,404601,5480,19.79,37,426347,41,-1.7,"58d 8h","10s",251136,,485748],
+["I love that I get to do this eve","4 Aug 17:01",292977,263666,4257,9.96,0,281462,37,-2.8,"22d 19h","7s",163077,,292977],
+["My job isn't for the weak ","4 Aug 16:00",2187480,1659131,84968,108.09,79,1688311,898,1.5,"288d 11h","11s",1013827,,2187480],
+["I've never needed something so b","4 Aug 14:31",1560969,1402244,33953,67.35,4,1527497,100,-0.7,"213d 2h","12s",914423,,1560969],
+["I need an entire barrel of pickl","5 Aug 19:15",134954,128100,1620,7.06,13,137615,8,-8.2,"10d 15h","7s",31185,,134954],
+["Something tells me Andy was comi","5 Aug 17:01",1001809,815331,17207,37.22,1,857678,58,-0.8,"120d 15h","10s",220470,,1001809],
+["His pudding serving technique is","5 Aug 15:51",1898576,1358943,53095,62.77,2,1508649,98,-0.5,"191d 13h","9s",478508,,1898576],
+["One wrong move and he could ruin","5 Aug 14:28",999036,894745,10562,34.73,5,893765,9,-7.2,"112d 18h","10s",337938,,999036],
+["I thought a truck had driven int","5 Aug 13:00",518141,444432,10471,14.05,28,454172,300,1.1,"45d 23h","9s",260484,,518141],
+["They sealed my son inside a mass","5 Aug 11:00",34388956,21184326,472710,1862.94,4610,26628793,5757,7.5,"3737d 5h","9s",1172628,,34388956],
+["No one is going to have a tattoo","5 Aug 08:15",2312107,1799564,71371,211.44,0,1946282,430,-0.1,"237d 17h","9s",970469,,2312107],
+["This definitely made my husband ","5 Aug 04:30",909667,760701,16321,91.82,0,817302,15,-4.2,"85d 23h","8s",385287,,909667],
+["You've never seen lines as clean","5 Aug 03:45",639017,616943,11841,36.45,13,631247,22,-2.8,"150d 7h","20s",286848,,639017],
+["He just came up to me and starte","5 Aug 02:30",762710,707963,29235,46.78,0,751029,119,0.1,"208d 2h","24s",299962,,762710],
+["I never knew you could do this underwater ","3 Aug 02:30",607600,499354,8568,59.24,0,541096,18,-3.6,"59d 8h","8s",,,607600],
+["It is so important to keep them clean ","4 Aug 02:30",1644302,1305114,41353,61.13,0,1360645,148,-1,"188d 20h","10s",,,1644302],
+["I can't wait to see her reaction to this  #","4 Aug 03:46",90930,82263,1739,4.87,4,94882,6,-20.9,"13d 8h","13s",,,90930],
+["I'm the person they call when the job is real","4 Aug 04:30",367762,340693,8278,16.9,10,367432,31,-3,"87d 2h","20s",,,367762],
+["I can't believe I found all this in the water","4 Aug 08:16",1468551,1161388,19954,52.45,17,1201171,37,-1.6,"165d 3h","10s",,,1468551],
+["People had told me this was in there but I ne","4 Aug 11:15",364397,314672,3503,10.74,2,335376,12,-7.6,"37d 4h","9s",,,364397],
+["He has to act fast before it cools  #intere","5 Aug 22:00",1827409,1710999,42804,194.49,2,1771438,102,-0.5,"280d 18h","13s",,,1827409],
+["Just don't get your hand caught in it  #did","5 Aug 02:31",814488,709488,9776,76.52,6,746124,15,-4.4,"86d 9h","9s",,,814488],
+["He climbed out of my bedroom window  #jobs ","5 Aug 03:46",241928,221196,4028,32.67,18,243664,7,-10.1,"53d 16h","19s",,,241928],
+["Your wheels can thank me later  #constructi","5 Aug 04:31",1601615,1456017,41532,173.14,2,1558714,168,-0.2,"232d 21h","13s",,,1601615],
+["It uses your phone battery to inflate itself ","5 Aug 08:16",1850363,1383125,34765,159.1,1,1508778,54,-1.3,"187d 20h","9s",,,1850363],
+["Thank god it wasn't a real cow  #inter","5 Aug 11:04",636759,546493,9846,46.92,4,583323,8,-6.6,"54d 7h","7s",,,636759],
+["There's dough flying everywhere  #crazy #in","5 Aug 14:16",1549497,1125459,42638,41.83,4,1195972,325,0,"148d 14h","8s",,,1549497],
+["Sorry I can't come out today, I'm busy vacuum","5 Aug 15:48",1596463,1215913,22329,131.37,4,1284963,118,-0.9,"159d 18h","9s",,,1596463],
+["He had a bone lodged between his teeth  #do","5 Aug 17:03",1686829,1208569,24329,137.96,0,1307220,57,-1.3,"164d 5h","8s",,,1686829],
+["A year's worth of work comes down to this mom","5 Aug 19:00",543582,436167,7473,50.5,7,472210,14,-4.6,"48d 17h","8s",,,543582],
+["Your chainsaw can thank us later  #satisfyi","5 Aug 22:01",794163,570521,8988,54.88,15,589232,25,-2.3,"79d 7h","9s",,,794163],
+["Without this, your drinks wouldn't have any i","6 Aug 13:03",1532422,1187337,49921,138.81,0,1281235,169,-1,"170d 19h","10s",,,1532422],
+["I was so worried how it would turn out  #ta","6 Aug 14:16",936430,726022,17968,86.29,5,797582,47,-2.1,"85d 14h","8s",,,936430],
+["It tosses the food all by itself  #intere","6 Aug 15:48",478250,401565,9000,32.6,7,423227,79,-0.8,"41d 14h","8s",,,478250],
+["That'll be the poshest glass of water I'll ev","6 Aug 17:07",585516,465592,8803,33.32,11,505489,10,-5.4,"60d 19h","9s",,,585516],
+["Without it our trains would crash  #inter","6 Aug 19:00",1693573,1210205,34368,153.68,2,1286494,57,-1.2,"186d 9h","10s",,,1693573],
+["We had to remain so calm  #interesting #cra","24 Jun 03:45",1535534,1376657,60300,213.51,0,1489362,530,0.6,"213d 21h","12s",,,1535534],
+["I had to stay so still  #shocking #caughton","24 Jun 02:30",100043,91568,1732,15.13,4,101889,15,-3.8,"10d 18h","9s",,,100043],
+["I've waited so long to be allowed to operate ","26 Jun 03:45",955154,788755,17722,114.3,42,932688,25,-1.8,"127d 20h","12s",,,955154],
+["I love getting to do this for all these peopl","26 Jun 02:30",495979,427008,9193,88.47,21,482056,20,-3.6,"70d 4h","12s",,,495979],
+["If only I could make bread this fast at home ","28 Jun 02:30",449183,407786,7367,77.68,3,442139,11,-4.3,"63d 7h","12s",,,449183],
+["It's risky yet it's worth it for what we foun","29 Jun 04:30",62840,57336,2678,11.03,5,67436,79,-9.9,"9d 2h","12s",,,62840],
+["The tempatation to not sneakily try one is to","27 Jun 02:30",338470,303997,4186,65.99,10,335090,24,-2.6,"40d 6h","10s",,,338470],
+["I had to do something with all of the excess ","27 Jun 04:30",73801,68982,2959,14.09,1,74593,23,-5.6,"18d","21s",,,73801],
+["They've created the ultimate heatwave surviva","27 Jun 03:45",284310,258974,4676,49.73,6,287513,19,-3.2,"29d 5h","9s",,,284310],
+["I had no idea what they had in that pot  #i","27 Jun 09:00",317376,279900,6415,46.29,11,317016,23,-2.1,"35d 10h","10s",,,317376],
+["My car was in desperate need of this  #cars","29 Jun 02:30",1565763,1151729,26346,211.52,26,1253719,49,-0.8,"196d 23h","11s",,,1565763],
+["I was so confused what they were spraying ont","29 Jun 03:45",2482032,1999049,53070,390.14,6,2107184,81,-0.5,"348d 16h","12s",,,2482032],
+["I can only imagine the smell  #cheese #inte","29 Jun 08:15",338445,305285,5980,47.19,2,340566,25,-2.1,"36d 16h","9s",,,338445],
+["People have been flocking to get a look at th","27 Jun 08:15",54286,50120,675,4.83,16,53642,9,-7.8,"3d 13h","6s",,,54286],
+["The plane wasn't the only thing taking off ","29 Jun 09:47",1979438,1775339,73451,344.92,0,1970100,345,0.9,"267d 8h","12s",,,1979438],
+["I had no idea this was how they were made  ","30 Jun 02:30",841366,759170,17007,37.4,5,822773,24,-1.8,"119d 5h","12s",,,841366],
+["Imagine getting to do this as your job  #ca","30 Jun 03:45",620585,584133,20805,85.87,0,633931,28,-1.5,"87d 17h","12s",,,620585],
+["My job takes so much skill to get it right ","1 Jul 04:30",415546,375800,9633,49.33,2,408843,13,-3.2,"115d 13h","24s",,,415546],
+["My hair line hurts just watching her  #uniq","1 Jul 02:30",45053,39723,568,3.1,1,44282,6,-11.7,"2d 21h","6s",,,45053],
+["This has completely transformed my arm  #ta","1 Jul 03:45",1555742,1196923,45177,174.68,2,1281767,103,-0.3,"205d 17h","11s",,,1555742],
+["I can't wait to see how my client will react ","1 Jul 08:15",317938,281271,3552,36.32,1,317771,18,-4.1,"35d 21h","10s",,,317938],
+["I've never had anything like this done before","1 Jul 09:46",517054,475091,15494,77.85,3,523480,55,-1.5,"64d 21h","11s",,,517054],
+["I was so relieved after recovering from this ","2 Jul 03:45",979507,716154,27895,44.98,0,790642,61,-1.5,"113d 11h","10s",,,979507],
+["I've got to get this right on the first try ","2 Jul 02:30",1504526,1063085,21503,203.61,17,1193295,42,-1,"175d 13h","10s",,,1504526],
+["I can't wait until his name is finally remove","3 Jul 04:30",144464,132825,2674,33.32,0,147894,26,-4.6,"31d 20h","19s",,,144464],
+["If it's anything like a sauna, I'm there  #","3 Jul 02:30",1170559,926977,20856,174.12,0,988642,84,-0.6,"133d 16h","10s",,,1170559],
+["I love getting the pitch game day ready  #n","3 Jul 03:45",439281,330809,3486,51.78,1,353979,5,-10.8,"49d 5h","10s",,,439281],
+["I have no idea what they are making  #inter","3 Jul 08:15",1040429,803679,21870,129.86,0,898033,79,-0.7,"116d 23h","10s",,,1040429],
+["I think I've found my new favourite task on t","3 Jul 10:00",8940385,6347622,161858,691.88,1021,7237484,1241,3.1,"1219d 12h","12s",,,8940385],
+["I wonder if restaurants let this much grease ","6 Jul 02:30",791395,715418,13451,148.2,5,775941,43,-2,"105d 21h","12s",,,791395],
+["I didn't know that you could weld underwater ","5 Jul 09:01",104062,92641,785,4.13,1,98097,2,-24.2,"6d 16h","6s",,,104062],
+["Need this to steam my hundreds of hats  #","6 Jul 03:45",685329,563024,8337,93.04,0,603505,23,-2.5,"72d 12h","9s",,,685329],
+["Maybe I shouldn't be recommending this as a h","5 Jul 02:30",624847,464471,13187,96.8,2,501416,45,-1.6,"66d 22h","9s",,,624847],
+["Nothing scares me when this is my job  #bee","4 Jul 03:45",548771,504419,9064,89.5,1,538596,8,-6.3,"75d 17h","12s",,,548771],
+["I have no idea how we're going to fix this ","4 Jul 02:30",236435,199335,6801,35.89,6,215977,15,-3.6,"25d 3h","9s",,,236435],
+["I wasn't sure it was even going to fit  #je","5 Jul 03:45",1103834,814804,29744,161.17,6,856610,125,-0.2,"144d 22h","11s",,,1103834],
+["This massage does not look very relaxing  #","5 Jul 08:15",1830067,1327028,38967,216.22,63,1633507,293,0.7,"197d 18h","9s",,,1830067],
+["I didn’t expect it to be totally covered in s","5 Jul 04:30",292928,270932,8074,72.58,3,291346,24,-3.7,"60d 2h","18s",,,292928],
+["I'm not sure if I'd try moldy cheese this fuz","7 Jul 04:30",132096,119716,3685,19.22,0,133567,25,-5.5,"26d 10h","17s",,,132096],
+["Not me thinking I could do this without falli","7 Jul 03:45",380690,287800,5146,40.09,0,318701,15,-3.4,"36d 3h","8s",,,380690],
+["I’ve tried to make the truck feel like home f","7 Jul 02:30",1447986,1275609,59717,257.42,0,1406462,115,-0.2,"214d 11h","13s",,,1447986],
+["I should probably explain this to my girlfrie","7 Jul 08:15",1557309,1124126,30226,188.43,0,1267218,40,-1.3,"169d 17h","9s",,,1557309],
+["This was the last thing I was expecting to fi","7 Jul 09:45",1040109,743784,17213,143.66,0,844839,44,-1.2,"122d 18h","10s",,,1040109],
+["I wake up early to sort thousands of eggs eve","8 Jul 04:30",143306,137332,3146,35.71,2,145418,25,-3.9,"28d 18h","17s",,,143306],
+["I've never been so scared  #planes #caughto","8 Jul 03:45",168043,132569,3302,24.47,3,144272,5,-10.2,"18d 1h","9s",,,168043],
+["I've never seen anything like this before  ","8 Jul 02:30",282468,231912,7221,12.84,0,259129,48,-1.5,"23d 10h","7s",,,282468],
+["I could eat this entire tub of pasta  #sp","9 Jul 04:30",484398,440467,16173,123.11,7,475261,49,-0.3,"121d 20h","22s",,,484398],
+["Suddenly my house looks brand new after this ","9 Jul 02:30",1422109,1101665,24453,212.25,1,1165714,38,-1.9,"169d 12h","10s",,,1422109],
+["I'm so impressed by how graceful she is  ","9 Jul 00:45",1356714,975782,43401,171.59,10,1096709,233,0.6,"174d 4h","11s",,,1356714],
+["I thought my workout at the gym was difficult","9 Jul 03:45",658398,548778,9221,100.26,3,573506,109,-0.2,"61d 6h","8s",,,658398],
+["If only I could learn how to wipe it this qui","9 Jul 08:15",1462750,1057812,14197,183.35,4,1157180,19,-2.9,"172d 13h","10s",,,1462750],
+["I'm shook trying a popsicle without my dentur","10 Jul 04:30",416938,388417,26109,68.78,0,406521,110,-2.4,"77d 17h","16s",,,416938],
+["Such a satisfying cheese pull in my dessert ","10 Jul 02:30",177118,147865,2300,21.82,2,158424,10,-6.3,"16d 17h","8s",,,177118],
+["Someone will have to convince me this is safe","10 Jul 00:45",981136,761724,19454,115.15,5,822391,137,0,"105d 7h","9s",,,981136],
+["If only my hair was waterproof like this ","10 Jul 03:45",15735294,9885733,325064,1136.76,981,13529258,4391,6.3,"1527d 13h","8s",,,15735294],
+["It could save me a lot of time to try this ou","11 Jul 00:45",698008,519675,12233,59.52,0,564909,20,-3,"71d 13h","9s",,,698008],
+["I've always wanted to stamp my own soap  ","11 Jul 02:30",417114,338557,4811,43.96,0,374676,3,-20.7,"43d 7h","9s",,,417114],
+["I'd have been stung if I tried this  #bee","11 Jul 03:45",397474,303387,5121,33.16,2,330535,7,-7.2,"41d 1h","9s",,,397474],
+["If only I trusted my hairstylist like this ","12 Jul 03:45",622163,524464,9243,24.93,1,567097,24,-2.2,"65d 10h","9s",,,622163],
+["It's so satisfying to trim my horse's chestnu","11 Jul 08:15",517839,411442,8014,51.7,2,451525,13,-5.9,"47d 17h","8s",,,517839],
+["I wish I'd known about this sooner  #trav","12 Jul 00:45",232889,175074,3766,21.28,1,195969,20,-11.6,"19d 14h","7s",,,232889],
+["I was ready for a new car until I tried this ","11 Jul 04:30",660003,566953,25506,129.17,0,627751,42,0,"193d 14h","25s",,,660003],
+["If only I could make my own leather like this","12 Jul 02:30",540382,412065,6171,49.02,0,456472,10,-5.7,"46d","7s",,,540382],
+["My girlfriend said I should do this before ou","13 Jul 00:45",997523,809490,13752,101.75,0,896088,36,-7,"111d","10s",,,997523],
+["I'm shook that the groom cried at the reveal ","12 Jul 04:30",316332,298024,17188,59.74,0,311467,11,-5.2,"68d 18h","19s",,,316332],
+["It gave me the ick when I found this out ","13 Jul 03:45",512085,416390,12849,53.82,0,444216,30,-1.7,"59d 12h","10s",,,512085],
+["I thought online shopping was convenient ","13 Jul 02:30",766494,543218,8774,68.82,0,566766,35,-2,"90d 5h","10s",,,766494],
+["If I'm a robot I'm not sure what job I'm goin","13 Jul 04:30",213646,197712,4963,34.16,3,213041,25,-3,"49d 14h","20s",,,213646],
+["If I worked here I'd make an office joke ","13 Jul 08:30",1202886,941992,19787,107.65,0,1036230,25,-2.1,"112d 3h","8s",,,1202886],
+["I'm not sure what to call this haircut  #","14 Jul 02:30",651561,519486,29952,26.4,0,577756,751,0.7,"69d 22h","9s",,,651561],
+["I'd get a tractor to roll over all of these ","14 Jul 05:30",1383363,1091650,24813,124.71,0,1197547,23,-2.5,"152d 1h","9s",,,1383363],
+["Bro's gonna need a new ride after this  #","14 Jul 00:45",673744,464301,13065,64.7,0,521528,79,-2.3,"75d 9h","10s",,,673744],
+["My neighbors saved my mom from a close call ","15 Jul 04:30",389395,354977,23773,68.83,1,380765,56,0,"104d 20h","23s",,,389395],
+["I never knew this was how they were made  #","15 Jul 08:15",466779,370709,5393,33.7,0,403787,12,-4,"44d 23h","8s",,,466779],
+["Surely she doesn't expect me to drink that ","15 Jul 02:30",999464,796514,36199,101.37,0,877639,70,-1,"131d 18h","11s",,,999464],
+["It looks like they caught something big  #f","15 Jul 03:45",1285595,935806,34619,107.04,0,1036860,53,-1.2,"136d 4h","9s",,,1285595],
+["He looks so handsome with his new hair  #ha","15 Jul 11:02",21178409,12470357,269618,1086.08,5243,16809899,3381,4.8,"2323d 5h","9s",,,21178409],
+["I feel so good after doing this every morning","16 Jul 02:30",2814378,1872840,127077,132.48,0,2082895,2007,2.3,"247d 2h","8s",,,2814378],
+["No can argue that this is the best way to do ","16 Jul 03:45",273836,224525,3217,18.89,5,250153,8,-6.4,"34d 3h","11s",,,273836],
+["I was so worried I was going to have to throw","17 Jul 04:30",177141,161959,2664,24.3,5,174996,9,-6.9,"42d","20s",,,177141],
+["How is he staying so calm  #tattoos #beauty","17 Jul 03:45",934470,699030,35326,85.48,5,779519,95,-0.3,"109d 7h","10s",,,934470],
+["All my kids wanted to do was shoot some hoops","17 Jul 02:30",2046326,1622400,131183,223.28,84,1696881,560,1.1,"345d 1h","15s",,,2046326],
+["Please tell me there isn't something in my le","17 Jul 08:15",89886,78094,1184,4.39,2,87277,16,-7,"5d 15h","5s",,,89886],
+["I have to be so careful to not push down too ","17 Jul 11:00",9112324,6158555,87452,392.86,908,7896605,471,0.9,"919d","9s",,,9112324],
+["I had no idea bees could live like this  ","19 Jul 02:30",533095,474121,10152,52.92,3,531504,26,-1.7,"60d 1h","10s",,,533095],
+["This was a great way to keep the kids enterta","18 Jul 03:45",291326,265297,7668,25.74,5,287428,22,-3.4,"37d 9h","11s",,,291326],
+["I hope this drink is worth it after all of th","19 Jul 04:30",181392,149054,3280,8.29,8,172114,21,-2.7,"19d 8h","9s",,,181392],
+["There is liquid gold hidden within these tree","19 Jul 10:19",596280,455616,5708,34.76,2,515434,5,-10.4,"50d 10h","7s",,,596280],
+["I didn't know one animal could produce so muc","19 Jul 08:15",278607,262579,4315,14.93,4,294196,5,-11.8,"28d 12h","9s",,,278607],
+["There is no room for error making these  ","18 Jul 02:31",711982,543508,9979,60.15,21,601341,22,-2.1,"73d 15h","9s",,,711982],
+["Even their families were starting to struggle","19 Jul 03:45",109474,102152,1586,8.9,13,112866,18,-8.9,"15d 15h","12s",,,109474],
+["How they are made is almost as fun as playing","20 Jul 02:30",520405,487797,9681,63.09,5,515645,17,-3.9,"99d 3h","16s",,,520405],
+["That's one way to get rid of them  #insects","20 Jul 03:45",464521,409531,12367,41.6,9,461602,46,-1.5,"52d 18h","10s",,,464521],
+["This pool was in desperate need of our help ","21 Jul 02:30",103354,92097,3095,6.37,8,102882,9,-9.3,"24d 5h","20s",,,103354],
+["Everyone on the neighborhood was stunned  #","21 Jul 03:46",276606,220598,3442,8.46,4,238420,8,-6.6,"25d 22h","8s",,,276606],
+["I can't believe it is made like this  #make","21 Jul 04:30",808542,738190,14798,26.24,0,802597,40,-1.6,"92d 2h","10s",,,808542],
+["I showed them how it was done  #fitness #cr","21 Jul 08:15",355096,309145,7655,9.71,7,332949,43,-1.4,"32d 14h","8s",,,355096],
+["I had no idea this would actually work #fru","21 Jul 11:00",1946497,1684542,38726,125.03,13,1883201,36,-1.3,"274d 11h","12s",,,1946497],
+["There's more to this than meets the eye  #j","22 Jul 03:45",1418796,1269641,22210,62.45,3,1388105,32,-1.9,"186d 22h","11s",,,1418796],
+["My husband bravely saved the day  #caughton","22 Jul 02:30",423017,386690,16539,19.18,6,423497,69,-1.2,"81d 17h","17s",,,423017],
+["No one is going to keep up with me now  #ca","23 Jul 02:30",679124,552973,8145,23.64,14,586915,5,-13.2,"69d 8h","9s",,,679124],
+["Everyone wants to know the secrets to our suc","23 Jul 04:30",606888,567441,8368,28.45,21,599927,4,-11.4,"70d 9h","10s",,,606888],
+["I can't wait to wear my brand new boots  #b","23 Jul 03:45",513056,483325,8548,32.43,11,505099,9,-4.9,"112d 15h","19s",,,513056],
+["My job combines two of my favourite things ","23 Jul 08:15",1344013,986158,16257,47.86,35,1085508,21,-2,"160d 14h","10s",,,1344013],
+["I can't figure out what they're making  #ma","23 Jul 11:01",725233,667393,13820,26.68,21,707982,48,-1.3,"107d 11h","13s",,,725233],
+["This takes next level amounts of precision ","24 Jul 03:45",737062,666512,10944,37.42,19,720811,9,-5,"103d 19h","12s",,,737062],
+["There is always something to do working here ","24 Jul 02:30",317567,301065,4668,20.31,48,317400,6,-9,"60d 18h","17s",,,317567],
+["They were blasting something all over my crop","25 Jul 09:00",273575,246632,3081,9.9,24,274678,2,-25.1,"26d 17h","8s",,,273575],
+["This is my favourite part of the job  #farm","25 Jul 04:30",674614,628295,30370,41.9,52,657631,202,1.3,"214d 10h","27s",,,674614],
+["I wasn't too sure when I saw what he was goin","25 Jul 02:30",2807994,2427329,64427,127.53,6,2553696,112,-0.3,"387d","12s",,,2807994],
+["I was just trying to share my music with ever","25 Jul 13:00",156842,134445,8639,3.98,21,158459,86,-1.8,"16d 14h","9s",,,156842],
+["I can back from the bathroom to see him on th","25 Jul 03:45",452802,367207,7238,17.29,41,389319,74,-0.9,"47d 19h","9s",,,452802],
+["It's so important that I do this  #health #","27 Jul 02:30",233267,217678,13413,16.8,8,233894,30,-2.5,"60d 13h","22s",,,233267],
+["I couldn't deal with it any longer  #tattoo","27 Jul 03:45",1701499,1622401,36686,83.81,0,1678024,90,-0.7,"223d 7h","11s",,,1701499],
+["You have no idea how dirty it gets in here ","27 Jul 04:30",273447,216767,3212,7.28,16,248914,13,-4.8,"22d 14h","7s",,,273447],
+["I wonder what it is that is being made  #fo","27 Jul 08:15",346931,276344,4742,7.32,16,309613,14,-4.7,"31d 2h","8s",,,346931],
+["I was fascinated by how it all worked  #the","27 Jul 11:12",4220842,2846426,59818,316.5,904,3313315,1100,2,"475d 18h","10s",,,4220842],
+["Having this done made me feel so confident ","28 Jul 02:30",1267289,1012246,26355,49.54,12,1095023,94,-0.5,"142d 7h","10s",,,1267289],
+["We had to work against the clock to stop it s","28 Jul 03:46",812828,780691,9952,33.68,23,816730,20,-2.9,"144d 10h","15s",,,812828],
+["This is a once in a lifetime experience  #c","29 Jul 08:15",669793,605983,11163,26.33,15,654970,19,-2.5,"84d 12h","11s",,,669793],
+["There is no wasting any time in our job  #m","29 Jul 03:45",1225881,976069,12690,62.56,27,1022643,6,-7.5,"133d 16h","9s",,,1225881],
+["This musn't be an easy task  #chef #cooking","29 Jul 04:30",750931,697227,20153,99.31,22,738970,28,-0.8,"164d 3h","19s",,,750931],
+["We were so close to the iceberg  #travel #c","29 Jul 02:30",391481,279338,5455,20.59,32,315326,13,-4,"37d 13h","8s",,,391481],
+["I've never made noises like that before  #t","29 Jul 11:01",1438888,1086852,54123,101.5,40,1217129,293,0.5,"158d 21h","10s",,,1438888],
+["We couldn't just leave them there  #rescue ","30 Jul 02:30",34617,32245,1065,3.02,10,35079,16,-15.1,"5d 2h","13s",,,34617],
+["I can't believe they made this from scratch ","31 Jul 02:30",342119,309558,11657,59.9,35,341456,54,-0.3,"124d 4h","31s",,,342119],
+["So this is what they really get up to at camp","31 Jul 03:45",397604,351800,5509,37.69,5,393409,12,-4.5,"46d 23h","10s",,,397604],
+["I've never seen a machine like that before ","31 Jul 08:15",699097,577934,10304,52.07,2,617075,14,-4.3,"73d 12h","9s",,,699097],
+["There are no prizes for being slow  #piz","31 Jul 04:30",1649284,1468074,87009,170.78,8,1589896,1076,1.3,"250d 12h","13s",,,1649284],
+["They just pop right out of there  #fish #fo","31 Jul 11:00",553674,453874,8825,43.9,4,491309,40,-2.2,"56d","9s",,,553674],
+["There is never a dull day at my job  #circu","2 Aug 13:00",545044,419038,7113,51.2,0,450173,9,-5.9,"57d 1h","9s",,,545044],
+["He creates everything by hand  #impressive ","2 Aug 09:00",2357129,1728096,33985,168.61,72,1804863,74,-0.2,"295d 15h","11s",,,2357129],
+["It's not as easy of a job as you would think ","2 Aug 03:45",90766,86527,1250,8.21,5,92926,6,-18,"16d 5h","15s",,,90766],
+["I had no idea this was how they made them  ","2 Aug 04:30",467212,388008,5154,42.24,4,421925,3,-16.1,"49d 16h","9s",,,467212],
+["We have to be so careful to not make a mistak","2 Aug 02:30",599520,542907,8316,63.46,6,597243,12,-4.7,"70d 19h","10s",,,599520],
+["I never thought about using a jet wash for th","7 Aug 02:30",271156,229593,2989,24.22,0,245276,11,-7.1,"24d 20h","8s",,,271156],
+["I had no idea what he was making  #interest","7 Aug 03:45",770828,614740,8751,73.2,4,665220,9,-15.5,"92d 15h","10s",,,770828],
+["I was determined not to let it become a waste","7 Aug 04:30",261501,239184,6155,34.3,10,256699,12,-5.8,"64d 3h","21s",,,261501],
+["It stains the skin and peels off after a few ","7 Aug 08:15",411645,304671,7359,34.99,0,337584,20,-6.8,"46d 18h","10s",221453,,411645],
+["It wasn't the treatment I was expecting  ","7 Aug 11:00",1297692,1028860,33267,97.94,0,1152281,1090,0.9,"127d 6h","8s",730433,,1297692],
+["I've been using a trowel this entire time ","7 Aug 22:00",772496,608660,11671,67.46,71,649928,71,-0.8,"83d 22h","9s",435959,,772496],
+["Learning Kung Fu looks insanely painful  ","8 Aug 02:30",186854,157028,2926,14.44,1,173332,26,-2.8,"16d 18h","8s",96325,,186854],
+["They crushed an entire digger into a tiny cub","8 Aug 03:45",278714,264401,7311,36.97,8,282100,30,-3.3,"69d 9h","22s",181000,,278714],
+["One wrong move and the entire cave could coll","8 Aug 04:30",1901527,1424911,49832,163.99,0,1510562,223,-0.2,"237d 4h","11s",1068422,,1901527],
+["It's called dizzing and I love it  #in","8 Aug 09:04",692657,566651,5987,56.61,0,598164,9,-7.5,"63d 4h","8s",395117,,692657],
+["It was so close to sanding his feet  #crazy","8 Aug 13:00",1636478,1368902,30545,79.42,0,1469803,48,-2,"203d 9h","11s",993914,,1636478],
+["It was heading straight for me  #interestin","8 Aug 14:15",760072,588766,12127,27.28,9,645526,66,-1.1,"90d 8h","10s",411364,,760072],
+["I can't take him anywhere  #interesting ","8 Aug 15:46",824529,673635,26323,80.4,0,754569,68,-1.7,"73d 22h","8s",486315,,824529],
+["She held her new granddaughter for the first ","8 Aug 17:06",354702,317953,10673,34.81,0,343509,17,-3.4,"43d 1h","10s",215117,,354702],
+["I'd be too scared to step on them  #constru","8 Aug 19:04",342539,283645,3662,27.25,4,307716,28,-2.7,"31d 8h","8s",173278,,342539],
+["It's so slimy  #interesting #didyouknow #sa","8 Aug 22:05",858781,636603,10654,35.04,1,660734,13,-4.6,"89d 16h","9s",432405,,858781],
+["He dug up my entire driveway  #interesting ","9 Aug 02:30",219584,199206,3463,23.9,0,219829,9,-7.4,"30d 20h","12s",132777,,219584],
+["I had no idea bird beaks needed trimming  #","9 Aug 03:45",241460,197970,3111,19.26,0,217573,3,-17.8,"24d 3h","9s",117237,,241460],
+["It was inside her purse the entire time  #i","9 Aug 04:30",1463688,1287142,136950,298.18,3,1402860,141,1.7,"472d 4h","28s",973505,,1463688],
+["They cut each other's kites out the sky  #i","9 Aug 09:00",386743,324132,6075,27.66,1,331116,57,-1.4,"39d 5h","9s",199200,,386743],
+["I almost don't want to cut into it now  #fo","9 Aug 13:00",1678926,1282943,27142,114.13,0,1410764,76,-1.4,"153d 13h","8s",893272,,1678926],
+["He said he knew how to pull the tree down  ","9 Aug 14:15",2761447,1730444,36404,201.07,0,1930170,73,-2.3,"299d 23h","9s",1392926,,2761447],
+["I wasn't sure what it would look like inside ","9 Aug 15:45",633204,483226,10799,46.64,2,528639,43,-3.2,"57d 22h","8s",322477,,633204],
+["There were lice crawling around in her hair ","9 Aug 17:08",4789942,3320032,153723,465.23,366,3497313,837,1.8,"594d 13h","11s",2612429,,4789942],
+["It saved me from having to but a brand new ty","9 Aug 19:10",1996871,1446456,47935,78.57,19,1586241,87,-0.6,"248d 17h","11s",1119347,,1996871],
+["I'd waited years to fix it  #interesting ","9 Aug 22:04",359908,299672,4438,27.7,0,327790,13,-4.9,"30d 23h","7s",176619,,359908],
+["He harvests beehives with his bare hands  #","10 Aug 02:30",3060697,2153805,71504,228.08,41,2327608,119,-0.3,"414d 9h","12s",1616195,,3060697],
+["It sprayed our entire building with foam  #","10 Aug 03:45",297299,244867,3733,23.4,2,269588,12,-4.6,"26d 11h","8s",152333,,297299],
+["They had to squeeze out every last drop  ","10 Aug 04:30",824323,745853,21353,106.6,15,824454,37,-0.6,"198d 15h","21s",553285,,824323],
+["They're so smooth with it  #beauty #sa","10 Aug 08:15",1204691,899521,14005,102.44,0,986255,8,-6.3,"123d","9s",685373,,1204691],
+["Is he spray painting the garden?!  Credit ","10 Aug 11:00",1253308,953333,20016,50.02,0,1014825,32,-2.5,"132d 23h","9s",634115,,1253308],
+["I did not expect that to be edible at first..","10 Aug 22:00",683687,548076,9945,56.03,0,592012,36,-3,"65d 9h","8s",381894,,683687],
+["My head hurts just watching this  #circus #","11 Aug 02:30",570662,482795,10523,22.52,0,520317,56,-2.3,"48d 17h","7s",348211,,570662],
+["I hope these babies feel better after this...","11 Aug 03:45",175045,164304,5527,18.38,0,176798,22,-9,"21d 20h","11s",107784,,175045],
+["I got my entire head tattooed  Credit ma","11 Aug 08:15",1901957,1337673,56994,120.4,0,1447139,217,-0.1,"185d 1h","8s",916887,,1901957],
+["That was no ordinary rock  Credit yhanale","11 Aug 04:30",694646,458600,31628,54.36,0,519606,69,-2.4,"75d 16h","9s",385420,,694646],
+["My 103-year-old grandma did what?!  #cent","10 Aug 13:01",199517,176970,3468,13.26,0,194785,28,-2.2,"14d 10h","6s",107046,,199517],
+["Why is this guy living in a literal billboard","10 Aug 14:15",734146,578185,15262,54.79,0,655092,70,-0.8,"69d 20h","8s",356460,,734146],
+["I found a solution to my fly problem...  ","10 Aug 17:01",472780,441704,12889,46.92,1,466543,25,-2.4,"59d","11s",288802,,472780],
+["My hairy daily routine...  Credit ishow","10 Aug 15:45",668369,606805,42459,68.32,0,663438,751,-0.2,"117d 4h","15s",383866,,668369],
+["This suspicious looking fruit actually comes ","10 Aug 19:00",89047,81651,1209,7.19,2,92252,3,-27.9,"9d 5h","9s",52158,,89047],
+["I can't believe this is my BF's job  #satis","11 Aug 11:04",679714,530752,8579,48.17,2,563470,19,-3.4,"76d 22h","10s",352944,,679714],
+["This jump did not go to plan  #shocking #fa","11 Aug 13:00",2620153,2362518,84218,237.54,0,2545281,105,-0.5,"345d 16h","11s",1962756,,2620153],
+["They just kept digging through it all  #int","11 Aug 14:15",516953,414918,12015,27.6,0,419166,108,-1.1,"49d 1h","8s",259928,,516953],
+["We had to act so fast  #birds #rescue #inte","11 Aug 17:01",49656,46245,1065,5.02,0,51766,4,-22.3,"6d 13h","11s",23160,,49656],
+["All the neighbours can't believe it does this","11 Aug 15:56",1166244,826004,33816,108.51,0,920912,74,-0.9,"114d 21h","9s",597341,,1166244],
+["They started collecting all my coconuts to do","12 Aug 04:30",353547,274829,3792,22.04,2,301211,5,-10,"33d 17h","8s",179533,,353547],
+["It doesn't get much fresher than that  #t","11 Aug 19:01",712508,532503,12729,58.34,6,581150,37,-1.5,"75d 18h","9s",386338,,712508],
+["This process is so unique  #construction #i","12 Aug 02:30",390591,343207,9974,59.07,3,384603,4,-9.7,"108d 10h","24s",247341,,390591],
+["I can't go outside of the lines even by a lit","11 Aug 22:00",496541,401794,5503,47.22,0,433421,10,-8,"56d 17h","10s",277001,,496541],
+["I wasn't expecting to see this out my window ","12 Aug 03:45",1163581,912426,21385,101.18,0,964879,70,-1,"121d 8h","9s",633091,,1163581],
+["Every move has to be so careful  #interesti","12 Aug 08:25",2173352,1571726,28493,0,0,1670051,24,-2,"231d 7h","9s",1120071,,2173352],
+["Desperate times call for desperate measures ","12 Aug 17:00",622956,460867,10543,23.77,45,490380,52,-0.2,"75d 13h","10s",337132,,622956],
+["Our tour guide showed us a unique trick  #t","12 Aug 11:14",268236,212859,10456,6.78,0,236726,181,-0.4,"22d 11h","7s",139579,,268236],
+["What's going on here?!  #alternativemedic","12 Aug 13:00",866554,785004,50803,91.77,0,854280,168,-1.8,"114d 15h","11s",592499,,866554],
+["I didn’t expect it to be so easy  #construc","12 Aug 14:15",373721,317619,3914,28.48,1,327596,12,-4.3,"36d 12h","8s",182529,,373721],
+["The scraping is my favourite part of the job ","12 Aug 21:30",935629,752335,15669,84.37,0,809818,32,-1.7,"109d","10s",534268,,935629],
+["This was my greatest achievement to date ","12 Aug 15:45",685932,546622,6843,54.22,0,598659,18,-2.7,"67d 16h","9s",400042,,685932],
+["I didn't know what he was spraying at first ","13 Aug 03:45",809084,630380,16007,29.33,0,690725,18,-2.5,"88d 7h","9s",459348,,809084],
+["My grandma works so hard every day  #cookin","12 Aug 22:00",742648,597527,29322,64.63,0,659182,156,-0.2,"76d 5h","9s",401081,,742648],
+["Everything was moving so fast  #interesting","13 Aug 08:15",602056,498151,7512,55.03,0,525926,17,-2.6,"69d 23h","10s",349898,,602056],
+["This hack is a game changer  #hack #farming","13 Aug 04:30",1009712,786610,13303,83.11,0,830638,6,-6,"115d 21h","10s",486056,,1009712],
+["Everyone hates this part of the job but I lov","13 Aug 02:30",530436,459386,12701,91.84,2,507313,29,-0.6,"118d 2h","19s",315198,,530436],
+["They are going to be good as new  #satisfyi","12 Aug 19:00",351138,286921,4715,31.26,1,300925,19,-6.9,"36d 13h","9s",191252,,351138],
+["I've never seen so much build up #jewellery #gross #cleaning #satisfying Credit: @juicyj427 on TikTok","13 Aug 19:00",682356,557359,13659,68.75,0,603308,60,-1,"74d 7h","9s",402549,,682356],
+["This was the only way to fix her hair #hair #beauty #interesting Credit: @ledafazal on Instagram","14 Aug 03:45",434961,378565,22778,45.65,0,401714,88,0,"54d 19h","11s",292010,,434961],
+["I wanted to know what it was like #interesting #crazy #didyouknow Credit: @kalebkeithwest on Instagram","13 Aug 11:00",1095889,807889,50056,83.06,0,878852,87,-0.3,"122d 1h","10s",549500,,1095889],
+["This was my last hope of fixing it #satisfying #luxury #fashion Credit: @vincesvillagecobbler","14 Aug 02:30",272529,239948,6912,29.56,0,266060,3,-4.5,"58d 12h","19s",172967,,272529],
+["Nothing was going to stop us helping this elephant #elephants #resuce #animals Credit: @sheldricktrust on Instagram","13 Aug 17:01",40892,38366,980,0,1,42584,8,-11.1,"5d","11s",17919,,40892],
+["I could do this job all day #satisfying #cars #interesting Credit: @mrppf.ir on Instagram","13 Aug 14:15",1440086,1045662,17168,119.78,0,1127954,27,-0.9,"156d 17h","9s",721841,,1440086],
+["I couldn't see anything they were doing #tattoos #health #interesting Credit: @wendywoohooo on Instagram","13 Aug 13:01",670873,546426,9540,53.66,0,572907,22,-2,"66d 20h","9s",376740,,670873],
+["Now we are ready for the race #cycling #interesting #satisfying Credit: @bikeuniverse.pl on TikTok","14 Aug 08:15",55353,0,88,0,0,0,0,0,"0s","0s",14744,,55353],
+["I have to do this everyday #farming #cleaning #satisfying Credit: @agrobertebr on Instagram","14 Aug 04:30",134134,107222,1142,7.11,0,112627,0,-4.3,"10d 4h","7s",61583,,134134],
+["I don't know how they stayed so still #travel #interesting #didyouknow Credit: @satimatanandgiri on Instagram","13 Aug 15:45",330112,239750,7919,23.34,0,279230,35,-1.3,"32d 22h","9s",164828,,330112],
+["No one can match my skills #skills #cooking #interesting Credit: @dsoqesalh on TikTok","13 Aug 22:00",206186,154858,3222,13.59,0,175349,2,-7.6,"19d 12h","8s",103611,,206186]
+];
+const DEEP_UNI={
+  36131:[28.3,10214,25878,15,"0:05",,,,9],
+  40892:[3.9,1600,39419,22,"0:05",,,,8],
+  47431:[4.3,2039,45391,27,"0:05",,,,-1],
+  49656:[1.7,867,50141,15,"0:07",,,,4],
+  52379:[4.7,2461,49899,40,"0:04",,,,1],
+  55353:[0.1,85,84417,45,"0:05",,,,3],
+  65120:[12.7,8270,56850,23,"0:05",,,,5],
+  85312:[8,6817,78390,9,"0:09",,,,4],
+  89047:[1.4,1267,89265,11,"0:07",,,,12],
+  92293:[4.1,3672,85881,27,"0:04",,,,-2],
+  94426:[2.2,2077,92343,53,"0:06",,,,-1],
+  105010:[9.5,9932,94617,15,"0:09",,,,8],
+  106690:[1.8,1920,104763,40,"0:04",,,,4],
+  109893:[8.4,9231,100662,27,"0:05",,,,3],
+  112340:[2.9,3235,108323,40,"0:07",,,,2],
+  122390:[3,3672,118713,40,"0:05",,,,0],
+  125152:[8.2,10260,114857,16,"0:06",,,,-2],
+  129803:[16.6,21529,108161,17,"0:06",,,,24],
+  130041:[5,6476,123051,32,"0:05",,,,12],
+  133500:[2.2,2936,130541,45,"0:04",,,,1],
+  134134:[0.2,275,137012,53,"0:04",,,,2],
+  134954:[0.7,508,72026,23,"0:04",,,,-1],
+  143127:[3.4,4835,137364,14,"0:05",,,,1],
+  144026:[6.9,9937,134077,45,"0:04",,,,22],
+  148156:[5.2,7409,135074,30,"0:04",,,,-1],
+  149406:[4,5975,143405,30,"0:05",,,,3],
+  149607:[3.6,5351,143291,45,"0:04",,,,7],
+  150586:[0.8,1205,149366,23,"0:05",,,,1],
+  150632:[26.2,39443,111102,37,"0:04",,,,23],
+  158392:[1.9,3009,155340,14,"0:08",,,,1],
+  159925:[4.4,7034,152832,40,"0:04",,,,12],
+  175045:[0.7,1256,178129,18,"0:05",,,,45],
+  181721:[1.9,3451,178176,37,"0:04",,,,-2],
+  182961:[9.4,17192,165698,50,"0:04",,,,12],
+  184215:[5.1,9380,174544,45,"0:04",,,,0],
+  186215:[3.3,6112,179094,30,"0:05",,,,5],
+  186854:[2.4,4525,183996,45,"0:06",,,,31],
+  188699:[1.3,2453,186224,45,"0:05",,,,0],
+  191125:[10.8,20555,169769,27,"0:05",,,,16],
+  198718:[2.7,5364,193307,45,"0:07",,,,0],
+  198754:[5.7,11326,187369,30,"0:04",,,,14],
+  199517:[6.3,12673,188486,35,"0:04",,,,36],
+  199835:[5.1,10171,189254,33,"0:04",,,,11],
+  199862:[1.1,2198,197637,50,"0:05",,,,1],
+  205260:[5.3,10877,194352,30,"0:06",,,,0],
+  205696:[5,10284,195396,45,"0:04",,,,1],
+  206003:[5.2,10711,195271,21,"0:09",,,,34],
+  206186:[0.7,1453,206085,50,"0:05",,,,24],
+  208006:[2.1,4368,203615,37,"0:04",,,,1],
+  208775:[2,4175,204576,27,"0:04",,,,3],
+  212437:[1.1,2337,210080,45,"0:06",,,,0],
+  214051:[1.2,2568,211472,45,"0:04",,,,3],
+  214521:[7,15003,199331,33,"0:06",,,,4],
+  219113:[4.7,10296,208767,60,"0:04",,,,6],
+  219584:[1,2228,220558,33,"0:08",,,,17],
+  219712:[4.4,9666,210023,37,"0:06",,,,8],
+  241460:[4.2,10253,233875,50,"0:05",,,,11],
+  242314:[1.5,3634,238640,45,"0:05",,,,1],
+  245424:[6.6,16196,229195,40,"0:04",,,,15],
+  247614:[3.4,8419,239195,43,"0:05",,,,1],
+  249047:[7.4,18426,230578,33,"0:04",,,,-2],
+  250636:[2,5012,245612,33,"0:04",,,,1],
+  253909:[6,15234,238664,30,"0:04",,,,9],
+  254367:[4.6,11700,242643,55,"0:04",,,,13],
+  258573:[5.8,14991,243472,30,"0:04",,,,5],
+  259292:[0.7,1815,257469,40,"0:05",,,,0],
+  259783:[1.1,2857,256914,53,"0:04",,,,1],
+  268236:[3.2,8586,259714,60,"0:04",,,,78],
+  269285:[1.4,3770,265511,60,"0:05",,,,3],
+  272529:[0.3,836,277969,20,"0:07",,,,41],
+  272782:[1,2728,270042,53,"0:05",,,,5],
+  273851:[3.1,8489,265363,23,"0:05",,,,-2],
+  274014:[6.1,16578,255196,23,"0:07",,,,15],
+  278714:[3,8445,273055,23,"0:06",,,,24],
+  282667:[6.1,17238,265349,30,"0:06",,,,30],
+  283161:[2.4,6795,276343,60,"0:10",,,,1],
+  283564:[2.1,5954,277584,27,"0:05",,,,7],
+  290040:[0.9,2610,287424,43,"0:05",,,,6],
+  292977:[1.9,5272,272181,35,"0:07",,,,-1],
+  297299:[7.6,22709,276089,45,"0:05",,,,22],
+  310311:[3.4,10551,299760,35,"0:06",,,,6],
+  322905:[0.4,1292,321600,40,"0:04",,,,-1],
+  329658:[1.8,5933,323698,50,"0:06",,,,1],
+  330112:[0.4,1325,329935,55,"0:03",,,,25],
+  333301:[3.1,10331,322928,25,"0:05",,,,6],
+  334782:[1.1,3682,331086,50,"0:05",,,,3],
+  338524:[0.7,2370,336140,55,"0:04",,,,0],
+  342539:[3.5,12081,333090,45,"0:04",,,,83],
+  344964:[4.9,16899,327971,45,"0:04",,,,1],
+  347023:[3.4,11794,335079,50,"0:04",,,,-4],
+  348407:[3.8,13238,335122,33,"0:05",,,,0],
+  351138:[0.6,2111,349725,55,"0:05",,,,31],
+  353547:[0.5,1769,352007,50,"0:04",,,,22],
+  354702:[19.9,71138,286340,37,"0:05",,,,46],
+  359908:[5.9,21620,344821,45,"0:04",,,,61],
+  369993:[5.3,19607,350334,45,"0:06",,,,13],
+  372814:[2.9,10789,361247,50,"0:04",,,,10],
+  373721:[2.4,8979,365132,50,"0:04",,,,53],
+  383748:[1.2,4601,378797,30,"0:04",,,,1],
+  386743:[11.1,43386,347482,55,"0:04",,,,84],
+  387321:[5.4,20886,365890,30,"0:05",,,,9],
+  388819:[1.3,5055,383754,55,"0:04",,,,4],
+  390591:[0.7,2736,388170,26,"0:06",,,,37],
+  391406:[1.2,4697,386720,60,"0:05",,,,0],
+  392188:[1.3,5098,387079,37,"0:04",,,,-1],
+  401837:[2.4,9643,392156,55,"0:06",,,,3],
+  407477:[2,8149,399308,30,"0:05",,,,-1],
+  409183:[3.5,14321,394850,65,"0:06",,,,-3],
+  409730:[6.3,25806,383807,35,"0:04",,,,12],
+  409754:[0.9,3688,406066,50,"0:08",,,,-2],
+  411645:[2.4,9931,403848,65,"0:04",,,,33],
+  412846:[12.2,50337,362265,22,"0:05",,,,45],
+  418136:[1.6,6690,411428,55,"0:03",,,,-2],
+  419885:[5.7,23901,395417,25,"0:05",,,,19],
+  429529:[0.5,2148,427366,37,"0:05",,,,-1],
+  432422:[3.9,16736,412386,18,"0:06",,,,10],
+  433100:[11.5,49807,383295,40,"0:04",,,,25],
+  434731:[2.3,9994,424532,45,"0:04",,,,-7],
+  434961:[2.8,12580,436699,43,"0:05",,,,54],
+  443624:[0.4,1774,441823,53,"0:06",,,,-1],
+  447568:[3.6,16111,431418,55,"0:06",,,,2],
+  448643:[0.6,2692,445941,65,"0:05",,,,1],
+  450514:[1,4505,446009,60,"0:04",,,,0],
+  455133:[1.9,8635,445851,55,"0:04",,,,7],
+  458933:[11.8,54151,404760,40,"0:05",,,,29],
+  460804:[3.3,15205,445548,40,"0:06",,,,8],
+  465553:[1.4,6509,458448,37,"0:06",,,,2],
+  467020:[8.4,39230,427791,47,"0:06",,,,11],
+  470144:[1.7,7992,462127,50,"0:04",,,,-1],
+  470715:[1,4707,465978,33,"0:04",,,,2],
+  472780:[0.7,3341,473878,40,"0:04",,,,53],
+  474335:[2,9486,464814,17,"0:09",,,,5],
+  476666:[2.5,11916,464731,37,"0:05",,,,6],
+  479617:[8.6,41220,438084,37,"0:04",,,,18],
+  480363:[2.6,12486,467755,45,"0:05",,,,2],
+  483754:[4.9,23695,459872,55,"0:04",,,,1],
+  485748:[9.8,42670,392734,60,"0:09",,,,28],
+  491703:[3.5,17196,474105,43,"0:05",,,,11],
+  496541:[0.3,1566,520495,60,"0:06",,,,24],
+  498899:[1.4,6984,491906,50,"0:05",,,,2],
+  505132:[3.1,15657,489408,40,"0:10",,,,4],
+  506687:[2.4,12116,492712,50,"0:06",,,,1],
+  507928:[0.3,1524,506386,40,"0:06",,,,-2],
+  516953:[1.8,9498,518183,50,"0:04",,,,52],
+  517240:[0.7,3621,513595,37,"0:07",,,,-2],
+  517430:[2.9,14998,502163,33,"0:04",,,,8],
+  518141:[25.2,130853,388405,45,"0:06",,,,28],
+  518880:[5.2,26977,491812,33,"0:07",,,,44],
+  519084:[1.7,8823,510186,50,"0:18",,,,-4],
+  520710:[2.5,13016,507620,45,"0:04",,,,1],
+  521492:[0.8,4172,517291,73,"0:07",,,,1],
+  524827:[0.9,4723,520078,55,"0:04",,,,1],
+  530436:[2,10633,521031,26,"0:07",,,,71],
+  531397:[0.6,3188,528129,45,"0:04",,,,1],
+  537685:[5.3,28492,509099,43,"0:04",,,,9],
+  541133:[2.6,14067,526967,19,"0:09",,,,8],
+  544981:[6.6,35961,508904,65,"0:04",,,,50],
+  547629:[0.5,2738,544891,67,"0:05",,,,-1],
+  553888:[0.4,2215,551635,43,"0:05",,,,-2],
+  554236:[5.1,27827,517803,50,"0:05",,,,5],
+  561013:[0.7,3927,557049,55,"0:05",,,,3],
+  568329:[0.5,2842,565464,50,"0:05",,,,-5],
+  570662:[0.3,1746,580333,45,"0:06",,,,33],
+  572111:[1.7,9658,558488,47,"0:04",,,,-4],
+  573702:[5.9,33839,539702,42,"0:05",,,,35],
+  578039:[0.8,4624,573416,37,"0:04",,,,-4],
+  578545:[1.7,9835,568680,65,"0:04",,,,10],
+  584413:[1.6,9350,575029,37,"0:04",,,,17],
+  584850:[0.9,5263,579537,50,"0:05",,,,-2],
+  587228:[2.2,12918,574274,21,"0:09",,,,2],
+  591982:[3,17672,571405,55,"0:06",,,,9],
+  595639:[3.5,20847,574770,60,"0:07",,,,12],
+  595922:[0.7,4171,591746,33,"0:04",,,,-4],
+  599161:[0.5,2996,596165,55,"0:04",,,,6],
+  602056:[0.4,2414,601182,60,"0:04",,,,29],
+  605211:[0.5,3026,602136,60,"0:04",,,,-2],
+  605404:[3,18139,586505,40,"0:05",,,,6],
+  608102:[4.4,26732,580809,40,"0:07",,,,18],
+  611489:[13.5,82552,528942,50,"0:04",,,,33],
+  616649:[5.2,32062,584522,67,"0:05",,,,8],
+  622956:[23.9,149169,474971,70,"0:12",,,,1449],
+  623257:[3.4,21189,602011,43,"0:04",,,,4],
+  632135:[4.2,26516,604808,40,"0:04",,,,9],
+  633204:[9.4,60494,583064,50,"0:04",,,,23],
+  638976:[3.5,22334,615782,50,"0:04",,,,25],
+  639017:[2.8,12784,443770,42,"0:05",,,,7],
+  651757:[4.6,29962,621392,27,"0:09",,,,22],
+  657808:[0.6,3947,653844,65,"0:05",,,,3],
+  661423:[0.5,3307,658013,55,"0:05",,,,1],
+  666129:[1.1,7327,658759,37,"0:06",,,,1],
+  668369:[1,6797,672943,20,"0:05",,,,220],
+  670873:[1.7,11441,661562,55,"0:06",,,,35],
+  675342:[0.7,4727,670618,65,"0:04",,,,0],
+  677675:[0.5,3388,674266,50,"0:04",,,,0],
+  679714:[4,27689,664525,60,"0:07",,,,52],
+  682356:[1.4,9606,676538,55,"0:05",,,,48],
+  683687:[0.7,4849,687888,50,"0:06",,,,32],
+  685932:[1.2,8238,678292,50,"0:08",,,,24],
+  687185:[0.6,4123,682975,40,"0:04",,,,-8],
+  687919:[4.9,33708,654211,37,"0:04",,,,14],
+  692657:[3.1,21623,675904,50,"0:05",,,,29],
+  694646:[1.7,12407,717403,70,"0:04",,,,46],
+  697059:[0.4,2788,694238,40,"0:10",,,,2],
+  703825:[1.8,12539,684056,55,"0:08",,,,-2],
+  712508:[1.1,8142,732038,60,"0:05",,,,91],
+  720335:[1.6,11436,703289,43,"0:05",,,,0],
+  732873:[0.5,3664,729184,55,"0:04",,,,-3],
+  734146:[3.4,25135,714118,50,"0:07",,,,117],
+  736213:[3.5,25725,709279,30,"0:06",,,,1],
+  740726:[1,7407,733281,40,"0:05",,,,1],
+  742294:[1.8,13361,728905,65,"0:04",,,,2],
+  742648:[0.8,5952,738022,55,"0:04",,,,164],
+  745497:[7,52212,693679,45,"0:06",,,,6],
+  746117:[4.2,31331,714657,33,"0:04",,,,12],
+  753694:[0.5,3767,749726,60,"0:04",,,,0],
+  758063:[1.2,9045,744707,60,"0:07",,,,0],
+  760072:[3.2,24533,742135,65,"0:07",,,,80],
+  762710:[2.1,9768,455354,25,"0:07",,,,1],
+  769414:[13,100020,669365,47,"0:05",,,,-1],
+  772496:[16,125238,657501,60,"0:05",,,,579],
+  775654:[2.2,17063,758549,40,"0:04",,,,10],
+  776064:[8.3,58960,651404,60,"0:04",,,,12],
+  781307:[2.6,20313,760974,70,"0:15",,,,-2],
+  783171:[3.2,24966,755222,55,"0:07",,,,-5],
+  784560:[0.4,3138,781385,55,"0:06",,,,-1],
+  788795:[28,220755,567657,14,"0:07",,,,84],
+  788933:[1.2,9467,779436,55,"0:10",,,,2],
+  790802:[1.4,9635,678556,60,"0:06",,,,-5],
+  791351:[1.9,15036,776315,55,"0:04",,,,2],
+  809084:[0.3,2433,808473,60,"0:06",,,,90],
+  809479:[0.3,2428,807011,55,"0:04",,,,1],
+  810044:[4.5,36426,773040,37,"0:04",,,,17],
+  824323:[9.8,80784,743539,22,"0:06",,,,87],
+  824529:[1,8304,822093,45,"0:05",,,,37],
+  836224:[0.4,3345,832892,50,"0:05",,,,-4],
+  837884:[1.8,15082,822802,60,"0:05",,,,0],
+  854057:[1.3,11084,841502,67,"0:04",,,,4],
+  858591:[6.7,57513,800895,24,"0:05",,,,22],
+  858781:[1.5,12979,852266,80,"0:05",,,,41],
+  859976:[7.1,61046,798750,65,"0:05",,,,41],
+  861103:[0.4,3444,857613,55,"0:06",,,,2],
+  866554:[0.9,7819,860978,15,"0:07",,,,114],
+  876776:[11.5,100833,775977,55,"0:05",,,,24],
+  884585:[1.2,10615,873940,43,"0:04",,,,2],
+  886671:[0.5,4433,882212,50,"0:08",,,,2],
+  890136:[2.9,25812,864260,33,"0:05",,,,1],
+  896258:[0.6,5377,890848,60,"0:05",,,,-7],
+  899603:[0.5,4498,895079,60,"0:07",,,,-1],
+  902989:[8.1,72797,825934,60,"0:04",,,,8],
+  906680:[1.6,14491,891206,50,"0:04",,,,3],
+  909667:[0.6,3824,633566,50,"0:06",,,,0],
+  914877:[2.1,18975,884614,55,"0:08",,,,5],
+  922821:[1.6,14713,904834,55,"0:05",,,,-2],
+  927238:[0.5,4636,922579,43,"0:06",,,,4],
+  927265:[1,9249,915625,65,"0:06",,,,-3],
+  935629:[0.3,2812,934414,60,"0:05",,,,50],
+  940857:[2.1,19758,921091,55,"0:14",,,,0],
+  944184:[7.3,68925,875259,40,"0:05",,,,21],
+  954625:[0.6,5728,948861,60,"0:08",,,,-3],
+  958075:[20.4,194189,757717,33,"0:05",,,,15],
+  959310:[1.3,12470,946769,73,"0:04",,,,0],
+  964663:[2.9,27971,936539,43,"0:07",,,,21],
+  965782:[55.7,536246,426494,60,"0:05",,,,249],
+  971529:[2.4,23224,944439,50,"0:05",,,,6],
+  999036:[1.2,7353,605393,55,"0:14",,,,-1],
+  1001809:[1.1,4283,385041,60,"0:04",,,,-1],
+  1004790:[4.1,41180,963211,47,"0:10",,,,13],
+  1009712:[0.7,7083,1004763,65,"0:04",,,,85],
+  1012088:[0.3,3028,1006385,55,"0:05",,,,-4],
+  1015172:[2.6,26392,988702,65,"0:07",,,,1],
+  1016811:[1.5,15252,1001535,55,"0:06",,,,-14],
+  1040102:[1.7,17300,1000347,55,"0:05",,,,4],
+  1040852:[4.3,44750,995950,37,"0:04",,,,31],
+  1056739:[1.1,11623,1045014,47,"0:05",,,,-4],
+  1059661:[1.4,14832,1044588,50,"0:04",,,,10],
+  1068017:[1,10678,1057076,55,"0:04",,,,7],
+  1084836:[11.3,111692,876735,70,"0:04",,,,28],
+  1085452:[0.8,8683,1076658,43,"0:04",,,,4],
+  1095889:[1.2,13183,1085380,65,"0:04",,,,121],
+  1106921:[7.5,82960,1023167,70,"0:06",,,,8],
+  1113492:[0.4,4454,1109054,50,"0:04",,,,-3],
+  1120004:[22.6,252579,865026,60,"0:08",,,,71],
+  1131668:[2,22632,1108951,43,"0:05",,,,5],
+  1136504:[1.8,20457,1116031,43,"0:04",,,,-2],
+  1153595:[4.1,47301,1106383,43,"0:04",,,,14],
+  1156061:[1.5,17341,1138726,50,"0:08",,,,-2],
+  1163581:[0.8,9315,1155060,55,"0:13",,,,72],
+  1166244:[1.3,15634,1186989,55,"0:04",,,,206],
+  1170184:[12.9,150786,1018095,70,"0:05",,,,21],
+  1172270:[9.5,110825,1055752,55,"0:04",,,,23],
+  1177917:[1.5,17662,1159831,37,"0:05",,,,3],
+  1178508:[1,11785,1166724,50,"0:08",,,,8],
+  1186665:[8.7,101090,1060866,28,"0:09",,,,9],
+  1197332:[1.1,13170,1184090,50,"0:04",,,,-9],
+  1204691:[1.5,18158,1192398,55,"0:07",,,,81],
+  1213269:[0.7,8493,1204722,60,"0:04",,,,0],
+  1216200:[1.6,19456,1196552,60,"0:04",,,,-5],
+  1240527:[5.4,67071,1174988,60,"0:08",,,,5],
+  1253308:[1.4,17647,1242828,60,"0:04",,,,65],
+  1264151:[2.2,27810,1236274,55,"0:05",,,,-2],
+  1268492:[0.6,7611,1260893,50,"0:05",,,,2],
+  1275359:[0.8,10202,1265025,65,"0:07",,,,-6],
+  1285641:[18.8,224186,968295,65,"0:04",,,,14],
+  1286143:[17,218607,1067319,40,"0:11",,,,17],
+  1297692:[5.3,68999,1232870,50,"0:05",,,,229],
+  1307806:[7.6,88352,1074176,70,"0:16",,,,41],
+  1315860:[51,668326,642118,40,"0:07",,,,10],
+  1330377:[64,850521,478418,70,"0:04",,,,350],
+  1334021:[1.3,17341,1316551,40,"0:06",,,,5],
+  1334909:[2.6,34367,1287459,73,"0:10",,,,7],
+  1350073:[3.1,41832,1307597,70,"0:05",,,,20],
+  1353294:[3.6,48632,1302257,55,"0:04",,,,-3],
+  1367101:[2.3,31427,1334954,65,"0:05",,,,3],
+  1376522:[17,233970,1142322,60,"0:04",,,,110],
+  1384836:[5,69233,1315426,25,"0:05",,,,10],
+  1412022:[1.7,23886,1381171,47,"0:06",,,,7],
+  1412051:[2,28191,1381365,60,"0:04",,,,-4],
+  1426544:[33.5,477896,948658,33,"0:04",,,,35],
+  1440086:[0.9,13007,1432210,65,"0:04",,,,131],
+  1453781:[13.8,200458,1252138,65,"0:05",,,,23],
+  1463688:[14.3,210788,1263257,30,"0:06",,,,264],
+  1488742:[8.5,101822,1096082,55,"0:09",,,,16],
+  1518001:[2.2,33371,1483508,55,"0:05",,,,22],
+  1547766:[1.7,26295,1520476,75,"0:06",,,,9],
+  1552920:[8.5,131972,1420635,43,"0:04",,,,29],
+  1560969:[7.7,111717,1339148,43,"0:06",,,,2],
+  1592354:[1.2,19108,1573246,40,"0:05",,,,-20],
+  1612562:[15.6,253253,1370161,47,"0:05",,,,18],
+  1629385:[1,16294,1613104,43,"0:06",,,,-23],
+  1636478:[0.6,9891,1638539,65,"0:04",,,,60],
+  1641387:[4.2,68764,1568474,80,"0:05",,,,1],
+  1667741:[0.6,10006,1657667,43,"0:06",,,,-10],
+  1678125:[0.3,5033,1672742,65,"0:04",,,,0],
+  1678926:[3.5,59419,1638267,67,"0:04",,,,71],
+  1720692:[1.4,24042,1693218,80,"0:05",,,,16],
+  1730222:[9.3,158310,1543943,60,"0:04",,,,-9],
+  1743559:[3.4,58157,1652350,50,"0:05",,,,-4],
+  1751953:[24.9,436239,1315725,60,"0:10",,,,240],
+  1776731:[0.9,15990,1760682,47,"0:06",,,,-4],
+  1812877:[6.2,120137,1817557,65,"0:11",,,,-16],
+  1814566:[0.4,7256,1806828,65,"0:09",,,,-31],
+  1898576:[0.9,8409,925935,55,"0:05",,,,-5],
+  1901527:[1.3,24862,1887590,70,"0:06",,,,193],
+  1901616:[0.9,17115,1884568,60,"0:04",,,,-9],
+  1901957:[1.6,31106,1913025,60,"0:05",,,,251],
+  1904370:[1.9,36085,1863148,37,"0:08",,,,15],
+  1963794:[0.6,11781,1951755,65,"0:05",,,,3],
+  1973792:[6.5,127481,1833768,60,"0:06",,,,17],
+  1996871:[12.6,255079,1769356,70,"0:06",,,,143],
+  2037397:[10.6,216490,1825869,50,"0:04",,,,77],
+  2063310:[1.4,28842,2031278,60,"0:05",,,,-3],
+  2069555:[0.7,14487,2055044,55,"0:04",,,,-2],
+  2079279:[11.1,224741,1799953,43,"0:06",,,,48],
+  2173352:[0.3,6528,2169449,87,"0:15",,,,93],
+  2178557:[9,196021,1981991,55,"0:04",,,,-7],
+  2187480:[16.8,300208,1486742,70,"0:07",,,,45],
+  2269774:[11.8,255941,1913051,70,"0:05",,,,38],
+  2279696:[75.9,1730020,549321,70,"0:07",,,,1315],
+  2286911:[3.7,84413,2197013,50,"0:04",,,,7],
+  2312107:[0.7,11144,1580900,55,"0:05",,,,1],
+  2326519:[59.7,1381116,932311,80,"0:05",,,,507],
+  2334233:[0.6,13990,2317694,65,"0:08",,,,-6],
+  2482762:[15.7,385952,2072338,53,"0:04",,,,99],
+  2520120:[10.2,256395,2257285,87,"0:05",,,,12],
+  2539401:[3.2,80859,2445990,65,"0:05",,,,39],
+  2572215:[7.9,203274,2369819,80,"0:09",,,,73],
+  2578017:[1.5,38656,2538433,65,"0:10",,,,6],
+  2620153:[0.4,11083,2759671,40,"0:04",,,,294],
+  2761447:[12.2,342268,2463210,93,"0:06",,,,75],
+  2866736:[5.3,151845,2713150,60,"0:05",,,,-8],
+  2916487:[20.9,612314,2317419,70,"0:06",,,,202],
+  2930992:[16.9,491702,2417775,73,"0:04",,,,19],
+  2980324:[6.1,169767,2613291,60,"0:08",,,,57],
+  3060697:[12.4,381512,2695195,80,"0:04",,,,208],
+  3084529:[6.8,203437,2788283,80,"0:04",,,,37],
+  3091559:[7.9,244108,2845870,75,"0:06",,,,40],
+  3144032:[4.3,122737,2731618,50,"0:06",,,,53],
+  3356302:[6.6,219658,3108495,60,"0:09",,,,59],
+  3360738:[0.7,23525,3337218,65,"0:04",,,,-21],
+  3463669:[4,138550,3325193,65,"0:05",,,,14],
+  3527336:[17.3,549204,2625386,67,"0:21",,,,55],
+  3565679:[37.3,1331368,2237984,57,"0:11",,,,590],
+  3606919:[68.5,2470439,1136042,22,"0:06",,,,908],
+  3690092:[2.1,77131,3595794,55,"0:05",,,,9],
+  4363366:[15.3,641890,3553472,75,"0:05",,,,122],
+  4566148:[8.8,389408,4035681,85,"0:05",,,,103],
+  4789942:[52.8,2593801,2318701,75,"0:08",,,,3108],
+  4823366:[35.4,1716450,3132278,60,"0:12",,,,228],
+  4877497:[44.3,2156802,2711825,26,"0:37",,,,703],
+  4943587:[35.8,1768230,3170961,50,"0:05",,,,164],
+  4963401:[1.8,89150,4863602,85,"0:05",,,,-120],
+  5402007:[70.8,3825259,1577649,90,"0:05",,,,1703],
+  5721873:[22.1,1267909,4469238,40,"0:06",,,,219],
+  6252893:[30,1875920,4377147,47,"0:11",,,,147],
+  7635077:[78.4,5973749,1645829,50,"0:04",,,,793],
+  7794102:[70.1,5391391,2299609,65,"0:06",,,,968],
+  10500768:[81.9,8600200,1900655,60,"0:05",,,,864],
+  12819551:[75.9,9722325,3087063,90,"0:05",,,,4574],
+  34388956:[5.2,106154,1935275,65,"0:06",,,,5],
+  37193113:[86.1,32023305,5169848,57,"0:05",,,,19307],
+  68207343:[94.7,64570385,3613760,100,"0:12",,,,20632],
+  75639596:[95,71903613,3784401,40,"0:10",,,,21407],
+  76556797:[93.2,71215743,5195998,67,"0:06",,,,14434],
+  86222106:[89.8,77386840,8790042,75,"0:05",,,,22489]
+};
+const DUR_UNI={36131:80,40892:50,47431:30,49656:80,52379:15,55353:20,65120:30,85312:150,89047:80,92293:30,94426:15,105010:150,106690:20,109893:30,112340:20,122390:20,125152:100,129803:100,130041:60,133500:20,134134:15,134954:30,143127:80,144026:20,148156:30,149406:30,149607:20,150586:60,150632:30,158392:150,159925:20,175045:60,181721:30,182961:20,184215:20,186215:30,186854:20,188699:20,191125:30,198718:20,198754:30,199517:20,199835:30,199862:20,205260:30,205696:20,206003:150,206186:20,208006:30,208775:30,212437:20,214051:20,214521:30,219113:20,219584:40,219712:30,241460:20,242314:20,245424:20,247614:30,249047:30,250636:30,253909:30,254367:20,258573:30,259292:30,259783:15,268236:15,269285:20,272529:100,272782:15,273851:30,274014:100,278714:100,282667:30,283161:15,283564:30,290040:30,292977:20,297299:20,310311:20,322905:20,329658:20,330112:20,333301:60,334782:20,338524:20,342539:20,344964:20,347023:20,348407:30,351138:20,353547:20,354702:30,359908:20,369993:20,372814:20,373721:20,383748:30,386743:20,387321:30,388819:20,390591:100,391406:20,392188:30,401837:20,407477:30,409183:20,409730:20,409754:20,411645:20,412846:60,418136:20,419885:80,429529:30,432422:100,433100:30,434731:20,434961:30,443624:15,447568:20,448643:20,450514:20,455133:20,458933:30,460804:30,465553:30,467020:30,470144:20,470715:30,472780:30,474335:150,476666:30,479617:30,480363:20,483754:20,485748:20,491703:30,496541:20,498899:20,505132:30,506687:20,507928:30,516953:20,517240:30,517430:30,518141:20,518880:30,519084:20,520710:20,521492:15,524827:20,530436:80,531397:20,537685:30,541133:150,544981:20,547629:15,553888:30,554236:20,561013:20,568329:20,570662:20,572111:30,573702:50,578039:30,578545:20,584413:30,584850:20,587228:150,591982:20,595639:20,595922:30,599161:20,602056:20,605211:20,605404:30,608102:30,611489:20,616649:15,622956:20,623257:30,632135:30,633204:20,638976:20,639017:50,651757:150,657808:20,661423:20,666129:30,668369:80,670873:20,675342:20,677675:20,679714:20,682356:20,683687:20,685932:20,687185:20,687919:30,692657:20,694646:20,697059:30,703825:20,712508:20,720335:30,732873:20,734146:20,736213:100,740726:30,742294:20,742648:20,745497:20,746117:30,753694:20,758063:20,760072:20,762710:100,769414:30,772496:20,775654:30,776064:20,781307:20,783171:20,784560:20,788795:100,788933:20,790802:20,791351:20,809084:20,809479:20,810044:30,824323:100,824529:20,836224:20,837884:20,854057:15,858591:80,858781:15,859976:20,861103:20,866554:80,876776:20,884585:30,886671:20,890136:60,896258:20,899603:20,902989:20,906680:20,909667:20,914877:20,922821:20,927238:30,927265:20,935629:20,940857:20,944184:30,954625:20,958075:60,959310:15,964663:30,965782:20,971529:30,999036:20,1001809:20,1004790:30,1009712:20,1012088:20,1015172:20,1016811:20,1040102:20,1040852:30,1056739:30,1059661:30,1068017:20,1084836:20,1085452:30,1095889:20,1106921:20,1113492:20,1120004:20,1131668:40,1136504:30,1153595:30,1156061:20,1163581:20,1166244:20,1170184:20,1172270:20,1177917:30,1178508:30,1186665:100,1197332:20,1204691:20,1213269:20,1216200:20,1240527:20,1253308:20,1264151:20,1268492:20,1275359:20,1285641:20,1286143:30,1297692:20,1307806:20,1315860:30,1330377:20,1334021:30,1334909:15,1350073:20,1353294:20,1367101:20,1376522:20,1384836:80,1412022:30,1412051:20,1426544:30,1440086:20,1453781:20,1463688:100,1488742:20,1518001:20,1547766:20,1552920:30,1560969:30,1592354:30,1612562:30,1629385:30,1636478:20,1641387:15,1667741:30,1678125:20,1678926:15,1720692:15,1730222:20,1743559:20,1751953:20,1776731:30,1812877:20,1814566:20,1898576:20,1901527:20,1901616:20,1901957:20,1904370:30,1963794:20,1973792:20,1996871:20,2037397:20,2063310:20,2069555:20,2079279:30,2173352:15,2178557:20,2187480:20,2269774:20,2279696:20,2286911:30,2312107:20,2326519:20,2334233:20,2482762:30,2520120:15,2539401:20,2572215:20,2578017:20,2620153:30,2761447:15,2866736:20,2916487:20,2930992:15,2980324:20,3060697:20,3084529:20,3091559:20,3144032:30,3356302:20,3360738:20,3463669:20,3527336:21,3565679:30,3606919:100,3690092:20,4363366:20,4566148:20,4789942:20,4823366:20,4877497:80,4943587:30,4963401:20,5402007:20,5721873:30,6252893:30,7635077:30,7794102:20,10500768:20,12819551:20,34388956:20,37193113:30,68207343:15,75639596:30,76556797:15,86222106:20};
+const CID_UNI={"34617":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM1MDI4Mzg1MzM1NDg5OjE4MzUwMjgzODUzMzU0ODk=","36131":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI4NjE0MDYyNjQzNTg4OjE4Mjg2MTQwNjI2NDM1ODg=","40892":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ4ODMyNzIwNjIxNzIyOjE4NDg4MzI3MjA2MjE3MjI=","45053":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA4MjA3ODExMzUwODgwOjE4MDgyMDc4MTEzNTA4ODA=","47431":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEzOTkxMzQ0MTA1ODYwOjE4MTM5OTEzNDQxMDU4NjA=","49656":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ3MTcyNzc3NDU0MzgzOjE4NDcxNzI3Nzc0NTQzODM=","52379":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIyMzE0MTQ5OTQwMjQ2OjE4MjIzMTQxNDk5NDAyNDY=","54286":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0NDg3MjAxNzIyOTQxOjE4MDQ0ODcyMDE3MjI5NDE=","55353":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ4ODc0NTgzOTUwODY5OjE4NDg4NzQ1ODM5NTA4Njk=","62840":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0MjY3MzMxNzQ0OTI4OjE4MDQyNjczMzE3NDQ5Mjg=","65120":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODAyNTQ2ODkxOTE2OTcyOjE4MDI1NDY4OTE5MTY5NzI=","73801":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0Mzk3ODE1MDY1MjEzOjE4MDQzOTc4MTUwNjUyMTM=","85312":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0MzQ3NDUxNzM2OTE2OjE4MDQzNDc0NTE3MzY5MTY=","89047":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ2MzQ2MzI0MjAzNjk1OjE4NDYzNDYzMjQyMDM2OTU=","89886":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIzMTMzNzUzMTkxNjE5OjE4MjMxMzM3NTMxOTE2MTk=","90766":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM2ODk3Njk4NDgxODkxOjE4MzY4OTc2OTg0ODE4OTE=","90930":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQwMTkwMTk4MTUyNjQxOjE4NDAxOTAxOTgxNTI2NDE=","92293":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM2OTU3MTk1MTQyNjA4OjE4MzY5NTcxOTUxNDI2MDg=","94426":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0MjgxNzM4NDEwMTU0OjE4MDQyODE3Mzg0MTAxNTQ=","100043":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODAxNjY1NDA1MzM4NDU0OjE4MDE2NjU0MDUzMzg0NTQ=","103354":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI3MTU3MTg2MTIyNjA5OjE4MjcxNTcxODYxMjI2MDk=","104062":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEwODQ1MjI3NzUzODA1OjE4MTA4NDUyMjc3NTM4MDU=","105010":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEwODMwMzY0NDIxOTU4OjE4MTA4MzAzNjQ0MjE5NTg=","106690":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE0OTcwMDY3MzQxMzIxOjE4MTQ5NzAwNjczNDEzMjE=","109474":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI1MzY0MDE2MzAxOTI2OjE4MjUzNjQwMTYzMDE5MjY=","109893":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODAyNTQ2ODk1MjUwMzA1OjE4MDI1NDY4OTUyNTAzMDU=","112340":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM2NzQ4MjQ1MTYzNTAzOjE4MzY3NDgyNDUxNjM1MDM=","122390":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEwMTAzNjAxMTYxMzAxOjE4MTAxMDM2MDExNjEzMDE=","125152":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI3Njk3MTc5NDAxOTQzOjE4Mjc2OTcxNzk0MDE5NDM=","129803":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMwMzg4MjMyNDY2MTcxOjE4MzAzODgyMzI0NjYxNzE=","130041":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM1MDI4MjQyMDAyMTcwOjE4MzUwMjgyNDIwMDIxNzA=","132096":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEzOTA5OTI0MTE0MDAyOjE4MTM5MDk5MjQxMTQwMDI=","133500":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIyMzMwMTM5OTM4NjQ3OjE4MjIzMzAxMzk5Mzg2NDc=","134134":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ4ODc0NjAwNjE3NTM0OjE4NDg4NzQ2MDA2MTc1MzQ=","134954":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQxNzIyNjQ0NjY2MDYzOjE4NDE3MjI2NDQ2NjYwNjM=","143127":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM2ODcwODY1MTUxMjQxOjE4MzY4NzA4NjUxNTEyNDE=","143306":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE0ODkxMTY0MDE1ODc4OjE4MTQ4OTExNjQwMTU4Nzg=","144026":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0NDY0MjA1MDU4NTc0OjE4MDQ0NjQyMDUwNTg1NzQ=","144464":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEwMDY3NTQxMTY0OTA3OjE4MTAwNjc1NDExNjQ5MDc=","148156":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM2NzQ4MjM1MTYzNTA0OjE4MzY3NDgyMzUxNjM1MDQ=","149406":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIzOTU3NTMzMTA5MjQxOjE4MjM5NTc1MzMxMDkyNDE=","149607":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM2ODk3NjY4NDgxODk0OjE4MzY4OTc2Njg0ODE4OTQ=","150586":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3NjUyODQ3MDczMDQzOjE4MTc2NTI4NDcwNzMwNDM=","150632":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMwNDc3ODk5MTIzODcxOjE4MzA0Nzc4OTkxMjM4NzE=","156842":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMwMzAzNDg5MTQxMzEyOjE4MzAzMDM0ODkxNDEzMTI=","158392":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIyNjA5MzY5OTEwNzI0OjE4MjI2MDkzNjk5MTA3MjQ=","159925":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI2NDQyMjQ5NTI3NDM2OjE4MjY0NDIyNDk1Mjc0MzY=","168043":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE0OTcwMDU0MDA3OTg5OjE4MTQ5NzAwNTQwMDc5ODk=","175045":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ2MjczODcwODc3NjA3OjE4NDYyNzM4NzA4Nzc2MDc=","177118":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE2NzY1MTQ3MTYxODEzOjE4MTY3NjUxNDcxNjE4MTM=","177141":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIzMTMzNjk2NTI0OTU4OjE4MjMxMzM2OTY1MjQ5NTg=","181392":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI0MDYyNjc5NzY1MzkzOjE4MjQwNjI2Nzk3NjUzOTM=","181721":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA5MTY4NDA0NTg4MTU0OjE4MDkxNjg0MDQ1ODgxNTQ=","182961":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI3Njk3MTY5NDAxOTQ0OjE4Mjc2OTcxNjk0MDE5NDQ=","184215":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI2MTIzNzA2MjI1OTU3OjE4MjYxMjM3MDYyMjU5NTc=","186215":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM2ODcwODI1MTUxMjQ1OjE4MzY4NzA4MjUxNTEyNDU=","186854":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQzODI1MzUxMTIyNDU5OjE4NDM4MjUzNTExMjI0NTk=","188699":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3NTg3ODQzNzQ2MjEwOjE4MTc1ODc4NDM3NDYyMTA=","191125":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM0MDMxNzQ1NDM1MTUzOjE4MzQwMzE3NDU0MzUxNTM=","198718":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA4MjA3ODIxMzUwODc5OjE4MDgyMDc4MjEzNTA4Nzk=","198754":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI0OTM1OTk5Njc4MDYxOjE4MjQ5MzU5OTk2NzgwNjE=","199517":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ2MTE1MDg0MjI2ODE5OjE4NDYxMTUwODQyMjY4MTk=","199835":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI2MzEyNzQyODczNzIwOjE4MjYzMTI3NDI4NzM3MjA=","199862":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE2NzczMDczODI3Njg3OjE4MTY3NzMwNzM4Mjc2ODc=","205260":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIzNzg4OTk5NzkyNzYxOjE4MjM3ODg5OTk3OTI3NjE=","205696":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEwODMwMzcxMDg4NjI0OjE4MTA4MzAzNzEwODg2MjQ=","206003":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODAyNTYzNzE1MjQ4NjIzOjE4MDI1NjM3MTUyNDg2MjM=","206186":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ4OTQxMzk3Mjc3NTIxOjE4NDg5NDEzOTcyNzc1MjE=","208006":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA5MTYzMDY0NTg4Njg4OjE4MDkxNjMwNjQ1ODg2ODg=","208775":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIzMTMzNzEzMTkxNjIzOjE4MjMxMzM3MTMxOTE2MjM=","212437":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3NjUyODUzNzM5NzA5OjE4MTc2NTI4NTM3Mzk3MDk=","213646":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3NzA5NzUzNzM0MDE5OjE4MTc3MDk3NTM3MzQwMTk=","214051":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEwMTAzNjA3ODI3OTY3OjE4MTAxMDM2MDc4Mjc5Njc=","214521":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMzMTEyNzU1NTI3MDUyOjE4MzMxMTI3NTU1MjcwNTI=","219113":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODAyNTYzNzM1MjQ4NjIxOjE4MDI1NjM3MzUyNDg2MjE=","219584":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ0NzYxOTc0MzYyMTMwOjE4NDQ3NjE5NzQzNjIxMzA=","219712":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODAzNTEwMTM1MTUzOTgxOjE4MDM1MTAxMzUxNTM5ODE=","232889":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3NjM3ODE3MDc0NTQ2OjE4MTc2Mzc4MTcwNzQ1NDY=","233267":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMyNTY3NTc1NTgxNTcwOjE4MzI1Njc1NzU1ODE1NzA=","236435":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODExMDE4NTMxMDY5ODA4OjE4MTEwMTg1MzEwNjk4MDg=","241460":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ0NzY1ODAxMDI4NDE0OjE4NDQ3NjU4MDEwMjg0MTQ=","241928":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQxNzM3MTQxMzMxMjgwOjE4NDE3MzcxNDEzMzEyODA=","242314":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIxMTcwNDAzMzg3OTU0OjE4MjExNzA0MDMzODc5NTQ=","245424":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI0MDc2Mjk5NzY0MDMxOjE4MjQwNzYyOTk3NjQwMzE=","247614":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODAyNTQ2ODk4NTgzNjM4OjE4MDI1NDY4OTg1ODM2Mzg=","249047":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI3MDU4MDk2MTMyNTE4OjE4MjcwNTgwOTYxMzI1MTg=","250636":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0MzQ3NDg4NDAzNTc5OjE4MDQzNDc0ODg0MDM1Nzk=","253909":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODAzNTEwMTI1MTUzOTgyOjE4MDM1MTAxMjUxNTM5ODI=","254367":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0NDY0MjA4MzkxOTA3OjE4MDQ0NjQyMDgzOTE5MDc=","258573":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMwMzAzNDc5MTQxMzEzOjE4MzAzMDM0NzkxNDEzMTM=","259292":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0MjY3Mjg4NDExNTk5OjE4MDQyNjcyODg0MTE1OTk=","259783":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE0OTcwMDU3MzQxMzIyOjE4MTQ5NzAwNTczNDEzMjI=","261501":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQyNjk0NDkxMjM1NTQ1OjE4NDI2OTQ0OTEyMzU1NDU=","268236":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ3OTE3MzMwNzEzMjYxOjE4NDc5MTczMzA3MTMyNjE=","269285":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODExMDYzMTcxMDY1MzQ0OjE4MTEwNjMxNzEwNjUzNDQ=","271156":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQyNjg1NzkxMjM2NDE1OjE4NDI2ODU3OTEyMzY0MTU=","272529":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ4ODMyNzAzOTU1MDU3OjE4NDg4MzI3MDM5NTUwNTc=","272782":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODExMDUwMzg3NzMzMjg5OjE4MTEwNTAzODc3MzMyODk=","273447":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMyNjM3NTI1NTc0NTc1OjE4MzI2Mzc1MjU1NzQ1NzU=","273575":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMwMTI5NDU1ODI1MzgyOjE4MzAxMjk0NTU4MjUzODI=","273836":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIyNTgyNTc2NTgwMDcwOjE4MjI1ODI1NzY1ODAwNzA=","273851":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI2Njc1Njc5NTA0MDkzOjE4MjY2NzU2Nzk1MDQwOTM=","274014":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM2OTU3MjExODA5MjczOjE4MzY5NTcyMTE4MDkyNzM=","276606":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI3MjAyODk2MTE4MDM4OjE4MjcyMDI4OTYxMTgwMzg=","278607":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI0MDYyNzAzMDk4NzI0OjE4MjQwNjI3MDMwOTg3MjQ=","278714":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQzODI4NjUxMTIyMTI5OjE4NDM4Mjg2NTExMjIxMjk=","282468":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE0OTcwMTE3MzQxMzE2OjE4MTQ5NzAxMTczNDEzMTY=","282667":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI5NDk5MTQ1ODg4NDEzOjE4Mjk0OTkxNDU4ODg0MTM=","283161":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA3MjE5ODAxNDQ5NjgxOjE4MDcyMTk4MDE0NDk2ODE=","283564":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0NDI1ODkxNzI5MDcyOjE4MDQ0MjU4OTE3MjkwNzI=","284310":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0Mzk3ODg1MDY1MjA2OjE4MDQzOTc4ODUwNjUyMDY=","290040":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA5MTY4NDI3OTIxNDg1OjE4MDkxNjg0Mjc5MjE0ODU=","291326":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIzOTU3NTY5Nzc1OTA0OjE4MjM5NTc1Njk3NzU5MDQ=","292928":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODExMDkxMDA0Mzk1ODk0OjE4MTEwOTEwMDQzOTU4OTQ=","292977":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQwNjk5NzM4MTAxNjg3OjE4NDA2OTk3MzgxMDE2ODc=","297299":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ1NzI4ODcwOTMyMTA3OjE4NDU3Mjg4NzA5MzIxMDc=","310311":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA5OTY3MjM0NTA4MjcxOjE4MDk5NjcyMzQ1MDgyNzE=","316332":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3Njg3MTczNzM2Mjc3OjE4MTc2ODcxNzM3MzYyNzc=","317376":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0NDI1ODc1MDYyNDA3OjE4MDQ0MjU4NzUwNjI0MDc=","317567":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI5NDk5MTI1ODg4NDE1OjE4Mjk0OTkxMjU4ODg0MTU=","317938":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA4MjA3ODI0Njg0MjEyOjE4MDgyMDc4MjQ2ODQyMTI=","322905":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEwODMwMzYxMDg4NjI1OjE4MTA4MzAzNjEwODg2MjU=","329658":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3Njg3MDk3MDY5NjE4OjE4MTc2ODcwOTcwNjk2MTg=","330112":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ4OTQxMzg3Mjc3NTIyOjE4NDg5NDEzODcyNzc1MjI=","333301":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI0MDYyNzA2NDMyMDU3OjE4MjQwNjI3MDY0MzIwNTc=","334782":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA3MjA4MTYxNDUwODQ1OjE4MDcyMDgxNjE0NTA4NDU=","338445":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0NDg3MTQ4Mzg5NjEzOjE4MDQ0ODcxNDgzODk2MTM=","338470":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0Mzk3ODExNzMxODgwOjE4MDQzOTc4MTE3MzE4ODA=","338524":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA4MjA3ODA0Njg0MjE0OjE4MDgyMDc4MDQ2ODQyMTQ=","342119":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM1OTk0MDI4NTcyMjU4OjE4MzU5OTQwMjg1NzIyNTg=","342539":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ0NTk1NzkxMDQ1NDE1OjE4NDQ1OTU3OTEwNDU0MTU=","344964":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI4NjE0MDU1OTc2OTIyOjE4Mjg2MTQwNTU5NzY5MjI=","346931":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMyNzY5OTk4ODk0NjYxOjE4MzI3Njk5OTg4OTQ2NjE=","347023":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMwMzAzNDg1ODA3OTc5OjE4MzAzMDM0ODU4MDc5Nzk=","348407":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3Njg3MTMwNDAyOTQ4OjE4MTc2ODcxMzA0MDI5NDg=","351138":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ4MTczNTUwNjg3NjM5OjE4NDgxNzM1NTA2ODc2Mzk=","353547":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ3MjI1NzgwNzgyNDE2OjE4NDcyMjU3ODA3ODI0MTY=","354702":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ0NTEyNjE0Mzg3MDY2OjE4NDQ1MTI2MTQzODcwNjY=","355096":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI3MzYyMzgyNzY4NzU2OjE4MjczNjIzODI3Njg3NTY=","359908":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ1NjMyODQ0Mjc1MDQzOjE4NDU2MzI4NDQyNzUwNDM=","364397":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQwNDY0OTg0NzkxODI5OjE4NDA0NjQ5ODQ3OTE4Mjk=","367762":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQwMjE3MTE0ODE2NjE2OjE4NDAyMTcxMTQ4MTY2MTY=","369993":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI5NDk5MTM1ODg4NDE0OjE4Mjk0OTkxMzU4ODg0MTQ=","372814":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM1MDA3MTQyMDA0MjgwOjE4MzUwMDcxNDIwMDQyODA=","373721":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ4MDUyMzkwNjk5NzU1OjE4NDgwNTIzOTA2OTk3NTU=","380690":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEzOTg4MjMwNzcyODM4OjE4MTM5ODgyMzA3NzI4Mzg=","383748":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEwOTk2MjExMDcyMDQwOjE4MTA5OTYyMTEwNzIwNDA=","386743":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ0NzczNjk3Njk0MjkxOjE4NDQ3NzM2OTc2OTQyOTE=","387321":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMyMDYxNTI4OTY1NTA4OjE4MzIwNjE1Mjg5NjU1MDg=","388819":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA3MjA4MTcxNDUwODQ0OjE4MDcyMDgxNzE0NTA4NDQ=","389395":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIxMTYxNTEwMDU1NTEwOjE4MjExNjE1MTAwNTU1MTA=","390591":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ3MjI1Nzk0MTE1NzQ4OjE4NDcyMjU3OTQxMTU3NDg=","391406":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3NjE2NzkzNzQzMzE1OjE4MTc2MTY3OTM3NDMzMTU=","391481":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM0MDUyNzE4NzY2Mzg5OjE4MzQwNTI3MTg3NjYzODk=","392188":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODExMDE4NTI0NDAzMTQyOjE4MTEwMTg1MjQ0MDMxNDI=","397474":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3NTg3ODkzNzQ2MjA1OjE4MTc1ODc4OTM3NDYyMDU=","397604":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM1OTk0MDM4NTcyMjU3OjE4MzU5OTQwMzg1NzIyNTc=","401837":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0NDI1OTExNzI5MDcwOjE4MDQ0MjU5MTE3MjkwNzA=","407477":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI0MDYyNjc2NDMyMDYwOjE4MjQwNjI2NzY0MzIwNjA=","409183":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODExMDE4NTAxMDY5ODExOjE4MTEwMTg1MDEwNjk4MTE=","409730":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMwMzAzNTAyNDc0NjQ0OjE4MzAzMDM1MDI0NzQ2NDQ=","409754":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3NzA5NzQwNDAwNjg3OjE4MTc3MDk3NDA0MDA2ODc=","411645":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQyNjk2NjU3OTAxOTk1OjE4NDI2OTY2NTc5MDE5OTU=","412846":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMwMzkxNDY1Nzk5MTgxOjE4MzAzOTE0NjU3OTkxODE=","415546":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA4MjA3ODA4MDE3NTQ3OjE4MDgyMDc4MDgwMTc1NDc=","416938":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE2NzY1MTM3MTYxODE0OjE4MTY3NjUxMzcxNjE4MTQ=","417114":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3NTg3ODM3MDc5NTQ0OjE4MTc1ODc4MzcwNzk1NDQ=","418136":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODExMDUwMzU3NzMzMjkyOjE4MTEwNTAzNTc3MzMyOTI=","419885":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM0MDMxNzU4NzY4NDg1OjE4MzQwMzE3NTg3Njg0ODU=","423017":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI3Njk3MTU5NDAxOTQ1OjE4Mjc2OTcxNTk0MDE5NDU=","429529":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIwMzQ0NjYzNDcwNTI4OjE4MjAzNDQ2NjM0NzA1Mjg=","432422":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM2ODk3Njc1MTQ4NTYwOjE4MzY4OTc2NzUxNDg1NjA=","433100":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODAzMzEzNzYxODQwMjg1OjE4MDMzMTM3NjE4NDAyODU=","434731":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE1ODY2MjQ3MjUxNzAzOjE4MTU4NjYyNDcyNTE3MDM=","434961":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ4ODIxNDQwNjIyODUwOjE4NDg4MjE0NDA2MjI4NTA=","439281":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEwMTAzNjExMTYxMzAwOjE4MTAxMDM2MTExNjEzMDA=","443624":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3NjUyODQzNzM5NzEwOjE4MTc2NTI4NDM3Mzk3MTA=","447568":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIzOTU3NTU2NDQyNTcyOjE4MjM5NTc1NTY0NDI1NzI=","448643":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEwMTAzNjMxMTYxMjk4OjE4MTAxMDM2MzExNjEyOTg=","449183":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0MjY3MjYxNzQ0OTM1OjE4MDQyNjcyNjE3NDQ5MzU=","450514":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3NzQ1OTgwMzk3MDYzOjE4MTc3NDU5ODAzOTcwNjM=","452802":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMwNzc4MDM1NzYwNTI0OjE4MzA3NzgwMzU3NjA1MjQ=","455133":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM1MDI4MjQ4NjY4ODM2OjE4MzUwMjgyNDg2Njg4MzY=","458933":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODAzMjA2MjA1MTg0Mzc0OjE4MDMyMDYyMDUxODQzNzQ=","460804":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODAxNjY1MzcyMDA1MTI0OjE4MDE2NjUzNzIwMDUxMjQ=","464521":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI2Mjg1MjQ5NTQzMTM2OjE4MjYyODUyNDk1NDMxMzY=","465553":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM1MDI4MjYyMDAyMTY4OjE4MzUwMjgyNjIwMDIxNjg=","466779":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIxMTkxNDAzMzg1ODU0OjE4MjExOTE0MDMzODU4NTQ=","467020":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODAyMzcwNjQ1MjY3OTMwOjE4MDIzNzA2NDUyNjc5MzA=","467212":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM2ODk3NzAxODE1MjI0OjE4MzY4OTc3MDE4MTUyMjQ=","470144":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3NTg3ODU3MDc5NTQyOjE4MTc1ODc4NTcwNzk1NDI=","470715":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIzMTMzNzU5ODU4Mjg1OjE4MjMxMzM3NTk4NTgyODU=","472780":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ2MjcxMDE0MjExMjI2OjE4NDYyNzEwMTQyMTEyMjY=","474335":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA3MjE5Nzk4MTE2MzQ4OjE4MDcyMTk3OTgxMTYzNDg=","476666":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODAzNTEwMTE4NDg3MzE2OjE4MDM1MTAxMTg0ODczMTY=","478250":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQzNTQ2MzU0NDgzNjkyOjE4NDM1NDYzNTQ0ODM2OTI=","479617":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMwMzAzNDkyNDc0NjQ1OjE4MzAzMDM0OTI0NzQ2NDU=","480363":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMwMzAzNDc1ODA3OTgwOjE4MzAzMDM0NzU4MDc5ODA=","483754":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI2MDYyNjM5NTY1Mzk3OjE4MjYwNjI2Mzk1NjUzOTc=","484398":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE1ODY2MjUwNTg1MDM2OjE4MTU4NjYyNTA1ODUwMzY=","485748":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQwODAzNzE0NzU3OTU2OjE4NDA4MDM3MTQ3NTc5NTY=","491703":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI3OTY0NDk5Mzc1MjExOjE4Mjc5NjQ0OTkzNzUyMTE=","495979":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODAzNTI0NTcxODE5MjA0OjE4MDM1MjQ1NzE4MTkyMDQ=","496541":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ3MjM2NTA3NDQ4MDEwOjE4NDcyMzY1MDc0NDgwMTA=","498899":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0NDI1OTA1MDYyNDA0OjE4MDQ0MjU5MDUwNjI0MDQ=","505132":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI3MDAyNTYyODA0NzM4OjE4MjcwMDI1NjI4MDQ3Mzg=","506687":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM1MDI4NTU4NjY4ODA1OjE4MzUwMjg1NTg2Njg4MDU=","507928":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3NjM3ODEzNzQxMjEzOjE4MTc2Mzc4MTM3NDEyMTM=","512085":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3NzA5NzMwNDAwNjg4OjE4MTc3MDk3MzA0MDA2ODg=","513056":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI4NjE0MDY5MzEwMjU0OjE4Mjg2MTQwNjkzMTAyNTQ=","516953":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ3MTIwMzQ0MTI2MjkzOjE4NDcxMjAzNDQxMjYyOTM=","517054":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA4ODU3MzQ3OTUyNTkzOjE4MDg4NTczNDc5NTI1OTM=","517240":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0MzQ3NDYxNzM2OTE1OjE4MDQzNDc0NjE3MzY5MTU=","517430":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMzMzgzMDQ4ODMzMzU2OjE4MzMzODMwNDg4MzMzNTY=","517839":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3NjM3ODAzNzQxMjE0OjE4MTc2Mzc4MDM3NDEyMTQ=","518141":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQxNDc3Nzg4MDIzODgyOjE4NDE0Nzc3ODgwMjM4ODI=","518880":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI5NTA2ODM5MjIwOTc3OjE4Mjk1MDY4MzkyMjA5Nzc=","519084":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE2NzY1MTUzODI4NDc5OjE4MTY3NjUxNTM4Mjg0Nzk=","520405":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI2MjQxNTA2MjE0MTc3OjE4MjYyNDE1MDYyMTQxNzc=","520710":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI3Njk3MTM5NDAxOTQ3OjE4Mjc2OTcxMzk0MDE5NDc=","521492":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3Njg3MTIzNzM2MjgyOjE4MTc2ODcxMjM3MzYyODI=","524827":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE1ODY2MjQzOTE4MzcwOjE4MTU4NjYyNDM5MTgzNzA=","530436":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ4MTczNTQ3MzU0MzA2OjE4NDgxNzM1NDczNTQzMDY=","531397":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE2NzY1MjE3MTYxODA2OjE4MTY3NjUyMTcxNjE4MDY=","533095":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIzOTU3NTYzMTA5MjM4OjE4MjM5NTc1NjMxMDkyMzg=","537685":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI4NjAyMjE5MzExNDM5OjE4Mjg2MDIyMTkzMTE0Mzk=","540382":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3NjUyODY3MDczMDQxOjE4MTc2NTI4NjcwNzMwNDE=","541133":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODAxNjY1MzU1MzM4NDU5OjE4MDE2NjUzNTUzMzg0NTk=","543582":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQyNjc5NTcxMjM3MDM3OjE4NDI2Nzk1NzEyMzcwMzc=","544981":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODExMDg5OTI3NzI5MzM1OjE4MTEwODk5Mjc3MjkzMzU=","545044":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM2NzQ4MjMxODMwMTcxOjE4MzY3NDgyMzE4MzAxNzE=","547629":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0MjgxNzM1MDc2ODIxOjE4MDQyODE3MzUwNzY4MjE=","548771":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODExMDE4NTIxMDY5ODA5OjE4MTEwMTg1MjEwNjk4MDk=","553674":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM2Njk4MjcxODM1MTY3OjE4MzY2OTgyNzE4MzUxNjc=","553888":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEwODQ1MjMxMDg3MTM4OjE4MTA4NDUyMzEwODcxMzg=","554236":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM5NjU0MTIxNTM5NTgyOjE4Mzk2NTQxMjE1Mzk1ODI=","561013":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODExMDUwMzc0Mzk5OTU3OjE4MTEwNTAzNzQzOTk5NTc=","568329":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE0OTcwMDYwNjc0NjU1OjE4MTQ5NzAwNjA2NzQ2NTU=","570662":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ2MTE1MDk3NTYwMTUxOjE4NDYxMTUwOTc1NjAxNTE=","572111":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM2NzQ4MjI4NDk2ODM4OjE4MzY3NDgyMjg0OTY4Mzg=","573702":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMwMjExNDg1ODE3MTc5OjE4MzAyMTE0ODU4MTcxNzk=","578039":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIzMDA1MjM5ODcxMTM3OjE4MjMwMDUyMzk4NzExMzc=","578545":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0NDY0MzA1MDU4NTY0OjE4MDQ0NjQzMDUwNTg1NjQ=","584413":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODAzNTI0NTM4NDg1ODc0OjE4MDM1MjQ1Mzg0ODU4NzQ=","584850":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIwMzA3OTkzNDc0MTk1OjE4MjAzMDc5OTM0NzQxOTU=","585516":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQzNjA2Mjk0NDc3Njk4OjE4NDM2MDYyOTQ0Nzc2OTg=","587228":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA5MTYzMDc0NTg4Njg3OjE4MDkxNjMwNzQ1ODg2ODc=","591982":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM2OTU3MjA1MTQyNjA3OjE4MzY5NTcyMDUxNDI2MDc=","595639":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODAzNDU1MzA4NDkyNzk3OjE4MDM0NTUzMDg0OTI3OTc=","595922":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA4MTc4MDA4MDIwNTI3OjE4MDgxNzgwMDgwMjA1Mjc=","596280":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI0MDYyNjkzMDk4NzI1OjE4MjQwNjI2OTMwOTg3MjU=","599161":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODExMDUwMzQ3NzMzMjkzOjE4MTEwNTAzNDc3MzMyOTM=","599520":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM2OTU3MTk4NDc1OTQxOjE4MzY5NTcxOTg0NzU5NDE=","602056":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ4MTczNTQwNjg3NjQwOjE4NDgxNzM1NDA2ODc2NDA=","605211":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEwODQ1MjM3NzUzODA0OjE4MTA4NDUyMzc3NTM4MDQ=","605404":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM1NzUzMzU1MjYyOTkyOjE4MzU3NTMzNTUyNjI5OTI=","606888":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI4NjE0MDY1OTc2OTIxOjE4Mjg2MTQwNjU5NzY5MjE=","607600":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM2NzQ4MjM4NDk2ODM3OjE4MzY3NDgyMzg0OTY4Mzc=","608102":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM0MDA1MTkyMTA0NDc1OjE4MzQwMDUxOTIxMDQ0NzU=","611489":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA3OTc2NDExMzc0MDIwOjE4MDc5NzY0MTEzNzQwMjA=","616649":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI3Njk3MTU2MDY4NjEyOjE4Mjc2OTcxNTYwNjg2MTI=","620585":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA3MjE5ODA0NzgzMDE0OjE4MDcyMTk4MDQ3ODMwMTQ=","622163":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3NjM3Nzk3MDc0NTQ4OjE4MTc2Mzc3OTcwNzQ1NDg=","622956":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ3OTExNDM3MzgwNTE3OjE4NDc5MTE0MzczODA1MTc=","623257":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI2ODAyOTM5NDkxMzY3OjE4MjY4MDI5Mzk0OTEzNjc=","624847":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEwOTczMTU0NDA3Njc5OjE4MTA5NzMxNTQ0MDc2Nzk=","632135":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM0OTY3NTYyMDA4MjM4OjE4MzQ5Njc1NjIwMDgyMzg=","633204":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ1MzEzMjAwOTczNjc0OjE4NDUzMTMyMDA5NzM2NzQ=","636759":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQyMzk0MTgxMjY1NTc2OjE4NDIzOTQxODEyNjU1NzY=","638976":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMyMTI5OTM4OTU4NjY3OjE4MzIxMjk5Mzg5NTg2Njc=","639017":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQwNjk5NzU4MTAxNjg1OjE4NDA2OTk3NTgxMDE2ODU=","651561":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIwMzMyNDMwMTM4NDE4OjE4MjAzMzI0MzAxMzg0MTg=","651757":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODAzNTI0NTQ1MTUyNTQwOjE4MDM1MjQ1NDUxNTI1NDA=","657808":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA3MjA4MTc4MTE3NTEwOjE4MDcyMDgxNzgxMTc1MTA=","658398":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE1ODY2MjYzOTE4MzY4OjE4MTU4NjYyNjM5MTgzNjg=","660003":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3NjUyODUwNDA2Mzc2OjE4MTc2NTI4NTA0MDYzNzY=","661423":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3NzA5NzYzNzM0MDE4OjE4MTc3MDk3NjM3MzQwMTg=","666129":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA3ODg3NTYxMzgyOTA1OjE4MDc4ODc1NjEzODI5MDU=","668369":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ2MjcxMDE3NTQ0NTU5OjE4NDYyNzEwMTc1NDQ1NTk=","669793":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM0MDUyNjY1NDMzMDYxOjE4MzQwNTI2NjU0MzMwNjE=","670873":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ4ODc0NTgwNjE3NTM2OjE4NDg4NzQ1ODA2MTc1MzY=","673744":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIwMzQyMjEzNDcwNzczOjE4MjAzNDIyMTM0NzA3NzM=","674614":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMwMTI5NDY5MTU4NzE0OjE4MzAxMjk0NjkxNTg3MTQ=","675342":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIxMDExNjQwMDcwNDk3OjE4MjEwMTE2NDAwNzA0OTc=","677675":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3NjM3ODAwNDA3ODgxOjE4MTc2Mzc4MDA0MDc4ODE=","679124":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI4NjE0MDQ1OTc2OTIzOjE4Mjg2MTQwNDU5NzY5MjM=","679714":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ2OTkyNDk3NDcyNDExOjE4NDY5OTI0OTc0NzI0MTE=","682356":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ4ODIwNDU3Mjg5NjE1OjE4NDg4MjA0NTcyODk2MTU=","683687":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ2MTE1MDkwODkzNDg1OjE4NDYxMTUwOTA4OTM0ODU=","685329":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEwOTA3NTU0NDE0MjM5OjE4MTA5MDc1NTQ0MTQyMzk=","685932":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ4MTAyNTE3MzYxNDA5OjE4NDgxMDI1MTczNjE0MDk=","687185":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3NjE2ODAzNzQzMzE0OjE4MTc2MTY4MDM3NDMzMTQ=","687919":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODAzMzIxOTcxODM5NDY0OjE4MDMzMjE5NzE4Mzk0NjQ=","692657":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ0MTgxMzQxMDg2ODYwOjE4NDQxODEzNDEwODY4NjA=","694646":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ2Mjc2MTI3NTQ0MDQ4OjE4NDYyNzYxMjc1NDQwNDg=","697059":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEzOTkxMzQ3NDM5MTkzOjE4MTM5OTEzNDc0MzkxOTM=","698008":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3NTg3ODMzNzQ2MjExOjE4MTc1ODc4MzM3NDYyMTE=","699097":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM2MDA2MTUxOTA0Mzc5OjE4MzYwMDYxNTE5MDQzNzk=","703825":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM2OTU3MjA4NDc1OTQwOjE4MzY5NTcyMDg0NzU5NDA=","711982":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI0NDQxOTE2Mzk0MTM2OjE4MjQ0NDE5MTYzOTQxMzY=","712508":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ3MjI1Nzg0MTE1NzQ5OjE4NDcyMjU3ODQxMTU3NDk=","720335":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM2ODk3NjkxODE1MjI1OjE4MzY4OTc2OTE4MTUyMjU=","725233":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI5MjQ0NzM5MjQ3MTg3OjE4MjkyNDQ3MzkyNDcxODc=","732873":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA5MTY4MzkxMjU0ODIyOjE4MDkxNjgzOTEyNTQ4MjI=","734146":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ2MTE1MDg3NTYwMTUyOjE4NDYxMTUwODc1NjAxNTI=","736213":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIwMzM3MzM2ODA0NTk0OjE4MjAzMzczMzY4MDQ1OTQ=","737062":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI5NDk5MTIyNTU1MDgyOjE4Mjk0OTkxMjI1NTUwODI=","740726":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0MzQ3NDY1MDcwMjQ4OjE4MDQzNDc0NjUwNzAyNDg=","742294":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE0OTcwMTQ3MzQxMzEzOjE4MTQ5NzAxNDczNDEzMTM=","742648":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ4MTczNTM3MzU0MzA3OjE4NDgxNzM1MzczNTQzMDc=","745497":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI2NzQ1MzkyODMwNDU1OjE4MjY3NDUzOTI4MzA0NTU=","746117":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0NDY0MjAxNzI1MjQxOjE4MDQ0NjQyMDE3MjUyNDE=","750931":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM0MDUyNjc4NzY2MzkzOjE4MzQwNTI2Nzg3NjYzOTM=","753694":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3NjM3NzkzNzQxMjE1OjE4MTc2Mzc3OTM3NDEyMTU=","758063":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM2ODcwODQxODE3OTEwOjE4MzY4NzA4NDE4MTc5MTA=","760072":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ0MjEzNTAxMDgzNjQ0OjE4NDQyMTM1MDEwODM2NDQ=","762710":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQwNjk5NzUxNDM1MDE5OjE4NDA2OTk3NTE0MzUwMTk=","766494":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3NzA5NzMzNzM0MDIxOjE4MTc3MDk3MzM3MzQwMjE=","769414":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI0MDYyNjgzMDk4NzI2OjE4MjQwNjI2ODMwOTg3MjY=","770828":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQyNjg4Nzk3OTAyNzgxOjE4NDI2ODg3OTc5MDI3ODE=","772496":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQzNjI5NTc3ODA4NzAzOjE4NDM2Mjk1Nzc4MDg3MDM=","775654":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0NDI1ODgxNzI5MDczOjE4MDQ0MjU4ODE3MjkwNzM=","776064":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM5NzU4MDY0ODYyNTIxOjE4Mzk3NTgwNjQ4NjI1MjE=","781307":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE2NjA0MzYzODQ0NTU4OjE4MTY2MDQzNjM4NDQ1NTg=","783171":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM2ODQzMDAxODIwNjk0OjE4MzY4NDMwMDE4MjA2OTQ=","784560":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3NjE2ODAwNDA5OTgxOjE4MTc2MTY4MDA0MDk5ODE=","788795":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI0NTA5NTc5NzIwNzAzOjE4MjQ1MDk1Nzk3MjA3MDM=","788933":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIwMzI0OTUzNDcyNDk5OjE4MjAzMjQ5NTM0NzI0OTk=","790802":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQwNjk5NzMxNDM1MDIxOjE4NDA2OTk3MzE0MzUwMjE=","791351":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE1NzMwNDIzOTMxOTUyOjE4MTU3MzA0MjM5MzE5NTI=","791395":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEwODMwMzY3NzU1MjkxOjE4MTA4MzAzNjc3NTUyOTE=","794163":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQyNjgzNTg0NTY5OTY5OjE4NDI2ODM1ODQ1Njk5Njk=","808542":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI3MjI5NDQyNzgyMDUwOjE4MjcyMjk0NDI3ODIwNTA=","809084":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ4MTczNTM0MDIwOTc0OjE4NDgxNzM1MzQwMjA5NzQ=","809479":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEwOTk2MjAxMDcyMDQxOjE4MTA5OTYyMDEwNzIwNDE=","810044":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM0MDMxNzI4NzY4NDg4OjE4MzQwMzE3Mjg3Njg0ODg=","812828":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMzNTIzNTgyMTUyNjM2OjE4MzM1MjM1ODIxNTI2MzY=","814488":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQxNzMzNDg0NjY0OTc5OjE4NDE3MzM0ODQ2NjQ5Nzk=","824323":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ1NzMwODAwOTMxOTE0OjE4NDU3MzA4MDA5MzE5MTQ=","824529":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ0NDU1NTA3NzI2MTEwOjE4NDQ0NTU1MDc3MjYxMTA=","836224":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3NDg2MjIzNzU2MzcyOjE4MTc0ODYyMjM3NTYzNzI=","837884":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODExMDUwMzc3NzMzMjkwOjE4MTEwNTAzNzc3MzMyOTA=","841366":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA3MjA4MTgxNDUwODQzOjE4MDcyMDgxODE0NTA4NDM=","854057":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM1MDI4MzMyMDAyMTYxOjE4MzUwMjgzMzIwMDIxNjE=","858591":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI5NDk5MTM5MjIxNzQ3OjE4Mjk0OTkxMzkyMjE3NDc=","858781":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ0NzA0OTM0MzY3ODM0OjE4NDQ3MDQ5MzQzNjc4MzQ=","859976":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMwMTM4NjUyNDkxMTI5OjE4MzAxMzg2NTI0OTExMjk=","861103":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIyMzg3NjE5OTMyODk5OjE4MjIzODc2MTk5MzI4OTk=","866554":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ3OTc0NTk3Mzc0MjAxOjE4NDc5NzQ1OTczNzQyMDE=","876776":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE1ODE1NjQzOTIzNDMwOjE4MTU4MTU2NDM5MjM0MzA=","884585":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA4MTYyMjk0Njg4NzY1OjE4MDgxNjIyOTQ2ODg3NjU=","886671":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEwMDM0OTY0NTAxNDk4OjE4MTAwMzQ5NjQ1MDE0OTg=","890136":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIzOTU3NTgzMTA5MjM2OjE4MjM5NTc1ODMxMDkyMzY=","896258":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE1ODM2NTkwNTg4MDAyOjE4MTU4MzY1OTA1ODgwMDI=","899603":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA4MjA3ODE0Njg0MjEzOjE4MDgyMDc4MTQ2ODQyMTM=","902989":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM2OTU3MjE1MTQyNjA2OjE4MzY5NTcyMTUxNDI2MDY=","906680":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIzOTU3NTM5Nzc1OTA3OjE4MjM5NTc1Mzk3NzU5MDc=","909667":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQwNjk5NzY0NzY4MzUxOjE4NDA2OTk3NjQ3NjgzNTE=","914877":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE2NzY1MTMzODI4NDgxOjE4MTY3NjUxMzM4Mjg0ODE=","922821":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM2ODcwODMxODE3OTExOjE4MzY4NzA4MzE4MTc5MTE=","927238":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA5MTEyNzU0NTkzNzE5OjE4MDkxMTI3NTQ1OTM3MTk=","927265":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM1OTk0MDM1MjM4OTI0OjE4MzU5OTQwMzUyMzg5MjQ=","934470":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIzMTMzNjk5ODU4MjkxOjE4MjMxMzM2OTk4NTgyOTE=","935629":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ4MDU4OTkwNjk5MDk1OjE4NDgwNTg5OTA2OTkwOTU=","936430":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQzNDc0OTc0NDkwODMwOjE4NDM0NzQ5NzQ0OTA4MzA=","940857":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA5Nzg3MDAxMTkyOTYxOjE4MDk3ODcwMDExOTI5NjE=","944184":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0MzAwODMxNzQxNTc4OjE4MDQzMDA4MzE3NDE1Nzg=","954625":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3NzA5NzYwNDAwNjg1OjE4MTc3MDk3NjA0MDA2ODU=","955154":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODAzNTI0NTU1MTUyNTM5OjE4MDM1MjQ1NTUxNTI1Mzk=","958075":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI2OTg0MjA5NDczMjQwOjE4MjY5ODQyMDk0NzMyNDA=","959310":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIyODYyODMzMjE4NzExOjE4MjI4NjI4MzMyMTg3MTE=","964663":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI5NDk5MTQ5MjIxNzQ2OjE4Mjk0OTkxNDkyMjE3NDY=","965782":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI1MjE5Mzg5NjQ5NzIyOjE4MjUyMTkzODk2NDk3MjI=","971529":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM1OTk0MDMxOTA1NTkxOjE4MzU5OTQwMzE5MDU1OTE=","979507":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA5MTYzMDcxMjU1MzU0OjE4MDkxNjMwNzEyNTUzNTQ=","981136":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE2NzY1MTcwNDk1MTQ0OjE4MTY3NjUxNzA0OTUxNDQ=","997523":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3Njg3MTA3MDY5NjE3OjE4MTc2ODcxMDcwNjk2MTc=","999036":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQxNTc2MjI0NjgwNzA1OjE4NDE1NzYyMjQ2ODA3MDU=","999464":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIxMTkxNDIwMDUyNTE5OjE4MjExOTE0MjAwNTI1MTk=","1001809":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQxNjk2Njk4MDAxOTkxOjE4NDE2OTY2OTgwMDE5OTE=","1004790":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI0MDE2NjY5NzY5OTk0OjE4MjQwMTY2Njk3Njk5OTQ=","1009712":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ4MTczNTQ0MDIwOTczOjE4NDgxNzM1NDQwMjA5NzM=","1012088":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEwOTczMTY3NzQxMDExOjE4MTA5NzMxNjc3NDEwMTE=","1015172":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIxMTcwNDIwMDU0NjE5OjE4MjExNzA0MjAwNTQ2MTk=","1016811":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE0ODk4MjA3MzQ4NTA3OjE4MTQ4OTgyMDczNDg1MDc=","1040102":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM5NzU4MDY4MTk1ODU0OjE4Mzk3NTgwNjgxOTU4NTQ=","1040109":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE0NjA1MTY3Mzc3ODExOjE4MTQ2MDUxNjczNzc4MTE=","1040429":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEwMTAzNjE0NDk0NjMzOjE4MTAxMDM2MTQ0OTQ2MzM=","1040852":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMwMzE3NjAyNDczMjM0OjE4MzAzMTc2MDI0NzMyMzQ=","1056739":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI2ODg4Njc5NDgyNzkzOjE4MjY4ODg2Nzk0ODI3OTM=","1059661":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0Mzk3ODIxNzMxODc5OjE4MDQzOTc4MjE3MzE4Nzk=","1068017":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMwMzAzNTA5MTQxMzEwOjE4MzAzMDM1MDkxNDEzMTA=","1084836":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM5NzU4MDYxNTI5MTg4OjE4Mzk3NTgwNjE1MjkxODg=","1085452":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIzMTMzNzA2NTI0OTU3OjE4MjMxMzM3MDY1MjQ5NTc=","1095889":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ4ODI1NDI3Mjg5MTE4OjE4NDg4MjU0MjcyODkxMTg=","1103834":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODExMDUwNDA0Mzk5OTU0OjE4MTEwNTA0MDQzOTk5NTQ=","1106921":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIxMTcwNDA2NzIxMjg3OjE4MjExNzA0MDY3MjEyODc=","1113492":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEzNzgyNDIwNzkzNDE5OjE4MTM3ODI0MjA3OTM0MTk=","1120004":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEwOTA3NTc0NDE0MjM3OjE4MTA5MDc1NzQ0MTQyMzc=","1131668":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0MzQ3NDgxNzM2OTEzOjE4MDQzNDc0ODE3MzY5MTM=","1136504":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODAyNTYzNzI4NTgxOTU1OjE4MDI1NjM3Mjg1ODE5NTU=","1153595":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMzOTM1MTA1NDQ0ODE3OjE4MzM5MzUxMDU0NDQ4MTc=","1156061":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3NDI2NjEwNDI5MDAwOjE4MTc0MjY2MTA0MjkwMDA=","1163581":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ3MjM2NTE0MTE0Njc2OjE4NDcyMzY1MTQxMTQ2NzY=","1166244":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ3MTg3NzgwNzg2MjE2OjE4NDcxODc3ODA3ODYyMTY=","1170184":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEzOTkxMzUwNzcyNTI2OjE4MTM5OTEzNTA3NzI1MjY=","1170559":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEwMTAzNTk3ODI3OTY4OjE4MTAxMDM1OTc4Mjc5Njg=","1172270":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMzNzYxNDU4Nzk1NTE1OjE4MzM3NjE0NTg3OTU1MTU=","1177917":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI2NjE5NjU5NTA5Njk1OjE4MjY2MTk2NTk1MDk2OTU=","1178508":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODAyNTQ2ODg1MjUwMzA2OjE4MDI1NDY4ODUyNTAzMDY=","1186665":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM2ODk3NjcxODE1MjI3OjE4MzY4OTc2NzE4MTUyMjc=","1197332":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIwMjg1OTg2ODA5NzI5OjE4MjAyODU5ODY4MDk3Mjk=","1202886":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3NzA5NzY3MDY3MzUxOjE4MTc3MDk3NjcwNjczNTE=","1204691":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ1NzMyMjcwOTMxNzY3OjE4NDU3MzIyNzA5MzE3Njc=","1213269":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIwMzIwMzE2ODA2Mjk2OjE4MjAzMjAzMTY4MDYyOTY=","1216200":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE0OTI0Mzk0MDEyNTU1OjE4MTQ5MjQzOTQwMTI1NTU=","1225881":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM0MDUyNjcyMDk5NzI3OjE4MzQwNTI2NzIwOTk3Mjc=","1240527":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM1ODAzODE1MjU3OTQ2OjE4MzU4MDM4MTUyNTc5NDY=","1253308":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ2MDY3NDg0MjMxNTc5OjE4NDYwNjc0ODQyMzE1Nzk=","1264151":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE1ODM2NTg3MjU0NjY5OjE4MTU4MzY1ODcyNTQ2Njk=","1267289":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMzNDc5Nzc1NDkwMzUwOjE4MzM0Nzk3NzU0OTAzNTA=","1268492":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3NzA5NzI3MDY3MzU1OjE4MTc3MDk3MjcwNjczNTU=","1275359":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE1ODM2NjAzOTIxMzM0OjE4MTU4MzY2MDM5MjEzMzQ=","1285595":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIxMTkxNDMwMDUyNTE4OjE4MjExOTE0MzAwNTI1MTg=","1285641":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM5NDc2MzU0ODkwNjkyOjE4Mzk0NzYzNTQ4OTA2OTI=","1286143":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMwMTI5NDYyNDkyMDQ4OjE4MzAxMjk0NjI0OTIwNDg=","1297692":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQzMzM1NDY3ODM4MTE0OjE4NDMzMzU0Njc4MzgxMTQ=","1307806":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA5MTY4Mzc0NTg4MTU3OjE4MDkxNjgzNzQ1ODgxNTc=","1315860":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM2ODk3Njg1MTQ4NTU5OjE4MzY4OTc2ODUxNDg1NTk=","1330377":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIyNzUxNjA5ODk2NTAwOjE4MjI3NTE2MDk4OTY1MDA=","1334021":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIzMDc1ODMzMTk3NDExOjE4MjMwNzU4MzMxOTc0MTE=","1334909":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3Njg3MTQwNDAyOTQ3OjE4MTc2ODcxNDA0MDI5NDc=","1344013":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI4NjE0MDcyNjQzNTg3OjE4Mjg2MTQwNzI2NDM1ODc=","1350073":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEwMDczNzQxMTY0Mjg3OjE4MTAwNzM3NDExNjQyODc=","1353294":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM1OTk0MDQxOTA1NTkwOjE4MzU5OTQwNDE5MDU1OTA=","1356714":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE1ODY2MjYwNTg1MDM1OjE4MTU4NjYyNjA1ODUwMzU=","1367101":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMzMTEyNzM4ODYwMzg3OjE4MzMxMTI3Mzg4NjAzODc=","1376522":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI1MDcyMTk2MzMxMTA4OjE4MjUwNzIxOTYzMzExMDg=","1383363":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIwMzMyNDM2ODA1MDg0OjE4MjAzMzI0MzY4MDUwODQ=","1384836":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI3Njk3MTY2MDY4NjExOjE4Mjc2OTcxNjYwNjg2MTE=","1412022":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIzMTA5NTUzMTk0MDM5OjE4MjMxMDk1NTMxOTQwMzk=","1412051":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODExMDE4NTA3NzM2NDc3OjE4MTEwMTg1MDc3MzY0Nzc=","1418796":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI3Njk3MTQ2MDY4NjEzOjE4Mjc2OTcxNDYwNjg2MTM=","1422109":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE1ODY2MjU3MjUxNzAyOjE4MTU4NjYyNTcyNTE3MDI=","1426544":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI4NDE3Nzg1OTk2NTQ5OjE4Mjg0MTc3ODU5OTY1NDk=","1438888":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM0NzI5MDI1MzY1NDI1OjE4MzQ3MjkwMjUzNjU0MjU=","1440086":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ4ODc0NTc3Mjg0MjAzOjE4NDg4NzQ1NzcyODQyMDM=","1447986":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEzOTg4MjM0MTA2MTcxOjE4MTM5ODgyMzQxMDYxNzE=","1453781":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIwOTMyMDEzNDExNzkzOjE4MjA5MzIwMTM0MTE3OTM=","1462750":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE1ODcxNDYzOTE3ODQ4OjE4MTU4NzE0NjM5MTc4NDg=","1463688":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ0NzY5NjIxMDI4MDMyOjE4NDQ3Njk2MjEwMjgwMzI=","1468551":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQwMzU2MDk0ODAyNzE4OjE4NDAzNTYwOTQ4MDI3MTg=","1488742":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0Mzk3ODMxNzMxODc4OjE4MDQzOTc4MzE3MzE4Nzg=","1504526":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA5MTY2MDE3OTIxNzI2OjE4MDkxNjYwMTc5MjE3MjY=","1518001":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMxNjYyNTc1NjcyMDcwOjE4MzE2NjI1NzU2NzIwNzA=","1532422":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQzNDE4ODA0NDk2NDQ3OjE4NDM0MTg4MDQ0OTY0NDc=","1535534":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODAxNjY1MzYyMDA1MTI1OjE4MDE2NjUzNjIwMDUxMjU=","1547766":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODExMDUwMzY3NzMzMjkxOjE4MTEwNTAzNjc3MzMyOTE=","1549497":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQyNTMxMTAxMjUxODg0OjE4NDI1MzExMDEyNTE4ODQ=","1552920":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI4NjAyMjA1OTc4MTA3OjE4Mjg2MDIyMDU5NzgxMDc=","1555742":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA4MjA3ODE4MDE3NTQ2OjE4MDgyMDc4MTgwMTc1NDY=","1557309":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEzOTg4MjM3NDM5NTA0OjE4MTM5ODgyMzc0Mzk1MDQ=","1560969":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQwNjAzNjYxNDQ0NjI4OjE4NDA2MDM2NjE0NDQ2Mjg=","1565763":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0NDY0MjE1MDU4NTczOjE4MDQ0NjQyMTUwNTg1NzM=","1592354":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIxMDcwMTMwMDY0NjQ4OjE4MjEwNzAxMzAwNjQ2NDg=","1596463":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQyNjA2ODk3OTEwOTcxOjE4NDI2MDY4OTc5MTA5NzE=","1601615":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQxNzQxNTI3OTk3NTA4OjE4NDE3NDE1Mjc5OTc1MDg=","1612562":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIzOTU3NTQ2NDQyNTczOjE4MjM5NTc1NDY0NDI1NzM=","1629385":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODAyNTA5MzM1MjU0MDYxOjE4MDI1MDkzMzUyNTQwNjE=","1636478":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ0MjExNjExMDgzODMzOjE4NDQyMTE2MTEwODM4MzM=","1641387":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM2OTE2MjgxODEzMzY2OjE4MzY5MTYyODE4MTMzNjY=","1644302":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM5NzU4MDc4MTk1ODUzOjE4Mzk3NTgwNzgxOTU4NTM=","1649284":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM2MDA2MTYxOTA0Mzc4OjE4MzYwMDYxNjE5MDQzNzg=","1667741":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA3MDkwMTg4MTI5MzA5OjE4MDcwOTAxODgxMjkzMDk=","1678125":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIyMTA3NTA5OTYwOTEwOjE4MjIxMDc1MDk5NjA5MTA=","1678926":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ1MDcwMjQ3NjY0NjM2OjE4NDUwNzAyNDc2NjQ2MzY=","1686829":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQyNjY0ODkxMjM4NTA1OjE4NDI2NjQ4OTEyMzg1MDU=","1693573":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQzNjI3Mjg0NDc1NTk5OjE4NDM2MjcyODQ0NzU1OTk=","1701499":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMyNjEyNTMyMjQzNzQxOjE4MzI2MTI1MzIyNDM3NDE=","1720692":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIyMjAyMzk2NjE4MDg4OjE4MjIyMDIzOTY2MTgwODg=","1730222":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEzNjUxMDM0MTM5ODkxOjE4MTM2NTEwMzQxMzk4OTE=","1743559":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM5NzI4Mjg4MTk4ODMyOjE4Mzk3MjgyODgxOTg4MzI=","1751953":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE1NzIwMTMzOTMyOTgxOjE4MTU3MjAxMzM5MzI5ODE=","1776731":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI0MDYyNzA5NzY1MzkwOjE4MjQwNjI3MDk3NjUzOTA=","1812877":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM5NTg1NDE4MjEzMTE5OjE4Mzk1ODU0MTgyMTMxMTk=","1814566":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIxMTcwNDEzMzg3OTUzOjE4MjExNzA0MTMzODc5NTM=","1827409":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQxNzMwMTcxMzMxOTc3OjE4NDE3MzAxNzEzMzE5Nzc=","1830067":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODExMDg5OTIxMDYyNjY5OjE4MTEwODk5MjEwNjI2Njk=","1850363":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQxNzQzMzU3OTk3MzI1OjE4NDE3NDMzNTc5OTczMjU=","1898576":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQxNjQxMDA0Njc0MjI3OjE4NDE2NDEwMDQ2NzQyMjc=","1901527":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQzODMxNzQ3Nzg4NDg2OjE4NDM4MzE3NDc3ODg0ODY=","1901616":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEzNzY2MTkwNzk1MDQyOjE4MTM3NjYxOTA3OTUwNDI=","1901957":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ2Mjc0Nzk0MjEwODQ4OjE4NDYyNzQ3OTQyMTA4NDg=","1904370":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI5NDUzOTY1ODkyOTMxOjE4Mjk0NTM5NjU4OTI5MzE=","1946497":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI3NDU4MDgyNzU5MTg2OjE4Mjc0NTgwODI3NTkxODY=","1963794":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODExMDU5MDk3NzMyNDE4OjE4MTEwNTkwOTc3MzI0MTg=","1973792":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM2OTU3MjE4NDc1OTM5OjE4MzY5NTcyMTg0NzU5Mzk=","1979438":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA2ODk5MzgxNDgxNzIzOjE4MDY4OTkzODE0ODE3MjM=","1996871":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ1NTIyNjcwOTUyNzI3OjE4NDU1MjI2NzA5NTI3Mjc=","2037397":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMzODM2Njc4Nzg3OTkzOjE4MzM4MzY2Nzg3ODc5OTM=","2046326":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIzMTMzNzE5ODU4Mjg5OjE4MjMxMzM3MTk4NTgyODk=","2063310":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM0ODkwODE1MzQ5MjQ2OjE4MzQ4OTA4MTUzNDkyNDY=","2069555":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE1NjQwNDQzOTQwOTUwOjE4MTU2NDA0NDM5NDA5NTA=","2079279":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMwMTI5NDY1ODI1MzgxOjE4MzAxMjk0NjU4MjUzODE=","2173352":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ3MjI1Nzc3NDQ5MDgzOjE4NDcyMjU3Nzc0NDkwODM=","2178557":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI4MzMzNzI2MDA0OTU1OjE4MjgzMzM3MjYwMDQ5NTU=","2187480":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQwNjcxNDk0NzcxMTc4OjE4NDA2NzE0OTQ3NzExNzg=","2269774":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM2OTE2Mjg4NDgwMDMyOjE4MzY5MTYyODg0ODAwMzI=","2279696":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0MjY3MjY4NDExNjAxOjE4MDQyNjcyNjg0MTE2MDE=","2286911":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM1ODg3MjE1MjQ5NjA2OjE4MzU4ODcyMTUyNDk2MDY=","2312107":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQwNjk5NzQ4MTAxNjg2OjE4NDA2OTk3NDgxMDE2ODY=","2326519":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMzNjgyMjA1NDcwMTA3OjE4MzM2ODIyMDU0NzAxMDc=","2334233":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEzOTI3MjU0MTEyMjY5OjE4MTM5MjcyNTQxMTIyNjk=","2357129":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM2NzQ4MjQxODMwMTcwOjE4MzY3NDgyNDE4MzAxNzA=","2482032":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0NDY0MjcxNzI1MjM0OjE4MDQ0NjQyNzE3MjUyMzQ=","2482762":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMzMTEyNzUyMTkzNzE5OjE4MzMxMTI3NTIxOTM3MTk=","2520120":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM2OTU3MjAxODA5Mjc0OjE4MzY5NTcyMDE4MDkyNzQ=","2539401":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI5NDk5MTEyNTU1MDgzOjE4Mjk0OTkxMTI1NTUwODM=","2572215":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMwMjExNDkyNDgzODQ1OjE4MzAyMTE0OTI0ODM4NDU=","2578017":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMzNTQ5NzM4ODE2Njg3OjE4MzM1NDk3Mzg4MTY2ODc=","2620153":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ3MDM0ODU0MTM0ODQyOjE4NDcwMzQ4NTQxMzQ4NDI=","2761447":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ1MDcyMzA0MzMxMDk3OjE4NDUwNzIzMDQzMzEwOTc=","2807994":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMwMzAzNDYyNDc0NjQ4OjE4MzAzMDM0NjI0NzQ2NDg=","2814378":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIyNTM4NTc2NTg0NDcwOjE4MjI1Mzg1NzY1ODQ0NzA=","2866736":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIxMTkxNDAwMDUyNTIxOjE4MjExOTE0MDAwNTI1MjE=","2916487":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3NDg2MjM3MDg5NzA0OjE4MTc0ODYyMzcwODk3MDQ=","2930992":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMwMzAzNDgyNDc0NjQ2OjE4MzAzMDM0ODI0NzQ2NDY=","2980324":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMzMzM2MjE1NTA0NzA2OjE4MzMzMzYyMTU1MDQ3MDY=","3060697":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ1NzI3ODk3NTk4ODcxOjE4NDU3Mjc4OTc1OTg4NzE=","3084529":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM2ODcwODM1MTUxMjQ0OjE4MzY4NzA4MzUxNTEyNDQ=","3091559":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMyMTk3NjAyMjg1MjM0OjE4MzIxOTc2MDIyODUyMzQ=","3144032":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODAyNTYzODE4NTgxOTQ2OjE4MDI1NjM4MTg1ODE5NDY=","3356302":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0NDY0MjE4MzkxOTA2OjE4MDQ0NjQyMTgzOTE5MDY=","3360738":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIxMTQ2Mzc2NzIzNjkwOjE4MjExNDYzNzY3MjM2OTA=","3463669":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA5ODgwMjg0NTE2OTY2OjE4MDk4ODAyODQ1MTY5NjY=","3527336":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA3MjA4MTY0Nzg0MTc4OjE4MDcyMDgxNjQ3ODQxNzg=","3565679":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI0ODY4NDI5Njg0ODE4OjE4MjQ4Njg0Mjk2ODQ4MTg=","3606919":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEwODk1MjUxMDgyMTM2OjE4MTA4OTUyNTEwODIxMzY=","3690092":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM1OTUzNDA1MjQyOTg3OjE4MzU5NTM0MDUyNDI5ODc=","4220842":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMyODgxNDgyMjE2ODQ2OjE4MzI4ODE0ODIyMTY4NDY=","4363366":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEzOTUwMzUwNzc2NjI2OjE4MTM5NTAzNTA3NzY2MjY=","4566148":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODAzNTEwMTI4NDg3MzE1OjE4MDM1MTAxMjg0ODczMTU=","4789942":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQ1NDI0MDM0Mjk1OTI0OjE4NDU0MjQwMzQyOTU5MjQ=","4823366":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE3NTU1MzY3MDgyNzkxOjE4MTc1NTUzNjcwODI3OTE=","4877497":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMxNjg4MDQyMzM2MTkwOjE4MzE2ODgwNDIzMzYxOTA=","4943587":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI3Njk3MTQyNzM1MjgwOjE4Mjc2OTcxNDI3MzUyODA=","4963401":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODM0MDUyNjY4NzY2Mzk0OjE4MzQwNTI2Njg3NjYzOTQ=","5402007":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0MzAwODM1MDc0OTExOjE4MDQzMDA4MzUwNzQ5MTE=","5721873":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMwMjExNDgyNDgzODQ2OjE4MzAyMTE0ODI0ODM4NDY=","6252893":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIyOTE3NTk5ODc5OTAxOjE4MjI5MTc1OTk4Nzk5MDE=","7635077":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA0MTc0OTgxNzU0MTYzOjE4MDQxNzQ5ODE3NTQxNjM=","7794102":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODMxMjMzNzAyMzgxNjI0OjE4MzEyMzM3MDIzODE2MjQ=","8940385":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODEwNzYwMDcxMDk1NjU0OjE4MTA3NjAwNzEwOTU2NTQ=","9112324":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIzNzg5MDEzMTI2MDkzOjE4MjM3ODkwMTMxMjYwOTM=","10500768":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODA4MDcxMDA0Njk3ODk0OjE4MDgwNzEwMDQ2OTc4OTQ=","12819551":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI0NjM3MjQzMDQxMjcwOjE4MjQ2MzcyNDMwNDEyNzA=","15735294":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE2NzczMDQzODI3NjkwOjE4MTY3NzMwNDM4Mjc2OTA=","21178409":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODIxODQ4MzQ2NjUzNDkzOjE4MjE4NDgzNDY2NTM0OTM=","34388956":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODQxNDIxNDg0Njk2MTc5OjE4NDE0MjE0ODQ2OTYxNzk=","37193113":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODAyMzc1NjI4NjAwNzY1OjE4MDIzNzU2Mjg2MDA3NjU=","68207343":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODE2NzY1MTYzODI4NDc4OjE4MTY3NjUxNjM4Mjg0Nzg=","75639596":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI4NDg5OTE1OTg5MzM2OjE4Mjg0ODk5MTU5ODkzMzY=","76556797":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODAyMjYzMjUxOTQ1MzM2OjE4MDIyNjMyNTE5NDUzMzY=","86222106":"UzpfSTEwMDA2NDg1MDM0NDEwMzoxODI4NTUyMzQ1OTgzMDkzOjE4Mjg1NTIzNDU5ODMwOTM="};
+const XTRA_UNI={"40892":{"reac":285,"shr":9,"sav":8,"lc":0,"traf":{"Feed":78.9,"Reels":19.5,"Unavailable":0.8,"Your Page":0.8,"Stories":0},"age":{"25-34":25.6,"35-44":22.5,"65+":17.1,"55-64":15.9,"45-54":15.8,"18-24":3.1}},"49656":{"reac":291,"shr":6,"sav":4,"lc":0,"traf":{"Feed":85.3,"Reels":13.3,"Unavailable":0.7,"Your Page":0.7,"Stories":0},"age":{"25-34":22.4,"35-44":21.5,"65+":19.9,"45-54":16.8,"55-64":16.7,"18-24":2.7}},"55353":{"reac":129,"shr":3,"sav":3,"lc":0,"traf":{"Feed":96.4,"Reels":3.4,"Unavailable":0.2,"Stories":0,"Your Page":0},"age":{"25-34":38,"35-44":27.7,"45-54":13.8,"55-64":9.2,"65+":6.8,"18-24":4.5}},"89047":{"reac":186,"shr":17,"sav":12,"lc":0,"traf":{"Feed":91.3,"Reels":7.3,"Your Page":0.9,"Unavailable":0.5,"Stories":0,"Groups":0},"age":{"25-34":29.7,"35-44":25.9,"45-54":15.6,"55-64":12.9,"65+":12.1,"18-24":3.8}},"134134":{"reac":148,"shr":1,"sav":2,"lc":0,"traf":{"Feed":90.5,"Reels":9,"Unavailable":0.3,"Your Page":0.1,"Stories":0},"age":{"25-34":34.1,"35-44":26.3,"45-54":14.5,"55-64":11.2,"65+":9.4,"18-24":4.5}},"175045":{"reac":583,"shr":41,"sav":45,"lc":1,"traf":{"Feed":95.7,"Reels":3.7,"Unavailable":0.4,"Your Page":0.3,"Stories":0,"Groups":0},"age":{"35-44":25.4,"25-34":22.8,"45-54":18.3,"55-64":16.2,"65+":15.1,"18-24":2.2}},"186854":{"reac":505,"shr":38,"sav":31,"lc":0,"traf":{"Feed":90.2,"Reels":9.1,"Unavailable":0.4,"Your Page":0.3,"Stories":0,"Groups":0},"age":{"35-44":26.7,"25-34":25,"45-54":18.9,"55-64":14.7,"65+":11.8,"18-24":2.9}},"199517":{"reac":1266,"shr":83,"sav":36,"lc":1,"traf":{"Feed":89.6,"Reels":9.6,"Unavailable":0.4,"Your Page":0.3,"Stories":0,"Groups":0},"age":{"35-44":23.2,"25-34":20.5,"65+":18.5,"45-54":18.1,"55-64":17.2,"18-24":2.5}},"206186":{"reac":629,"shr":12,"sav":24,"lc":2,"traf":{"Feed":83.8,"Reels":15.8,"Unavailable":0.3,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":33.6,"35-44":28.5,"45-54":14.8,"55-64":10.3,"65+":8.9,"18-24":3.9}},"219584":{"reac":321,"shr":11,"sav":17,"lc":2,"traf":{"Feed":96.5,"Reels":3,"Unavailable":0.3,"Your Page":0.3,"Stories":0,"Groups":0},"age":{"25-34":34.1,"35-44":26.1,"45-54":15.1,"55-64":11.4,"65+":9.2,"18-24":4.1}},"241460":{"reac":646,"shr":12,"sav":11,"lc":1,"traf":{"Feed":91.4,"Reels":7.9,"Unavailable":0.4,"Your Page":0.3,"Stories":0,"Groups":0},"age":{"25-34":30.8,"35-44":26.6,"45-54":16.4,"55-64":12.1,"65+":10,"18-24":4.1}},"268236":{"reac":869,"shr":149,"sav":78,"lc":2,"traf":{"Feed":97.4,"Reels":1.7,"Your Page":0.5,"Unavailable":0.4,"Stories":0,"Groups":0},"age":{"25-34":33.2,"35-44":28.7,"45-54":16.1,"55-64":10.2,"65+":7.9,"18-24":3.9}},"272529":{"reac":610,"shr":10,"sav":41,"lc":3,"traf":{"Feed":98,"Reels":1.7,"Unavailable":0.2,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":43.5,"35-44":27.4,"45-54":12.1,"55-64":6.6,"18-24":6,"65+":4.4}},"278714":{"reac":750,"shr":39,"sav":24,"lc":2,"traf":{"Feed":94.3,"Reels":5.2,"Unavailable":0.3,"Your Page":0.2,"Stories":0,"Groups":0},"age":{"25-34":29.5,"35-44":26.9,"45-54":17.2,"55-64":12.8,"65+":10.2,"18-24":3.4}},"297299":{"reac":570,"shr":37,"sav":22,"lc":4,"traf":{"Feed":86.4,"Reels":13.2,"Unavailable":0.3,"Your Page":0.2,"Stories":0},"age":{"35-44":27.8,"25-34":27.2,"45-54":17.6,"55-64":13.4,"65+":11,"18-24":3}},"330112":{"reac":511,"shr":16,"sav":25,"lc":3,"traf":{"Feed":93.8,"Reels":5.8,"Unavailable":0.2,"Your Page":0.1,"Stories":0},"age":{"25-34":40.9,"35-44":27.9,"45-54":12.1,"55-64":7.8,"65+":6.3,"18-24":5}},"342539":{"reac":642,"shr":31,"sav":83,"lc":1,"traf":{"Feed":83.7,"Reels":15.8,"Unavailable":0.3,"Your Page":0.2,"Stories":0,"Groups":0},"age":{"25-34":33.8,"35-44":26.5,"45-54":15.3,"55-64":11.2,"65+":9,"18-24":4.2}},"351138":{"reac":415,"shr":3,"sav":31,"lc":1,"traf":{"Feed":90.8,"Reels":8.8,"Unavailable":0.2,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":41.4,"35-44":27.2,"45-54":12.9,"55-64":8.2,"65+":5.6,"18-24":4.7}},"353547":{"reac":486,"shr":9,"sav":22,"lc":1,"traf":{"Feed":91.7,"Reels":7.9,"Unavailable":0.2,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":45.4,"35-44":24.8,"45-54":11,"55-64":6.9,"18-24":6.4,"65+":5.5}},"354702":{"reac":2596,"shr":55,"sav":46,"lc":3,"traf":{"Feed":88.6,"Reels":10.9,"Unavailable":0.3,"Your Page":0.2,"Stories":0,"Groups":0},"age":{"35-44":27.9,"25-34":25.9,"45-54":18.5,"55-64":13.8,"65+":11,"18-24":2.9}},"359908":{"reac":314,"shr":23,"sav":61,"lc":2,"traf":{"Feed":96.4,"Reels":3.1,"Unavailable":0.3,"Your Page":0.2,"Stories":0,"Groups":0},"age":{"25-34":36.9,"35-44":26.6,"45-54":14,"55-64":9.9,"65+":7.6,"18-24":5}},"373721":{"reac":582,"shr":19,"sav":53,"lc":5,"traf":{"Feed":86.9,"Reels":9.9,"Unavailable":3.1,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":36.1,"35-44":24.8,"45-54":14,"55-64":11.1,"65+":10.1,"18-24":3.9}},"386743":{"reac":826,"shr":79,"sav":84,"lc":2,"traf":{"Feed":80.8,"Reels":18.7,"Unavailable":0.3,"Your Page":0.2,"Stories":0,"Groups":0},"age":{"25-34":40.5,"35-44":30.6,"45-54":12.7,"55-64":6.9,"18-24":5,"65+":4.3}},"390591":{"reac":977,"shr":36,"sav":37,"lc":3,"traf":{"Feed":97.4,"Reels":2.2,"Unavailable":0.3,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":34.1,"35-44":26,"45-54":15.2,"55-64":11.4,"65+":9.5,"18-24":3.8}},"411645":{"reac":281,"shr":5,"sav":33,"lc":2,"traf":{"Feed":92.2,"Reels":7.4,"Unavailable":0.2,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":41.5,"35-44":27.5,"45-54":12.7,"55-64":7.7,"18-24":5.4,"65+":5.2}},"434961":{"reac":693,"shr":26,"sav":54,"lc":5,"traf":{"Feed":94.1,"Reels":5.6,"Unavailable":0.2,"Your Page":0,"Stories":0,"Groups":0},"age":{"25-34":33.2,"35-44":27.9,"45-54":15.6,"55-64":11,"65+":8.6,"18-24":3.7}},"472780":{"reac":953,"shr":46,"sav":53,"lc":4,"traf":{"Feed":97.3,"Reels":2.3,"Unavailable":0.3,"Your Page":0.2,"Stories":0,"Groups":0},"age":{"25-34":40.7,"35-44":26.9,"45-54":12.5,"55-64":8.5,"65+":6.3,"18-24":5.1}},"496541":{"reac":524,"shr":5,"sav":24,"lc":4,"traf":{"Feed":94.2,"Reels":5.5,"Unavailable":0.2,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":48.2,"35-44":25.7,"45-54":10.1,"18-24":6.6,"55-64":5.6,"65+":3.8}},"516953":{"reac":924,"shr":38,"sav":52,"lc":4,"traf":{"Feed":86.7,"Reels":13,"Unavailable":0.2,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":37.3,"35-44":27.2,"45-54":13.6,"55-64":9.2,"65+":7.8,"18-24":4.9}},"530436":{"reac":1286,"shr":77,"sav":71,"lc":3,"traf":{"Feed":98.1,"Reels":1.6,"Unavailable":0.2,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":40.4,"35-44":28.5,"45-54":13.5,"55-64":8.2,"65+":5.1,"18-24":4.3}},"570662":{"reac":362,"shr":16,"sav":33,"lc":2,"traf":{"Feed":98.2,"Reels":1.4,"Unavailable":0.2,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":41.2,"35-44":27.1,"45-54":12.8,"55-64":8,"65+":5.6,"18-24":5.3}},"602056":{"reac":709,"shr":19,"sav":29,"lc":3,"traf":{"Feed":95.3,"Reels":4.4,"Unavailable":0.2,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":40.1,"35-44":27.1,"45-54":12.9,"55-64":8.8,"65+":6.8,"18-24":4.3}},"622956":{"reac":5467,"shr":373,"sav":1449,"lc":2,"traf":{"Reels":50.5,"Feed":49.2,"Unavailable":0.2,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":35.3,"35-44":27.2,"45-54":14.1,"55-64":10.1,"65+":7.7,"18-24":5.6}},"633204":{"reac":318,"shr":12,"sav":23,"lc":4,"traf":{"Feed":96.7,"Reels":3,"Unavailable":0.2,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":42.8,"35-44":27,"45-54":12.3,"55-64":6.9,"18-24":6,"65+":5}},"668369":{"reac":1601,"shr":152,"sav":220,"lc":3,"traf":{"Feed":97.4,"Reels":2.1,"Unavailable":0.3,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":41.6,"35-44":27.4,"45-54":12.5,"55-64":7,"18-24":6.5,"65+":5}},"670873":{"reac":411,"shr":14,"sav":35,"lc":5,"traf":{"Feed":96.8,"Reels":2.9,"Unavailable":0.2,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":37.8,"35-44":25.3,"45-54":13.5,"55-64":10,"65+":8.1,"18-24":5.3}},"679714":{"reac":1067,"shr":19,"sav":52,"lc":7,"traf":{"Feed":88.9,"Reels":8.7,"Unavailable":2.3,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":40.7,"35-44":26.8,"45-54":12.6,"55-64":8.1,"65+":6.5,"18-24":5.3}},"682356":{"reac":562,"shr":14,"sav":48,"lc":5,"traf":{"Feed":95.7,"Reels":4,"Unavailable":0.2,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":38.4,"35-44":28,"45-54":14,"55-64":8.8,"65+":6.1,"18-24":4.7}},"683687":{"reac":461,"shr":12,"sav":32,"lc":5,"traf":{"Feed":97.4,"Reels":2.3,"Unavailable":0.2,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":41,"35-44":26.6,"45-54":12.7,"55-64":8.2,"65+":6.2,"18-24":5.3}},"685932":{"reac":1247,"shr":55,"sav":24,"lc":2,"traf":{"Feed":93,"Reels":5.5,"Unavailable":1.4,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":29.4,"35-44":26.8,"45-54":17.5,"55-64":13,"65+":10.2,"18-24":3.1}},"692657":{"reac":331,"shr":12,"sav":29,"lc":4,"traf":{"Feed":94.9,"Reels":4.8,"Unavailable":0.2,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":43.8,"35-44":25.5,"45-54":11.9,"55-64":7.2,"18-24":6.3,"65+":5.3}},"694646":{"reac":398,"shr":9,"sav":46,"lc":1,"traf":{"Feed":94.5,"Reels":5.2,"Unavailable":0.2,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":43.6,"35-44":27.7,"45-54":11.6,"55-64":6.9,"18-24":5.5,"65+":4.7}},"712508":{"reac":2858,"shr":82,"sav":91,"lc":5,"traf":{"Feed":89.8,"Reels":9.9,"Unavailable":0.2,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":34,"35-44":27.1,"45-54":15.1,"55-64":11,"65+":9.1,"18-24":3.7}},"734146":{"reac":1927,"shr":208,"sav":117,"lc":7,"traf":{"Feed":95.9,"Reels":3.4,"Unavailable":0.5,"Your Page":0.1,"Groups":0,"Stories":0},"age":{"25-34":32.6,"35-44":28.5,"45-54":16.4,"55-64":10.8,"65+":7.9,"18-24":3.8}},"742648":{"reac":5487,"shr":261,"sav":164,"lc":5,"traf":{"Feed":96.3,"Reels":3.4,"Unavailable":0.2,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":30.5,"35-44":27.1,"45-54":16.3,"55-64":12.4,"65+":10.7,"18-24":3}},"760072":{"reac":2122,"shr":131,"sav":80,"lc":6,"traf":{"Feed":91.7,"Reels":7.9,"Unavailable":0.3,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":30.6,"35-44":26.3,"45-54":16.5,"55-64":12.3,"65+":10.7,"18-24":3.6}},"772496":{"reac":3452,"shr":226,"sav":579,"lc":11,"traf":{"Feed":67.8,"Reels":31.8,"Unavailable":0.3,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":28.2,"35-44":25.8,"45-54":16.4,"55-64":14.6,"65+":12,"18-24":3}},"809084":{"reac":1076,"shr":33,"sav":90,"lc":5,"traf":{"Feed":96.4,"Reels":3.4,"Unavailable":0.2,"Your Page":0,"Stories":0,"Groups":0},"age":{"25-34":45.3,"35-44":28.7,"45-54":10.9,"55-64":5.9,"18-24":5.2,"65+":4}},"824323":{"reac":1811,"shr":68,"sav":87,"lc":7,"traf":{"Feed":91.1,"Reels":8.5,"Unavailable":0.2,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":37.9,"35-44":29.7,"45-54":13.7,"55-64":7.9,"18-24":5.4,"65+":5.4}},"824529":{"reac":1151,"shr":28,"sav":37,"lc":3,"traf":{"Feed":96.4,"Reels":3.2,"Unavailable":0.3,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":37.5,"35-44":28,"45-54":14.4,"55-64":9,"65+":6.5,"18-24":4.6}},"858781":{"reac":613,"shr":32,"sav":41,"lc":5,"traf":{"Feed":94.2,"Reels":5.4,"Unavailable":0.2,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":42.3,"35-44":27.7,"45-54":12.6,"55-64":7.2,"18-24":5.6,"65+":4.6}},"866554":{"reac":1030,"shr":73,"sav":114,"lc":5,"traf":{"Feed":97,"Reels":2.6,"Unavailable":0.3,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":49.3,"35-44":25.6,"45-54":9.8,"18-24":6.3,"55-64":5.2,"65+":3.8}},"935629":{"reac":1264,"shr":20,"sav":50,"lc":3,"traf":{"Feed":95.3,"Reels":4.4,"Unavailable":0.2,"Your Page":0,"Stories":0,"Groups":0},"age":{"25-34":41.1,"35-44":27.9,"45-54":13,"55-64":7.8,"65+":5.6,"18-24":4.6}},"1009712":{"reac":1116,"shr":22,"sav":85,"lc":2,"traf":{"Feed":94.4,"Reels":5.3,"Unavailable":0.2,"Your Page":0,"Stories":0,"Groups":0},"age":{"25-34":44,"35-44":26.1,"45-54":11.2,"55-64":7.3,"65+":5.8,"18-24":5.6}},"1095889":{"reac":1470,"shr":49,"sav":121,"lc":16,"traf":{"Feed":97.1,"Reels":2.6,"Unavailable":0.2,"Your Page":0,"Stories":0,"Groups":0},"age":{"25-34":45.4,"35-44":27.7,"45-54":11,"55-64":6.4,"18-24":5.3,"65+":4.2}},"1163581":{"reac":1554,"shr":90,"sav":72,"lc":7,"traf":{"Feed":97.5,"Reels":2.2,"Unavailable":0.2,"Your Page":0,"Stories":0,"Groups":0},"age":{"35-44":28.6,"25-34":28,"45-54":18.3,"55-64":13,"65+":9.8,"18-24":2.3}},"1166244":{"reac":2367,"shr":106,"sav":206,"lc":10,"traf":{"Feed":92.2,"Reels":7.6,"Unavailable":0.2,"Your Page":0,"Stories":0,"Groups":0},"age":{"25-34":38.6,"35-44":29.8,"45-54":14.2,"55-64":8.1,"65+":5.1,"18-24":4.2}},"1204691":{"reac":1193,"shr":40,"sav":81,"lc":11,"traf":{"Feed":96.8,"Reels":2.9,"Unavailable":0.2,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":47.1,"35-44":27.6,"45-54":10.7,"18-24":6.2,"55-64":5.2,"65+":3.2}},"1253308":{"reac":1275,"shr":20,"sav":65,"lc":9,"traf":{"Feed":96.7,"Reels":3,"Unavailable":0.2,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":38.9,"35-44":28,"45-54":13.6,"55-64":8.6,"65+":6.4,"18-24":4.5}},"1297692":{"reac":2239,"shr":559,"sav":229,"lc":6,"traf":{"Feed":95.8,"Reels":3.6,"Unavailable":0.3,"Your Page":0.2,"Stories":0,"Groups":0},"age":{"25-34":37,"35-44":28,"45-54":14.9,"55-64":9,"65+":6.4,"18-24":4.7}},"1440086":{"reac":1808,"shr":52,"sav":131,"lc":92,"traf":{"Feed":97.5,"Reels":2.3,"Unavailable":0.2,"Your Page":0,"Stories":0,"Groups":0},"age":{"25-34":40.6,"35-44":26.9,"45-54":13.1,"55-64":8.3,"65+":6.3,"18-24":4.8}},"1463688":{"reac":2587,"shr":76,"sav":264,"lc":13,"traf":{"Feed":95.3,"Reels":4.4,"Unavailable":0.2,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":42.1,"35-44":26.1,"45-54":12,"55-64":7.6,"18-24":6.7,"65+":5.5}},"1636478":{"reac":1132,"shr":28,"sav":60,"lc":14,"traf":{"Feed":97.3,"Reels":2.4,"Unavailable":0.2,"Your Page":0,"Stories":0,"Groups":0},"age":{"25-34":42.4,"35-44":27,"45-54":12.4,"55-64":7.3,"18-24":5.7,"65+":5.2}},"1678926":{"reac":1678,"shr":37,"sav":71,"lc":10,"traf":{"Feed":98.1,"Reels":1.6,"Unavailable":0.2,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":39.9,"35-44":27,"45-54":13.5,"55-64":8.1,"65+":6.1,"18-24":5.4}},"1901527":{"reac":2806,"shr":115,"sav":193,"lc":16,"traf":{"Feed":91.9,"Reels":7.8,"Unavailable":0.2,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":38.6,"35-44":29.3,"45-54":14,"55-64":8.3,"65+":5.7,"18-24":4.1}},"1901957":{"reac":2924,"shr":169,"sav":251,"lc":13,"traf":{"Feed":96.1,"Reels":3.6,"Unavailable":0.2,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":44,"35-44":27.1,"45-54":11.5,"18-24":6.7,"55-64":6.5,"65+":4.2}},"1996871":{"reac":3551,"shr":98,"sav":143,"lc":14,"traf":{"Feed":92.4,"Reels":7.3,"Unavailable":0.2,"Your Page":0,"Stories":0,"Groups":0},"age":{"25-34":39.4,"35-44":30,"45-54":13.8,"55-64":7.4,"18-24":4.7,"65+":4.7}},"2173352":{"reac":1355,"shr":29,"sav":93,"lc":17,"traf":{"Feed":97.2,"Reels":2.6,"Unavailable":0.2,"Your Page":0,"Stories":0,"Groups":0},"age":{"25-34":47.7,"35-44":26.9,"45-54":10.5,"18-24":6.1,"55-64":5.3,"65+":3.5}},"2620153":{"reac":4446,"shr":172,"sav":294,"lc":35,"traf":{"Feed":97.3,"Reels":2.4,"Unavailable":0.2,"Your Page":0,"Stories":0,"Groups":0},"age":{"25-34":43.1,"35-44":28.6,"45-54":12.5,"55-64":6.6,"18-24":5.3,"65+":3.9}},"2761447":{"reac":1171,"shr":10,"sav":75,"lc":15,"traf":{"Feed":94.8,"Reels":5,"Unavailable":0.2,"Your Page":0,"Stories":0,"Groups":0},"age":{"25-34":37.4,"35-44":28.5,"45-54":14.3,"55-64":8.8,"65+":6.5,"18-24":4.5}},"3060697":{"reac":4079,"shr":107,"sav":208,"lc":16,"traf":{"Feed":94,"Reels":5.8,"Unavailable":0.2,"Your Page":0,"Stories":0,"Groups":0},"age":{"25-34":41.2,"35-44":28.9,"45-54":12.8,"55-64":7,"18-24":5.5,"65+":4.6}},"4789942":{"reac":14379,"shr":1645,"sav":3108,"lc":29,"traf":{"Feed":79,"Reels":20.8,"Unavailable":0.2,"Your Page":0.1,"Stories":0,"Groups":0},"age":{"25-34":34.3,"35-44":32.1,"45-54":15.8,"55-64":8,"18-24":5.7,"65+":4.1}}};
+const META_LIMG={ range:"4 Jul – 5 Aug 2026", pulled:"6 Aug 2026, 06:59", source:"Facebook Professional Dashboard" };
+const IMG_LAD=[
+["","4 Jul 01:02",3374880,2009438,437124,134.49,0,2011512,220,,2459885,0.05,134.49,5728,430454,210,193,98.4,1.6,-10,1,2009438,"1431222022373014"],
+["The pair were arrested after the stunt 😮","4 Jul 02:01",329933,241968,3874,47.46,0,245245,29,,249090,0.19,47.46,171,3640,27,8,93.8,6.2,0,9,241968,"1431255825702967"],
+["Aryna Sabalenka pleads with Wimbledon to end 149-year-old no dog policy 😮 Full ","4 Jul 03:02",1334996,859251,68635,164.17,24,856640,738,,886882,0.19,164.17,1590,66158,695,25,88.3,11.7,24,1,859251,"1431292965699253"],
+["Police discovered a host of bizarre items at her address 😳","4 Jul 04:02",311130,234362,5489,49.21,0,229020,14,,239777,0.21,49.21,163,5278,12,14,91.5,8.5,-7,7,234362,"1431328359029047"],
+["Guess it's time to listen to the experts 🧠","4 Jul 05:01",282237,205729,9868,40.49,0,203604,14,,209712,0.19,40.49,68,9760,12,10,90.4,9.6,-9,9,205729,"1431365345692015"],
+["She intentionally blew up her home 😳","4 Jul 06:03",583599,429086,12548,86.29,0,422185,61,,431872,0.2,86.29,324,12072,37,28,95.3,4.7,-14,10,429086,"1431403049021578"],
+["","4 Jul 07:02",3078543,1726035,387051,360.64,0,1656420,727,,1817992,0.2,360.64,884,385135,683,21,97.4,2.6,-15,,1726035,"1431440939017789"],
+["","5 Jul 00:03",499086,360300,8866,76.86,0,369383,53,,379652,0.2,76.86,134,8650,48,5,94.2,5.8,-5,13,360300,"1432117855616764"],
+["The actor only got a fraction of the film's earnings 😳","5 Jul 02:03",759714,565636,10087,112.57,0,565080,52,,573147,0.2,112.57,485,9507,46,16,93.7,6.3,-4,4,565636,"1432185152276701"],
+["Officials have reported a spike in cases 😳","5 Jul 03:00",355736,252680,9942,50.37,5,254592,136,,252200,0.2,50.37,170,9566,115,45,82.5,17.5,5,11,252680,"1432218998939983"],
+["There might be a way to cure it 😲","5 Jul 04:02",1106711,823360,27500,154.29,0,799991,58,,813455,0.19,154.29,151,27217,58,15,95.9,4.1,-8,15,823360,"1432260462269170"],
+["It might be time to speed up 😅","5 Jul 05:02",455707,332344,13924,66.94,0,336088,31,,345102,0.19,66.94,99,13762,31,9,89.7,10.3,-5,14,332344,"1432298188932064"],
+["","5 Jul 06:02",126144,91844,3184,17.25,0,91030,42,,94177,0.18,17.25,56,3078,39,2,99.7,0.3,0,12,91844,"1432337172261499"],
+["","6 Jul 00:01",332293,250293,5574,54.44,0,251688,31,,259897,0.21,54.44,111,5416,28,5,89,11,0,9,250293,"1433087488853134"],
+["We're in for an even later start.","6 Jul 00:22",985140,672395,57299,129.71,10,652232,244,,667432,0.19,129.71,533,56350,203,78,92.4,7.6,10,11,672395,"1433099975518552"],
+["Rain, rain go away 😨🤞","6 Jul 00:30",433222,314571,13136,61.28,0,308415,48,,310105,0.2,61.28,181,12865,44,12,96.9,3.1,-1,9,314571,"1433105168851366"],
+["Peter Crouch's hilarious reaction to the England game being delayed 🤣 England’s","6 Jul 01:22",3099045,2222317,55241,413.69,27,2139382,170,,2153695,0.19,413.69,9904,44430,151,288,88.7,11.3,27,2,2222317,"1433136352181581"],
+["Fans may be in for a very long night 👀","6 Jul 02:23",762410,524491,51345,100.94,0,499651,75,,514135,0.2,100.94,268,50934,70,9,96.9,3.1,-1,17,524491,"1433171092178107"],
+["It’s that easy 😅","6 Jul 05:00",373963,253481,26208,52.68,0,248897,46,,263740,0.2,52.68,86,26047,40,9,93.5,6.5,-2,18,253481,"1433274972167719"],
+["Some big names got their break on the show 🤯","6 Jul 05:30",276912,182865,25664,43.25,0,187339,13,,218657,0.2,43.25,62,25562,11,4,97.4,2.6,-1,1,182865,"1433292715499278"],
+["It’s a worrying revelation.","6 Jul 06:00",779320,525941,68164,106.23,0,499245,149,,526127,0.2,106.23,157,67778,138,21,93.9,6.1,-14,16,525941,"1433310362164180"],
+["It’s a game-changer for weight-loss 🤯","6 Jul 07:00",2599532,1838377,112809,339.55,0,1791201,435,,1793945,0.19,339.55,482,111688,380,43,99.5,0.5,-13,2,1838377,"1433345042160712"],
+["","6 Jul 07:30",2747048,1660814,281794,334.38,0,1644186,386,,1755660,0.19,334.38,1991,279089,340,59,98.9,1.1,-7,39,1660814,"1433364822158734"],
+["","7 Jul 00:01",728453,557608,16990,112.82,0,536955,28,,552750,0.2,112.82,181,16739,25,5,96.7,3.3,0,5,557608,"1434074335421116"],
+["It's all fun and games until you're sat guessing for hours 🫨","7 Jul 01:00",823595,508728,68911,115.84,0,518376,346,,552520,0.21,115.84,311,68184,293,11,93.1,6.9,-20,1,508728,"1434111385417411"],
+["Talk about body on the line 😨","7 Jul 02:00",760615,578102,5919,118.87,0,571554,57,,584477,0.2,118.87,1060,4705,49,37,98.5,1.5,-6,,578102,"1434148622080354"],
+["Must be bad for Jackass to go too far 😳","7 Jul 03:00",421859,327407,5119,66.2,0,319994,12,,326602,0.2,66.2,142,4948,10,5,89.9,10.1,-5,6,327407,"1434182858743597"],
+["Basketball legend Shaquille O’Neal has earned a hell of a lot of money during hi","7 Jul 04:00",677029,495108,10374,103.07,1,493445,36,,490505,0.21,103.07,691,9576,35,26,97.3,2.7,1,,495108,"1434220518739831"],
+["It could end up saving you in the long run 😨","7 Jul 05:00",237083,183099,2843,36.04,0,177650,17,,185090,0.19,36.04,50,2760,16,5,98.1,1.9,0,6,183099,"1434261142069102"],
+["It’s a major discovery 🤯","7 Jul 06:00",279498,215846,3050,38.92,1,213628,11,,221172,0.18,38.92,161,2849,10,10,95.3,4.7,1,5,215846,"1434296045398945"],
+["Don’t miss out on that 🤑","7 Jul 07:00",1033474,729571,46082,135.11,1,719960,13,,737082,0.18,135.11,163,45834,12,7,95.3,4.7,1,37,729571,"1434333058728577"],
+["They had some strong words after knocking the hosts out of the tournament 😅","7 Jul 07:28",1027448,692920,58807,134.55,0,684267,867,,710247,0.19,134.55,4238,53443,778,101,93.6,6.4,-16,11,692920,"1434348852060331"],
+["","7 Jul 07:57",1869579,1222406,121472,250.08,0,1205370,1750,,1278032,0.2,250.08,13933,104673,1615,417,93.6,6.4,-15,13,1222406,"1434365218725361"],
+["","8 Jul 00:03",1347828,895236,80999,195.9,0,882832,143,,936652,0.21,195.9,752,79963,131,21,90.5,9.5,-17,29,895236,"1435081415320408"],
+["Until now, investigators we unable to nail down any solid leads.","8 Jul 01:01",296448,233201,3345,50.72,0,224839,8,,232265,0.22,50.72,88,3227,8,5,96.8,3.2,-2,3,233201,"1435115735316976"],
+["The latest twist comes after her appeal was rejected.","8 Jul 02:00",562148,409755,16255,85.6,2,400988,190,,409435,0.21,85.6,404,15611,176,15,91,9,2,7,409755,"1435152308646652"],
+["The duo are on a 15,000 mile journey 😲","8 Jul 03:02",406009,297979,3752,57.42,0,296081,18,,300817,0.19,57.42,73,3499,8,5,84.6,15.4,-1,3,297979,"1435189788642904"],
+["Booyakasha!","8 Jul 04:00",253974,194289,2108,37.6,0,194931,82,,196490,0.19,37.6,436,1526,76,42,91.3,8.7,-2,1,194289,"1435225675305982"],
+["Experts think it might take until 2028 😳","8 Jul 05:02",187174,143222,1725,26.57,0,141381,30,,140637,0.19,26.57,25,1662,25,0,98.8,1.2,-2,4,143222,"1435263721968844"],
+["That's not what you want to see on your million-pound question 😳 The show's fir","8 Jul 05:32",986879,670688,46094,77.75,0,672921,323,,709057,0.11,77.75,431,45265,277,11,93.6,6.4,-6,,670688,"1435282005300349"],
+["He spoke of his pride in the team ❤️","8 Jul 06:00",412500,296129,16970,52.78,2,287307,75,,286037,0.18,52.78,226,16648,68,4,91.6,8.4,2,20,296129,"1435298925298657"],
+["She has hit back at the trolls.","8 Jul 07:00",1303056,909096,17999,188.49,0,913694,326,,932262,0.2,188.49,343,17256,303,4,96.5,3.5,-11,3,909096,"1435334858628397"],
+["","8 Jul 07:47",739626,473586,54507,90.62,0,469956,166,,490185,0.18,90.62,557,53603,148,92,97.5,2.5,-2,16,473586,"1435360871959129"],
+["","9 Jul 00:02",233401,170134,1924,36.52,0,170653,40,,174350,0.21,36.52,338,1524,36,6,95.1,4.9,-4,1,170134,"1436009435227606"],
+["Tom Hanks explains why '35 is the worst age' in life 🤔 As Hollywood legend Tom ","9 Jul 01:01",1003806,652118,24765,82.97,0,663155,201,,672270,0.12,82.97,1462,22956,191,69,98.1,1.9,-2,,652118,"1436041651891051"],
+["He doesn’t feature in any of the newly filmed scenes.","9 Jul 01:30",525262,373777,6412,82.87,0,380388,33,,388267,0.21,82.87,165,6180,31,3,96.6,3.4,0,1,373777,"1436059068555976"],
+["Officials said the 'community is not at risk because of this bond'.","9 Jul 02:04",932058,605266,37491,136.73,0,618447,248,,647652,0.21,136.73,408,36720,236,31,98,2,-13,14,605266,"1436078668554016"],
+["Sure this will go down well 🫣","9 Jul 03:00",370574,259164,14361,56.67,0,260035,36,,272412,0.21,56.67,71,14239,35,2,96.8,3.2,-9,5,259164,"1436109388550944"],
+["Ariana Grande impersonator Paige Niemann has shared DM the popstar sent her in n","9 Jul 04:31",925392,538651,126284,138.12,0,525192,50,,667317,0.21,138.12,781,125300,47,8,98.8,1.2,-2,1,538651,"1436160271879189"],
+["The child star faced some serious issues.","9 Jul 05:00",486193,359046,6648,73.63,0,360578,43,,370657,0.2,73.63,135,6436,34,4,92.6,7.4,-6,5,359046,"1436176355210914"],
+["The infection causes diarrhoea and stomach cramps 🦠","9 Jul 06:02",626125,423457,38237,80.61,0,414534,105,,424860,0.19,80.61,202,37834,92,47,91.2,8.8,-8,16,423457,"1436210255207524"],
+["Finally some (almost) good news 🫣","9 Jul 07:00",163742,127156,1836,21.78,0,124497,12,,125967,0.17,21.78,36,1775,10,2,95.3,4.7,-2,3,127156,"1436241221871094"],
+["","9 Jul 07:32",1973358,1271827,143732,295.57,0,1253027,231,,1341592,0.22,295.57,1230,141997,211,71,96.5,3.5,-12,21,1271827,"1436259078535975"],
+["","10 Jul 00:02",2551079,1721779,100924,330.13,0,1654011,237,,1713737,0.19,330.13,895,99607,214,24,97.1,2.9,-2,5,1721779,"1436901315138418"],
+["Polish javelin thrower, Maria Andrejczyk, auctioned off her Olympic silver medal","10 Jul 01:02",1163946,822652,34640,158.8,20,811551,131,,803362,0.2,158.8,9642,24191,120,273,92.5,7.5,20,,822652,"1436933451801871"],
+["Elizabeth Sider's lawyer has shared new insights.","10 Jul 02:02",540710,353692,44825,77.35,0,344757,114,,364780,0.21,77.35,216,44434,99,12,88,12,-7,23,353692,"1436965601798656"],
+["It's not sounding good lads 😬","10 Jul 03:00",684696,456833,29138,90.85,0,460797,288,,470127,0.19,90.85,488,28237,258,66,93.1,6.9,-9,8,456833,"1436996555128894"],
+["The truth is out there 🛸","10 Jul 04:00",165240,124914,4474,23.57,2,120330,103,,125265,0.19,23.57,177,4166,88,12,90.9,9.1,2,3,124914,"1437028711792345"],
+["Things escalated quickly 😳","10 Jul 06:02",938771,681590,12333,125.73,13,671558,148,,679980,0.18,125.73,671,11429,145,22,94.9,5.1,13,3,681590,"1437095441785672"],
+["An England fan who spent his life savings to take his grandad to the World Cup h","10 Jul 06:31",607911,407272,21972,24.32,0,411411,49,,424715,0.06,24.32,1640,20142,48,29,97.7,2.3,-6,4,407272,"1437111785117371"],
+["He began suffering an illness two days into their trip.","10 Jul 07:02",1085426,753511,50470,23.6,0,736393,130,,765405,0.03,23.6,453,49780,110,20,96.1,3.9,-5,26,753511,"1437128175115732"],
+["She also famously starred on Strictly Come Dancing and Celebrity Big Brother.","10 Jul 07:14",947527,614071,51679,120.87,0,622532,476,,640110,0.19,120.87,2828,47678,361,358,91.6,8.4,-8,9,614071,"1437135131781703"],
+["","10 Jul 07:46",980605,633669,74264,114.83,0,623394,227,,641115,0.18,114.83,381,73568,216,17,94.7,5.3,-6,19,633669,"1437153408446542"],
+["","11 Jul 01:02",997961,674042,18203,85.32,0,668627,84,,656777,0.13,85.32,603,17443,79,11,95.4,4.6,-15,1,674042,"1437808658381017"],
+["She’s called him out 🫣","11 Jul 01:30",133404,99538,3963,20.6,0,95684,135,,100557,0.2,20.6,230,3571,131,14,90.1,9.9,0,5,99538,"1437823001712916"],
+["Imagine seeing him run at you like that in the octagon 😨","11 Jul 02:00",1098725,801153,24346,48.37,3,770225,124,,792212,0.06,48.37,481,23673,115,9,95.7,4.3,3,3,801153,"1437842245044325"],
+["33 people were killed during the incident.","11 Jul 03:00",321445,233865,8851,49.84,0,229523,9,,239512,0.21,49.84,70,8750,9,3,97.1,2.9,0,6,233865,"1437873005041249"],
+["He didn’t fake this 😰","11 Jul 04:00",1478040,1062647,46970,66.6,0,1038428,34,,1072712,0.06,66.6,197,46645,34,4,96.2,3.8,-4,20,1062647,"1437907071704509"],
+["There’s Nor-way you’ll catching him doing it 😳","11 Jul 05:01",1731128,1206355,72513,227.14,0,1170693,261,,1196072,0.19,227.14,626,71465,239,19,97.7,2.3,-6,12,1206355,"1437939871701229"],
+["The Menace got a taste of his own medicine 😬","11 Jul 06:00",549267,380236,25390,73.16,0,383670,60,,395482,0.18,73.16,216,25072,57,4,90.3,9.7,-3,22,380236,"1437972771697939"],
+["Least it’s not altitude this time 😆","11 Jul 07:00",411249,296080,3688,56.9,0,303895,62,,306067,0.19,56.9,160,3434,60,7,97.6,2.4,-5,,296080,"1438007261694490"],
+["","11 Jul 07:30",90009,66278,1035,12.18,1,66801,53,,68320,0.18,12.18,42,930,46,4,95.8,4.2,1,4,66278,"1438024115026138"],
+["","12 Jul 00:01",2888432,1665578,373043,344,0,1647634,1166,,1814657,0.19,344,1968,369464,1081,119,98.4,1.6,-37,59,1665578,"1438649901630226"],
+["It wouldn't have happened in the Premier League 😬","12 Jul 00:26",1235936,858033,73377,151.63,0,818535,383,,847142,0.18,151.63,764,72079,354,49,95,5,-2,15,858033,"1438662051629011"],
+["Jude Bellingham you are sensational 🦁🦁🦁","12 Jul 00:47",1016337,644458,68388,116.97,14,648390,1633,,666360,0.18,116.97,9999,52738,1011,1768,79.4,20.6,14,,644458,"1438673111627905"],
+["The Pentagon has released shocking documents and videos 🤯","12 Jul 01:00",558084,390975,26906,78.1,4,384308,459,,401407,0.19,78.1,832,25513,443,55,89,11,4,5,390975,"1438682231626993"],
+["He wasn't happy at all with the interviewer despite the win 😬","12 Jul 01:14",1043498,671167,93179,130.69,0,665668,463,,702112,0.19,130.69,798,91801,416,28,95,5,-10,31,671167,"1438696401625576"],
+["That’s when you know it's too far 😱","12 Jul 02:00",330670,244569,4844,53.56,0,250324,21,,257227,0.21,53.56,77,4735,19,3,93.8,6.2,-8,4,244569,"1438727278289155"],
+["Might be time to sell up 😱🪙","12 Jul 03:00",262513,196859,6567,37.63,0,191894,88,,196275,0.19,37.63,165,6283,88,19,89.6,10.4,-9,2,196859,"1438758258286057"],
+["Not again 😬","12 Jul 04:00",605382,419774,10866,92.72,0,438952,86,,445325,0.21,92.72,540,10155,76,41,93.4,6.6,-3,4,419774,"1438790258282857"],
+["WHAT JUST HAPPENED 😨 McGregor loses in bizarre fashion on his controversial ret","12 Jul 04:49",2414665,1439964,190591,315.57,15,1492189,1926,,1567320,0.2,315.57,5184,181606,1381,822,88.7,11.3,15,13,1439964,"1438817994946750"],
+["That did not go to plan at all 😱","12 Jul 05:04",6261928,3419396,776244,779.71,0,3492160,2505,,3767030,0.21,779.71,10741,760732,2034,783,91.6,8.4,-21,25,3419396,"1438829098278973"],
+["He was forced to retire from the bout in just one minute 😬","12 Jul 05:19",3108120,2008713,157418,415.64,0,2060142,726,,2131892,0.19,415.64,2346,153979,663,123,96.3,3.7,-11,28,2008713,"1438840261611190"],
+["It’s a head-scratcher 🤔","12 Jul 06:30",701421,492409,40413,84.14,0,464105,311,,461092,0.18,84.14,119,39930,301,2,94.6,5.4,-5,,492409,"1438886108273272"],
+["All those lies could’ve been very different 🫨","12 Jul 07:00",344576,254347,5915,52.16,0,259237,4,,265210,0.2,52.16,61,5832,4,3,96.1,3.9,-4,1,254347,"1438903814938168"],
+["","12 Jul 07:30",682755,494004,26765,94.18,0,485920,112,,497025,0.19,94.18,188,26405,103,20,92.4,7.6,-4,9,494004,"1438920301603186"],
+["","13 Jul 00:02",1494551,1077622,20765,210.62,0,1082832,151,,1098570,0.19,210.62,3305,17127,146,95,93.5,6.5,-1,3,1077622,"1439558311539385"],
+["Clue: they’re no longer in the Premier League 👀😅","13 Jul 00:21",3284481,1888654,401626,388.98,0,1871944,520,,1978792,0.2,388.98,655,400111,483,16,98.5,1.5,-3,1,1888654,"1439567584871791"],
+["They’ve been supporting their other halves the whole way 👏","13 Jul 01:01",1286780,913373,27489,180.77,0,909767,28,,931417,0.19,180.77,456,26922,26,11,96.9,3.1,-10,11,913373,"1439588914869658"],
+["A very different side to Dame Judi 😅","13 Jul 02:00",250460,180543,1719,39.34,0,183651,11,,187877,0.21,39.34,286,1394,11,10,99.8,0.2,-1,3,180543,"1439618818200001"],
+["Not just for gains then 👀","13 Jul 03:01",1964705,1374957,101657,249.99,0,1326876,210,,1345175,0.19,249.99,1511,99556,192,226,97.1,2.9,0,13,1374957,"1439653008196582"],
+["His office has shared an update.","13 Jul 04:00",647751,425108,44327,96.27,34,415828,781,,437052,0.22,96.27,995,42398,725,34,90.8,9.2,34,17,425108,"1439684404860109"],
+["She had 44 siblings 🫢","13 Jul 05:02",916042,668303,17004,140.5,0,663248,35,,678792,0.21,140.5,246,16655,35,11,97.8,2.2,-7,9,668303,"1439720328189850"],
+["A 28-year-old man was arrested on Saturday.","13 Jul 06:00",1165782,777924,88498,146.84,0,761482,329,,769912,0.19,146.84,619,87439,302,14,95.7,4.3,-7,55,777924,"1439751814853368"],
+["His family say the death was 'sudden and unexpected'.","13 Jul 07:07",2801133,1769862,196722,351.64,8,1760818,2638,,1839800,0.19,351.65,28418,150471,1363,7069,80.8,19.2,8,15,1769862,"1439789558182927"],
+["","13 Jul 07:29",1286474,818415,112747,155.64,0,797509,157,,842807,0.18,155.64,699,111722,152,15,95.3,4.7,-7,16,818415,"1439801884848361"],
+["","14 Jul 00:04",1604517,1052215,54609,212.96,0,1054914,1084,,1100937,0.19,212.96,1047,52320,1016,10,96.4,3.6,-9,7,1052215,"1440435784784971"],
+["Might need to get my eyes checked 😅","14 Jul 01:02",998278,682096,55944,132.23,0,682571,413,,695835,0.19,132.23,1335,53807,401,35,95.1,4.9,-7,,682096,"1440466581448558"],
+["Not ominous at all 😮","14 Jul 01:30",99095,73983,1173,14.21,0,72846,17,,76632,0.19,14.21,46,1103,15,1,97.9,2.1,-1,2,73983,"1440486074779942"],
+["He says he was given an ultimatum 😬","14 Jul 02:02",262906,187266,7953,41.75,0,187996,113,,196282,0.21,41.75,140,7677,103,4,97.8,2.2,-6,7,187266,"1440505918111291"],
+["He was nicknamed ‘Captain Coward’.","14 Jul 03:02",1036726,748184,40489,140.63,0,705694,60,,724575,0.19,140.63,286,40093,54,2,97.3,2.7,-8,4,748184,"1440539414774608"],
+["They're going head to head on Wednesday 😲","14 Jul 05:32",482804,350608,10668,20.67,0,349905,204,,352355,0.06,20.67,476,9934,180,14,96.8,3.2,-2,5,350608,"1440621558099727"],
+["A new twist in the long-running legal dispute.","14 Jul 06:01",1101999,766832,35209,153.26,0,758938,298,,764370,0.2,153.26,1268,33550,284,11,94.1,5.9,-2,4,766832,"1440636438098239"],
+["There are some places you really don't want to be 😨","14 Jul 06:30",972246,610257,71547,120.43,0,615937,178,,652530,0.18,120.43,338,70895,151,43,94.3,5.7,-9,20,610257,"1440650608096822"],
+["He’s said he has ‘no regrets’ 😮","14 Jul 07:01",546303,412694,4264,79.44,2,407916,23,,413975,0.19,79.44,117,4094,20,2,95.1,4.9,2,3,412694,"1440665521428664"],
+["","14 Jul 07:31",2015800,1371071,124785,267,0,1320690,427,,1398842,0.19,267,2724,121346,391,112,97,3,-4,26,1371071,"1440683691426847"],
+["","15 Jul 00:01",637412,470374,12016,94.29,2,463153,29,,472297,0.2,94.29,404,11542,29,1,95.6,4.4,2,3,470374,"1441314901363726"],
+["Whattttttt 😨","15 Jul 01:02",4023401,2383200,440362,447.67,0,2258691,482,,2395447,0.19,447.67,1321,438088,430,32,98,2,-19,,2383200,"1441345218027361"],
+["Not everyone will be able to play 🤨","15 Jul 01:30",981564,684047,24475,133.79,0,693314,71,,710440,0.19,133.79,182,24166,62,4,98.5,1.5,-2,7,684047,"1441360601359156"],
+["He's shared his thoughts on McGregor's future 😬","15 Jul 02:01",668616,458483,17661,91.46,0,467224,163,,471965,0.19,91.46,422,17029,152,3,94.8,5.2,0,1,458483,"1441376684690881"],
+["The tragedy has been the subject of a Netflix documentary.","15 Jul 03:00",1394172,1047045,30917,195.36,0,996504,69,,1024082,0.19,195.36,1183,29531,58,39,97,3,-4,5,1047045,"1441411001354116"],
+["Search efforts are ongoing.","15 Jul 04:02",1161419,793104,29824,145.05,0,790666,73,,810462,0.18,145.05,1138,28484,71,33,99.9,0.1,-10,13,793104,"1441447008017182"],
+["She’s witnessed some haunting situations 😨","15 Jul 05:00",123948,93119,1432,19.29,0,93133,14,,96257,0.2,19.29,33,1378,10,2,97.1,2.9,-1,8,93119,"1441482281346988"],
+["”I wouldn't wish it on anyone.”","15 Jul 06:01",3342873,2219351,220552,472.31,0,2132647,653,,2262522,0.21,472.31,1521,217901,596,145,98.7,1.3,-65,29,2219351,"1441516794676870"],
+["A 19-year-old was pronounced dead at the scene following a fatal gunshot wound.","15 Jul 07:00",1269163,869714,76131,178.8,2,840607,628,,875052,0.2,178.8,5134,70093,566,85,94.9,5.1,2,9,869714,"1441554064673143"],
+["","15 Jul 07:31",984710,629033,71783,127.67,0,635610,42,,667617,0.19,127.67,354,71296,23,10,94.7,5.3,-13,37,629033,"1441572121338004"],
+["","16 Jul 01:03",4918101,2376330,790840,139.94,0,2437610,437,,2715162,0.05,139.94,2306,786683,394,114,99.3,0.7,-10,3,2376330,"1442300644598485"],
+["He had some very specific requests 😅","16 Jul 01:30",368104,272592,9114,65.23,0,269314,17,,264097,0.25,65.23,120,8953,15,7,92.6,7.4,0,2,272592,"1442315687930314"],
+["He's shared a heartbreaking tribute 💔","16 Jul 01:46",1777290,1192514,116040,261.58,0,1171166,264,,1175255,0.22,261.58,7206,108123,256,95,94.7,5.3,-1,29,1192514,"1442325127929370"],
+["He’s a man that knows his stuff 🤯","16 Jul 03:01",312590,234629,7101,53.05,0,229271,166,,221385,0.24,53.05,188,6713,162,11,95.6,4.4,-4,2,234629,"1442369041258312"],
+["The decision now rests with Trump.","16 Jul 04:03",1555697,1006315,76692,54.84,14,1038752,926,,1051332,0.05,54.84,2091,73362,868,123,96.8,3.2,14,5,1006315,"1442405424588007"],
+["Might be an idea to get some 0% for the final 😮","16 Jul 05:32",305738,215872,12228,10.58,0,215827,99,,206272,0.05,10.58,86,12015,78,10,96.2,3.8,-4,5,215872,"1442457724582777"],
+["Things got heated after England's defeat 😳","16 Jul 06:01",1455194,939096,112385,190.39,4,925897,850,,952110,0.2,190.39,2956,108279,780,92,95.3,4.7,4,16,939096,"1442473284581221"],
+["Is it too late to switch careers 🤔","16 Jul 06:32",478608,347486,3979,82.14,0,353750,6,,344750,0.24,82.14,69,3879,5,5,98.5,1.5,-1,4,347486,"1442492664579283"],
+["It’s the last thing they expected 😱","16 Jul 07:03",1192500,779696,97814,184.76,0,763413,80,,783180,0.24,184.76,295,97308,71,7,95.8,4.2,-16,28,779696,"1442510857910797"],
+["","16 Jul 07:50",813117,529366,52262,111.56,0,530243,350,,532580,0.21,111.56,298,51537,313,12,95.7,4.3,-1,13,529366,"1442538587908024"],
+["","17 Jul 00:04",1192229,760565,87375,156.95,0,752890,667,,761690,0.21,156.95,920,85644,595,40,97.3,2.7,-2,8,760565,"1443215347840348"],
+["This is a lot harder than it looks 😨","17 Jul 01:01",2413296,1417482,290362,343.33,0,1355568,1810,,1429357,0.24,343.33,1142,287122,1711,32,97.2,2.8,-17,1,1417482,"1443244337837449"],
+["There are key lifestyle changes you can make 🤔","17 Jul 01:32",1304778,808129,107829,193.3,0,827245,213,,831187,0.23,193.3,423,107021,180,85,96.2,3.8,-11,16,808129,"1443261147835768"],
+["”My best friend, my gossip buddy, my forever twin...” 💔","17 Jul 02:01",539616,394416,6506,84.53,0,382669,39,,379435,0.22,84.53,460,5969,38,3,95.8,4.2,-2,,394416,"1443276964500853"],
+["The captain has maintained his innocence.","17 Jul 03:01",357561,278374,4125,59.18,0,268437,12,,255690,0.23,59.18,84,4003,12,3,94.2,5.8,-1,2,278374,"1443313111163905"],
+["The hospital has responded to the claims 😲","17 Jul 05:32",263452,198546,3530,46.14,0,197851,6,,191572,0.24,46.14,106,3396,5,1,96.5,3.5,-1,2,198546,"1443404717821411"],
+["He's said it's a 'big problem'.","17 Jul 06:08",671352,442094,36201,21.08,0,449764,725,,448497,0.05,21.08,603,34800,689,21,96.8,3.2,-2,6,442094,"1443426354485914"],
+["You may not be as savvy as you realise 🤔","17 Jul 06:31",312527,226646,9514,50.25,0,226556,10,,218302,0.23,50.25,61,9416,7,4,98,2,-1,27,226646,"1443440621151154"],
+["She explained the first symptoms he noticed.","17 Jul 07:01",514351,389199,7270,83.7,0,380540,26,,370120,0.23,83.7,420,6794,25,6,95.1,4.9,-1,5,389199,"1443457074482842"],
+["","17 Jul 07:25",645266,451512,24231,90.13,0,445950,151,,441197,0.2,90.13,585,23432,139,10,93.9,6.1,-7,12,451512,"1443471154481434"],
+["","18 Jul 00:03",215567,155513,2911,35.59,0,159002,16,,152145,0.23,35.59,53,2826,12,3,95.1,4.9,-1,6,155513,"1444131187748764"],
+["Maybe it's time to get your eyes checked 👀","18 Jul 01:02",873551,607298,56560,130.1,0,588349,100,,588920,0.22,130.1,259,55982,87,4,95.8,4.2,-3,,607298,"1444177491077467"],
+["They have three children together 😲","18 Jul 01:32",843835,610482,18711,31.83,0,610341,31,,604170,0.05,31.83,340,18292,28,3,94.5,5.5,-5,5,610482,"1444193394409210"],
+["Ryan Hurst made a huge physical transformation for the role 😲","18 Jul 02:01",1007692,622771,68253,33.4,1,642419,340,,651895,0.05,33.4,745,67050,319,39,94.2,5.8,1,4,622771,"1444210641074152"],
+["There have been 1,600 cases since May 😲","18 Jul 03:01",669075,483242,24025,112.03,0,484414,90,,470837,0.24,112.03,151,23720,88,27,92.6,7.4,-2,20,483242,"1444243037737579"],
+["He might have missed the point 😲","18 Jul 04:01",292147,213579,6794,45.29,0,210512,136,,204287,0.22,45.29,134,6504,120,1,90.6,9.4,0,2,213579,"1444276414400908"],
+["She sadly passed away this week 💔","18 Jul 05:03",274577,196554,2314,41.85,0,195107,6,,192420,0.22,41.85,226,2043,6,3,97.4,2.6,-1,1,196554,"1444311191064097"],
+["This will make you really think about your life 🫣","18 Jul 06:01",775405,509048,59279,108.7,0,496400,82,,494217,0.22,108.7,220,58859,75,57,92.6,7.4,-3,23,509048,"1444347374393812"],
+["They do it every night 😲","18 Jul 06:31",4899635,3075506,311987,741.91,0,3105757,250,,3211067,0.23,741.91,4205,307011,234,76,99.1,0.9,-19,25,3075506,"1444364127725470"],
+["","18 Jul 07:03",1283481,862045,76291,180.22,0,844522,168,,833995,0.22,180.22,1945,73961,148,67,96.7,3.3,-7,29,862045,"1444383147723568"],
+["","19 Jul 00:01",1611091,1150635,65961,255.07,0,1123287,42,,1098635,0.23,255.07,315,65449,40,34,96.1,3.9,-6,21,1150635,"1445028554325694"],
+["That’s true love 🥺 A couple both lost an arm while sheltering inside their home","19 Jul 02:02",703395,519513,9384,119.99,0,522484,74,,504300,0.24,119.99,1563,7624,70,39,93.1,6.9,-2,1,519513,"1445094130985803"],
+["It’s stuck with people after leaving the cinema 😰","19 Jul 03:00",1730505,1180384,91726,273.02,0,1158944,572,,1154482,0.24,273.02,931,90066,526,39,96,4,-5,15,1180384,"1445125850982631"],
+["She doesn't feel at fault 🤨","19 Jul 06:00",985923,677156,44692,161.47,0,675801,527,,676407,0.24,161.47,414,43665,471,17,94.8,5.2,-17,17,677156,"1445226864305863"],
+["It's worth being aware of 🤯","19 Jul 07:00",1839716,1227666,94252,259.67,0,1256628,99,,1230487,0.21,259.67,258,93766,86,29,97.2,2.8,-5,40,1227666,"1445260370969179"],
+["","19 Jul 07:30",614920,462535,5417,97.02,0,456993,18,,439725,0.22,97.02,304,5015,9,10,97,3,-2,4,462535,"1445275560967660"],
+["","20 Jul 00:10",506355,340207,35654,71.82,0,342834,155,,346920,0.21,71.82,1852,33557,145,21,89.6,10.4,-1,,340207,"1445949544233595"],
+["He's done it again 😬","20 Jul 00:30",665549,486316,16417,97.05,5,480789,103,,465467,0.21,97.05,1187,14927,89,100,94.2,5.8,5,8,486316,"1445964997565383"],
+["She wasn’t having any of it 😬","20 Jul 01:01",501186,368097,12390,85.67,1,355727,34,,344182,0.25,85.67,175,12152,26,4,97.3,2.7,1,7,368097,"1445983457563537"],
+["Some strong words of encouragement 🤣 Christopher Nolan’s latest epic The Odysse","20 Jul 01:31",2009396,1366872,38581,308.65,0,1383975,232,,1374312,0.22,308.65,2684,35509,214,35,98.1,1.9,-2,,1366872,"1446000427561840"],
+["The team has been accused of showing 'no class'.","20 Jul 02:09",2858775,1706007,284036,371.38,0,1673178,2326,,1761687,0.21,371.38,12855,267050,2116,697,95.3,4.7,-21,9,1706007,"1446023130892903"],
+["What am I looking at here then 😅","20 Jul 04:32",7931795,4693291,667981,236.32,0,4801355,914,,5128520,0.05,236.32,5934,659522,849,307,98.9,1.1,-61,4,4693291,"1446108670884349"],
+["The summer holiday chaos continues 😬","20 Jul 05:02",272616,207987,5068,40.98,0,200570,10,,189145,0.22,40.98,48,4991,7,3,96.2,3.8,-1,11,207987,"1446126730882543"],
+["Every team that took part got paid 💰","20 Jul 06:01",1573388,977267,129985,191.16,0,995354,120,,1000587,0.19,191.16,1856,127761,107,85,97.1,2.9,-7,56,977267,"1446160547545828"],
+["Staff at an animal rescue centre were left appalled after discovering a hedgehog","20 Jul 06:30",524072,373269,9848,82.83,0,370829,123,,359862,0.23,82.83,779,8867,114,32,97.1,2.9,-4,,373269,"1446177087544174"],
+["","20 Jul 07:34",2480174,1597801,225603,317.37,0,1529561,1126,,1565507,0.2,317.37,3374,220480,1028,227,96.7,3.3,-13,43,1597801,"1446216180873598"],
+["","21 Jul 00:08",1605864,1004374,127224,196.99,2,998021,440,,1013440,0.19,196.99,2047,124494,415,51,96,4,2,17,1004374,"1446890930806123"],
+["Donald Trump has threatened tariffs again, this time against Canada because smok","21 Jul 01:02",482805,320993,24240,77.77,3,323284,1754,,318920,0.24,77.77,1650,20628,1635,86,95.4,4.6,3,,320993,"1446919517469931"],
+["They have a pretty significant age gap 😮","21 Jul 01:32",2296906,1564645,82011,382.79,0,1550730,234,,1578172,0.24,382.79,962,80613,211,20,97.9,2.1,-11,18,1564645,"1446938504134699"],
+["Would you try it? 🤔","21 Jul 02:02",3943535,2505483,255760,650.12,0,2475767,501,,2551090,0.25,650.12,1281,253604,453,30,98.4,1.6,-23,11,2505483,"1446959264132623"],
+["It's more complicated than you'd think 🤔","21 Jul 03:01",161909,121954,980,28.01,0,124203,6,,,,,,,,,,,,,,"1446993837462499"],
+["She's vowed to never give in 😮","21 Jul 05:30",591021,448816,8714,92.73,0,435533,35,,,,,,,,,,,,,,"1447083280786888"],
+["The brothers have appeared in court in Miami.","21 Jul 06:05",481109,342663,12217,55.71,0,333513,360,,328680,0.17,55.71,411,11397,335,13,95,5,0,2,342663,"1447103784118171"],
+["You could be entitled to a surprise lump of cash 💰","21 Jul 06:33",236387,173004,8582,26.26,0,169693,6,,163037,0.16,26.26,31,8531,5,4,88.3,11.7,0,18,173004,"1447120247449858"],
+["He also shared the biggest mistake people make ⚠️","21 Jul 07:02",1215851,763841,110334,127.71,0,745978,138,,737642,0.17,127.71,244,109797,118,42,95.4,4.6,-24,47,763841,"1447138910781325"],
+["","21 Jul 07:29",2298964,1348482,288291,217.61,0,1305571,1197,,1371987,0.16,217.61,2360,284279,1131,82,96.3,3.7,-19,57,1348482,"1447154544113095"],
+["","22 Jul 00:02",532078,369824,24044,20.36,0,371409,119,,366102,0.06,20.36,290,23580,115,15,94.6,5.4,-7,10,369824,"1447809867380896"],
+["Promise there's a right answer 😅","22 Jul 01:00",2365608,1412447,205320,339.35,0,1414381,1262,,1445405,0.23,339.35,823,202946,1095,37,96.3,3.7,-4,,1412447,"1447835987378284"],
+["A judge has begun hearing evidence in the case.","22 Jul 02:02",300638,220494,4396,11.08,0,225821,13,,218655,0.05,11.08,67,4296,13,4,96.5,3.5,-2,5,220494,"1447866834041866"],
+["Not one for the faint hearted 😓","22 Jul 03:01",795432,579811,21785,120.96,1,568302,74,,553320,0.22,120.96,489,21164,66,15,93.7,6.3,1,6,579811,"1447898784038671"],
+["She’s shared a heart-wrenching statement on the anniversary of his death 💔","22 Jul 04:02",242460,189004,2077,39.23,3,186186,14,,178480,0.22,39.23,353,1684,11,8,92.2,7.8,3,,189004,"1447948647367018"],
+["Martin Lewis has issued a reality check 💰","22 Jul 06:00",617962,417512,41464,88.26,0,414456,68,,417742,0.21,88.26,115,41238,62,7,91.5,8.5,-2,25,417512,"1448015564026993"],
+["His wife was clinging on to his legs.","22 Jul 06:32",680638,495107,14151,100.17,0,509088,57,,487662,0.21,100.17,231,13824,44,10,95.8,4.2,-5,14,495107,"1448032024025347"],
+["Some people are exempt.","22 Jul 07:01",921950,632324,46007,133.41,0,637748,462,,622840,0.21,133.41,274,45176,413,12,94.9,5.1,0,21,632324,"1448048960690320"],
+["The 18-year-old's death was sadly announced yesterday.","22 Jul 07:29",2253368,1460855,150075,310.48,0,1441208,147,,1442550,0.22,310.48,4295,145125,118,164,96.9,3.1,-11,32,1460855,"1448064457355437"],
+["","22 Jul 07:55",674149,488555,9302,107.38,0,494919,73,,476407,0.23,107.38,4879,3254,41,559,90,10,-4,,488555,"1448077800687436"],
+["","23 Jul 00:08",412449,289787,16383,64.72,0,296789,49,,287825,0.22,64.72,587,15650,46,48,93.3,6.7,-1,11,289787,"1448699537291929"],
+["Michelle Hadley could have been locked up for life.","23 Jul 01:02",216599,163943,5466,39.55,0,159689,16,,156365,0.25,39.55,56,5382,10,1,95.1,4.9,-7,16,163943,"1448725600622656"],
+["The World Cup might be over but that hasn’t brought an end to the blossoming fri","23 Jul 01:32",736044,503664,32635,111.51,0,483834,721,,483310,0.23,111.51,2289,29486,691,46,97.9,2.1,0,,503664,"1448741160621100"],
+["It's not for the faint hearted 😨","23 Jul 02:00",999660,703117,30852,164.67,0,703243,178,,683705,0.24,164.67,699,29886,153,23,94.9,5.1,-1,4,703117,"1448756723952877"],
+["He's made a bold new claim 😳","23 Jul 02:01",747689,526662,18073,27.86,0,528031,203,,513727,0.05,27.86,382,17291,115,30,96.5,3.5,-3,4,526662,"1448756993952850"],
+["He was jailed for a crime he committed aged 15 and the entire world changed arou","23 Jul 05:01",733537,502835,31924,111.49,0,503281,102,,504095,0.22,111.49,461,31270,80,29,98.2,1.8,-6,19,502835,"1448859847275898"],
+["“I took one look at him and I thought he was dead.”","23 Jul 06:04",1430857,998807,37322,221.93,0,986557,42,,986550,0.22,221.93,399,36787,34,8,96.5,3.5,-9,16,998807,"1448899470605269"],
+["Back in 2023, German farmer Michael Stücke founded Rainbow Wool 🐑 This came aft","23 Jul 06:31",1252867,879698,35884,179.59,0,860959,756,,858802,0.21,179.59,4132,30555,694,151,95.5,4.5,-11,1,879698,"1448915310603685"],
+["Investigators have made a grim new discovery.","23 Jul 07:01",1059236,702069,63531,151.55,0,701819,185,,701187,0.22,151.55,2183,60822,167,169,95.4,4.6,-23,21,702069,"1448931103935439"],
+["","23 Jul 07:31",359304,253097,15704,53.44,0,247926,9,,244347,0.22,53.44,192,15465,6,1,97.3,2.7,-4,12,253097,"1448946860600530"],
+["","24 Jul 00:02",1257393,914596,31404,211.27,2,901549,313,,887302,0.24,211.27,1142,29830,298,44,96,4,2,3,914596,"1449620987199784"],
+["These A-list celebrities live a teetotal lifestyle after going completely sober ","24 Jul 01:01",3124607,1841291,344692,421.42,0,1864244,92,,1924520,0.22,421.42,2358,341835,77,47,98.4,1.6,-8,6,1841291,"1449649370530279"],
+["That doesn’t sound good 😨","24 Jul 01:30",407988,298412,10157,63.62,0,297485,58,,289085,0.22,63.62,241,9814,58,18,94.9,5.1,-2,11,298412,"1449663457195537"],
+["He says it still haunts him today.","24 Jul 02:00",640872,450188,28799,106.14,0,445839,70,,442980,0.24,106.14,304,28359,69,18,94.4,5.6,-3,8,450188,"1449678813860668"],
+["Some iconic pop culture moments have come from the show 🤯","24 Jul 03:01",373599,280140,12200,58.93,0,277978,16,,264387,0.22,58.93,89,12071,15,5,86.6,13.4,-3,21,280140,"1449722060523010"],
+["There's a correct answer, we promise 🫣","24 Jul 04:32",1873966,1074211,229841,262.31,0,1024819,852,,1105972,0.24,262.31,851,227890,811,36,95.7,4.3,-14,,1074211,"1449775810517635"],
+["She’d kept the painting wrapped up in a sleeping bag for years 😅","24 Jul 06:02",194439,142997,2505,32.28,0,146205,8,,142790,0.23,32.28,168,2323,6,0,96.6,3.4,-2,4,142997,"1449829163845633"],
+["Only 41 cinemas in the world are capable of showing the film the way it’s intend","24 Jul 06:30",418244,316490,7040,64.88,0,312264,28,,300400,0.22,64.88,124,6861,24,7,88,12,0,5,316490,"1449845120510704"],
+["Thousands of people could be at risk ⚠️","24 Jul 07:02",902497,604758,57381,149.03,0,603313,285,,583735,0.26,149.03,160,56792,239,67,89.1,10.9,-4,16,604758,"1449863660508850"],
+["","24 Jul 07:31",1395874,1028260,41269,216.01,0,983070,575,,956415,0.23,216.01,3255,37183,537,62,95.6,4.4,-7,8,1028260,"1449879717173911"],
+["","25 Jul 00:02",837251,617713,12408,133.34,0,609663,31,,594830,0.22,133.34,475,11830,31,19,93.8,6.2,-2,8,617713,"1450541087107774"],
+["This took me a minute… 😳","25 Jul 01:01",4226989,2564283,321157,554.37,0,2606772,962,,2671197,0.21,554.37,4521,314386,892,207,97.9,2.1,-30,2,2564283,"1450572540437962"],
+["The AI bot allegedly convinced her it had a ‘soul’.","25 Jul 02:01",1466328,956246,97049,220.06,1,933265,403,,947457,0.23,220.07,903,95489,365,94,95.1,4.9,1,8,956246,"1450603637101519"],
+["It can be a challenge for his family.","25 Jul 03:01",603973,453080,4289,101.32,0,442338,12,,435165,0.23,101.32,473,3774,12,5,99.9,0.1,-3,5,453080,"1450638783764671"],
+["“Everyone was in such grief and trauma.”","25 Jul 04:00",253885,186186,2456,46.21,0,190132,36,,186487,0.25,46.21,89,2317,35,2,96,4,-1,7,186186,"1450674530427763"],
+["Insane 🤯","25 Jul 04:32",1129376,817110,28676,171.69,0,800640,34,,781610,0.22,171.69,582,27959,31,17,95.3,4.7,0,8,817110,"1450693703759179"],
+["You’d be fuming 😭","25 Jul 05:02",484745,373817,2831,83.63,0,359229,12,,354107,0.24,83.63,113,2682,12,3,96.6,3.4,-4,3,373817,"1450709910424225"],
+["If there's anyone to listen to 🤑","25 Jul 06:02",521438,358240,24754,78.6,0,366592,18,,362145,0.22,78.6,44,24671,17,5,88.7,11.3,-4,22,358240,"1450741790421037"],
+["She thought it was the ‘best idea’ due to his condition.","25 Jul 07:02",1195779,833132,53679,195.49,0,808509,1289,,823332,0.24,195.49,772,51473,1168,34,95.1,4.9,-5,4,833132,"1450774040417812"],
+["","25 Jul 07:32",651657,470014,12462,92.77,0,478502,57,,475817,0.19,92.77,858,11467,53,26,96.4,3.6,0,6,470014,"1450789223749627"],
+["","26 Jul 00:19",456554,332066,8318,66.09,6,331308,56,,326797,0.2,66.09,1359,6831,51,35,90.8,9.2,6,1,332066,"1451445480350668"],
+["“I’m gonna rip his heart out.” 😳","26 Jul 01:02",565178,404840,14856,83.4,1,399771,211,,397042,0.21,83.4,662,13932,198,21,96.8,3.2,1,3,404840,"1451467243681825"],
+["Thankfully, there's positive news.","26 Jul 02:00",646509,462221,22835,100.82,0,466275,15,,456730,0.22,100.82,365,22396,14,15,91.3,8.7,0,26,462221,"1451498190345397"],
+["She's fired back over the use of Firework 😳","26 Jul 03:39",1906957,1342759,28586,309.49,0,1321350,473,,1320505,0.23,309.49,1925,26030,449,23,97.4,2.6,-3,1,1342759,"1451554693673080"],
+["An expert has explained how today’s cannabis products are vastly different.","26 Jul 04:02",1382133,941875,63292,231.8,0,939340,1275,,945305,0.25,231.8,1911,59893,1201,68,95,5,-8,3,941875,"1451568030338413"],
+["Hmmmmm 🤔","26 Jul 04:32",1731187,1039260,195943,243.34,0,969694,1445,,1030982,0.24,243.34,547,193681,1278,13,94.2,5.8,-15,,1039260,"1451585747003308"],
+["An obituary has paid tribute to her life ❤️","26 Jul 05:02",1300752,969253,12431,47.34,0,952792,18,,944515,0.05,47.34,1079,11250,17,10,97.3,2.7,-4,8,969253,"1451602717001611"],
+["How did I never know this 🤯","26 Jul 06:01",240576,171991,6526,39.61,0,174077,56,,172937,0.23,39.61,86,6374,54,6,94.8,5.2,-1,5,171991,"1451637253664824"],
+["The Insta pic isn’t worth it 😨","26 Jul 07:02",506227,390771,8175,76.55,0,371792,14,,367190,0.21,76.55,109,8026,13,3,96.7,3.3,-2,6,390771,"1451674160327800"],
+["","26 Jul 07:32",438648,318989,13211,69.13,0,316891,674,,313595,0.22,69.13,815,11654,635,27,92.5,7.5,-4,13,318989,"1451691476992735"],
+["","27 Jul 00:03",2160757,1446350,150556,288.22,0,1401483,304,,1363667,0.21,288.22,810,149248,294,29,96.6,3.4,-13,24,1446350,"1452374106924472"],
+["There's a lot of them to catch up with 😂","27 Jul 00:32",1290912,942636,53993,210.41,0,912912,18,,897102,0.23,210.41,426,53401,17,19,95.8,4.2,-7,23,942636,"1452390023589547"],
+["His lawyer has filed a new request.","27 Jul 02:02",143614,108119,1878,25.69,0,106456,13,,103630,0.25,25.69,51,1799,13,4,95.8,4.2,-4,4,108119,"1452437006918182"],
+["Not a bad idea actually 🤔","27 Jul 02:31",154443,118453,1201,23.83,0,117389,7,,112365,0.21,23.83,48,1139,7,1,92,8,0,5,118453,"1452457490249467"],
+["She was one of the biggest child stars of the '90s 😮","27 Jul 03:30",830721,577351,29112,145.74,0,590873,21,,580285,0.25,145.74,301,28707,21,22,94.5,5.5,-13,7,577351,"1452490413579508"],
+["She followed in her mum's footsteps 👏","27 Jul 05:32",1073611,709888,83676,159,0,697619,58,,697335,0.23,159,462,83069,53,7,95.4,4.6,-6,27,709888,"1452559560239260"],
+["She's shared her side of the story.","27 Jul 06:02",1940398,1383540,71851,310.73,0,1332246,166,,1331942,0.23,310.74,374,71199,140,10,98,2,-19,23,1383540,"1452578440237372"],
+["Game changer 🤯","27 Jul 06:30",3715442,2600989,128398,599.2,0,2539385,266,,2537205,0.24,599.2,681,127163,262,60,98.5,1.5,-21,28,2600989,"1452594830235733"],
+["”I just wanted it to be over.” 💔","27 Jul 07:02",1824574,1166765,75106,272.62,0,1184165,92,,1204575,0.23,272.63,648,74237,83,11,95.3,4.7,-4,8,1166765,"1452613610233855"],
+["","27 Jul 07:46",1345208,947135,36402,217.53,0,930867,79,,919072,0.24,217.53,482,35721,68,14,97.2,2.8,-10,12,947135,"1452638586898024"],
+["","28 Jul 00:02",734850,515510,20516,26.85,0,515254,140,,507912,0.05,26.85,1440,18771,113,72,93.1,6.9,-1,1,515510,"1453344333494116"],
+["Myself included 😅","28 Jul 01:02",1917584,1200463,223441,289.04,0,1181333,707,,1209352,0.24,289.04,1354,220106,684,32,97.8,2.2,-32,1,1200463,"1453376540157562"],
+["Survivors of the attack recalled their experience.","28 Jul 01:32",1246197,837406,84815,202.48,0,815567,145,,827992,0.24,202.48,562,83973,132,32,95.6,4.4,-10,12,837406,"1453393853489164"],
+["She claims she didn't tell police the whole story.","28 Jul 02:02",615823,436232,26909,23.19,0,433139,39,,418580,0.06,23.19,122,26698,35,9,92.7,7.3,-2,12,436232,"1453412503487299"],
+["What we’d do with our lottery winnings is a common talking point among friends b","28 Jul 03:01",1267691,922477,24767,45.54,0,903117,207,,874687,0.05,45.54,3827,20536,198,73,96.2,3.8,-3,,922477,"1453448040150412"],
+["Her four housemates were killed in the horror attack.","28 Jul 05:33",807461,544249,31954,129.66,0,553000,50,,551720,0.24,129.66,294,31543,42,15,93.9,6.1,-10,12,544249,"1453546643473885"],
+["She was quickly Ushered off stage 😅","28 Jul 06:02",1726427,1136900,94406,224.37,0,1101193,208,,1110882,0.2,224.37,456,93619,189,13,96.5,3.5,-25,18,1136900,"1453564163472133"],
+["She was banned from even auditioning 😨","28 Jul 06:30",1363046,883820,76189,230.25,0,906871,197,,919147,0.25,230.25,990,74857,187,40,96.4,3.6,-8,16,883820,"1453580283470521"],
+["Musk says things will look very different in five years 😳","28 Jul 07:02",459897,311553,26717,64.14,16,311310,118,,300082,0.21,64.14,222,26302,105,39,74.5,25.5,16,6,311553,"1453599993468550"],
+["","28 Jul 07:35",590669,345150,52655,78.73,0,344517,171,,345587,0.23,78.73,360,52026,133,26,99.8,0.2,-5,18,345150,"1453619563466593"],
+["","29 Jul 00:02",1038682,694263,56683,155.68,18,679532,648,,673672,0.23,155.7,1763,54070,604,90,93.4,6.6,18,4,694263,"1454313816730501"],
+["This is hurting my brain 😭","29 Jul 01:00",2944613,1813531,148574,435.41,0,1863300,690,,1913560,0.23,435.41,2445,144971,648,72,99.8,0.2,-22,,1813531,"1454348076727075"],
+["The initial evidence that convicted him has been dubbed 'junk science'.","29 Jul 01:32",530414,400595,10162,87.74,0,391957,26,,381422,0.23,87.75,259,9826,21,14,93.4,6.6,-5,10,400595,"1454366280058588"],
+["It’s now been 20 years since her big breakthrough.","29 Jul 02:01",1761523,1212617,76820,283.65,0,1181245,40,,1183595,0.24,283.65,975,75636,37,24,96.2,3.8,-10,13,1212617,"1454385680056648"],
+["Documents revealed that Chase died without leaving a will.","29 Jul 03:00",380499,287667,3176,15.44,0,287079,9,,278510,0.06,15.44,77,3078,8,1,95.5,4.5,-4,3,287667,"1454422883386261"],
+["He was trying to report some bad driving 🤔","29 Jul 05:16",553273,389403,25553,78.44,0,385059,80,,376192,0.21,78.44,536,24858,75,18,94,6,-2,24,389403,"1454512596710623"],
+["Man builds entire £10k Greek village in his own back garden 🤯😍","29 Jul 06:02",4140352,2246936,571851,523.44,35,2286213,4561,,2415725,0.22,523.45,25698,537676,4178,955,87.1,12.9,35,20,2246936,"1454547036707179"],
+["People were completely shocked by the image he shared 🤯","29 Jul 06:31",1211935,863697,45287,183.87,0,841452,393,,846820,0.22,183.87,615,44153,363,19,94.6,5.4,-12,14,863697,"1454565956705287"],
+["He’s been diagnosed with a devastating rare disorder.","29 Jul 07:00",454887,342807,7108,71.73,0,341120,40,,331787,0.22,71.73,612,6393,33,32,91.9,8.1,-4,5,342807,"1454584840036732"],
+["","29 Jul 07:35",7068144,4279435,562317,976.69,0,4237360,477,,4403032,0.22,976.7,3693,557279,416,93,98,2,-54,12,4282395,"1454606443367905"],
+["","30 Jul 00:03",529659,390480,11572,92.78,0,389780,43,,376062,0.25,92.78,954,10473,38,47,91.2,8.8,-3,5,390480,"1455344289960787"],
+["Think I need to go back to school 🤔🫣","30 Jul 01:02",751447,488673,52005,105.24,0,477053,432,,471390,0.22,105.24,276,51206,358,22,89.5,10.5,-4,,488673,"1455376759957540"],
+["Her legal team say Shirilla's defence counsel didn't present key evidence.","30 Jul 02:03",276950,191506,8011,10.66,1,194966,91,,189927,0.06,10.66,280,7604,82,11,96.1,3.9,1,3,191506,"1455413863287163"],
+["”The Odyssey people, they didn't invite us to the Premier.” 😬","30 Jul 03:00",1183711,789469,58916,174.87,0,766975,90,,776010,0.23,174.88,604,58134,62,13,94.8,5.2,-1,5,789469,"1455447536617129"],
+["We've all been there 😅","30 Jul 04:08",1842177,1114586,163543,269.69,0,1111916,74,,1133410,0.24,269.69,538,162711,59,32,96.7,3.3,-5,3,1114586,"1455491089946107"],
+["A heartbreaking tragedy.","30 Jul 06:01",1201414,792967,72253,170.67,0,775122,79,,780552,0.22,170.67,1563,70430,74,35,94.8,5.2,-24,10,792967,"1455557466606136"],
+["There are a number to be aware from 😨","30 Jul 06:30",267129,181775,11719,39.46,0,183200,11,,178722,0.22,39.46,59,11627,10,8,96.2,3.8,-4,9,181775,"1455573663271183"],
+["You’re legally allowed 👀","30 Jul 07:00",563235,396677,28327,82.65,0,392330,87,,384090,0.22,82.65,93,28109,81,4,90.1,9.9,-7,13,396677,"1455594169935799"],
+["Greek police said incidents like this were ‘very rare’.","30 Jul 07:28",604130,410910,29399,86.43,0,409457,47,,400627,0.22,86.44,630,28641,38,23,96.7,3.3,-6,21,410910,"1455613196600563"],
+["","30 Jul 07:58",760515,561331,8208,121.58,0,567516,80,,543570,0.22,121.59,2372,5642,70,46,94.9,5.1,-1,,561331,"1455633189931897"],
+["","31 Jul 00:02",607794,397023,35741,86.6,0,395682,135,,394050,0.22,86.6,1050,34461,123,36,93.3,6.7,-1,5,397023,"1456346973193852"],
+["She was one of the four students killed in the Idaho murders.","31 Jul 00:30",2210343,1228991,295162,304.44,26,1294947,581,,1323675,0.23,304.47,2557,291703,534,106,42,58,26,14,1229235,"1456362243192325"],
+["Ben got it right but can you 🤔 Hollywood superstar Ben Affleck won the Who Want","31 Jul 01:02",1632286,1112359,87163,252.18,0,1063350,95,,1085157,0.23,252.19,986,85942,90,14,93.2,6.8,-2,8,1112359,"1456378429857373"],
+["He went to some crazy lengths to get his own back 😳","31 Jul 01:31",195466,143323,2340,32.63,0,145716,8,,141297,0.23,32.64,41,2286,8,0,94.8,5.2,-6,1,143323,"1456393566522526"],
+["”It is clear you failed as a parent.”","31 Jul 02:03",990282,687337,33517,36.52,0,690147,563,,683035,0.05,36.52,2260,30520,510,77,94.8,5.2,-1,7,687337,"1456411436520739"],
+["It doesn't look like a regular plane inside ✈️😶‍🌫️","31 Jul 05:16",1610083,1119712,68694,239.99,0,1099572,52,,1071895,0.22,240,627,67861,45,16,96.2,3.8,-5,29,1119712,"1456539789841237"],
+["FIFA has hit out amid the growing backlash ⚽","31 Jul 06:02",492744,309656,33494,60.69,17,314442,557,,309802,0.2,60.7,1368,31474,514,18,84.9,15.1,17,2,309656,"1456567706505112"],
+["The long-awaited film is finally here 🕸️","31 Jul 06:31",931675,657049,31454,29.61,0,650097,95,,637370,0.05,29.61,690,30572,84,41,93.7,6.3,-9,6,657049,"1456586103169939"],
+["He swapped the Solana for something entirely different 😮","31 Jul 07:01",538203,386098,18159,82.97,0,384632,24,,382570,0.22,82.98,84,18028,22,6,94.2,5.8,-3,8,386459,"1456606216501261"],
+["","31 Jul 07:40",2835215,1624307,328409,362.69,0,1576849,975,,1657777,0.22,362.7,4471,322247,646,170,93.4,6.6,-3,4,1624307,"1456630376498845"],
+["","1 Aug 00:02",431137,312016,6058,68.8,0,315633,18,,311030,0.22,68.81,107,5910,18,5,97.2,2.8,-2,3,312016,"1457303109764905"],
+["Tom Holland has had some pretty big slip ups, but admits there's one he wishes h","1 Aug 00:31",535153,398229,12227,83.14,0,382846,20,,370632,0.22,83.16,408,11762,19,8,94.3,5.7,-4,4,398229,"1457318139763402"],
+["So impressive 🤯","1 Aug 01:01",249007,174532,11673,36.79,0,176056,107,,169370,0.22,36.79,76,11472,98,3,77,23,-1,,174532,"1457333109761905"],
+["She says the walls of the home 'would shake'","1 Aug 01:33",268123,202219,2622,46.05,0,204222,19,,198147,0.23,46.07,158,2434,19,4,87.3,12.7,0,4,202219,"1457350453093504"],
+["The future of air travel is here 🤯","1 Aug 02:31",1358123,988585,27379,206.04,0,957951,183,,930885,0.22,206.06,841,26237,165,51,96.3,3.7,-3,9,988585,"1457383499756866"],
+["She was in her room during the horrific attack.","1 Aug 03:32",3474593,2233669,319899,541.29,0,2068627,869,,,,,,,,,,,,,,"1457420019753214"],
+["Hilaria Baldwin is addressing the long-running claims that she married Alec Bald","1 Aug 04:31",643114,460968,8394,107.49,0,457465,97,,,,,,,,,,,,,,"1457457413082808"],
+["It might be time to rethink your plans 👀","1 Aug 06:31",578927,331789,66475,79.09,0,346158,50,,,,,,,,,,,,,,"1457527073075842"],
+["There's a lot that goes on 😨","1 Aug 07:00",377554,293487,2256,61.46,0,290848,6,,,,,,,,,,,,,,"1457544729740743"],
+["","1 Aug 07:32",2036120,1450040,49758,317.53,0,1392633,50,,,,,,,,,,,,,,"1457562946405588"],
+["","2 Aug 00:04",1146111,721734,88881,177.76,0,712253,977,,,,,,,,,,,,,,"1458237623004787"],
+["Even I can get this one 😂","2 Aug 01:01",3846593,2151757,463094,495.21,0,2072936,1672,,,,,,,,,,,,,,"1458266366335246"],
+["It's not looking good for us 😨","2 Aug 02:03",511300,334080,33852,76.49,0,339132,56,,,,,,,,,,,,,,"1458301409665075"],
+["It's been 12 years since he was found guilty of killing Reeva Steenkamp.","2 Aug 03:01",1706323,1083960,121485,233.91,0,1075397,656,,,,,,,,,,,,,,"1458335382995011"],
+["Some celebrities have even more famous family members 👀 You can see the resembl","2 Aug 04:02",2256598,1284557,293083,301.84,0,1266384,25,,,,,,,,,,,,,,"1458376362990913"],
+["The 'Godzilla of weight-loss jabs' is seemingly everywhere 😮","2 Aug 05:03",2219360,1467867,148489,305.04,0,1419924,579,,,,,,,,,,,,,,"1458414926320390"],
+["It's on the rise 😨","2 Aug 06:03",834818,584298,35126,120.39,0,583316,184,,,,,,,,,,,,,,"1458454902983059"],
+["","2 Aug 07:01",169438,123800,1603,26.42,0,128712,8,,,,,,,,,,,,,,"1458489766312906"],
+["","3 Aug 00:04",627730,444124,17714,99.9,0,443732,167,,,,,,,,,,,,,,"1459200299575186"],
+["Make use of it while you can 😳","3 Aug 00:32",338657,228242,23162,49.8,0,224479,13,,,,,,,,,,,,,,"1459217022906847"],
+["The new Spider-Man movie is already doing incredibly well in box office 😮🕷️","3 Aug 01:01",385403,278057,7079,14.01,0,279686,16,,,,,,,,,,,,,,"1459233272905222"],
+["Think twice before calling him Seth... 👀","3 Aug 02:02",1763660,1176284,47478,301.05,0,1183790,1313,,,,,,,,,,,,,,"1459263592902190"],
+["There’s a ‘right’ way to lug your bags around 😲","3 Aug 02:30",323001,251161,2263,52.44,0,249219,14,,,,,,,,,,,,,,"1459281376233745"],
+["Our resident film expert has weighed in 🕷️","3 Aug 05:31",839251,428348,166180,90.55,1,424188,413,,,,,,,,,,,,,,"1459393026222580"],
+["An incredible act of bravery.","3 Aug 06:01",409931,318299,4201,65.66,0,306565,32,,,,,,,,,,,,,,"1459410152887534"],
+["There are key things to look out for.","3 Aug 06:33",775503,540206,41773,115.55,0,530724,207,,,,,,,,,,,,,,"1459429546218928"],
+["She feared she'd 'never speak again'.","3 Aug 07:01",409268,323951,2547,64.49,0,314189,13,,,,,,,,,,,,,,"1459445736217309"],
+["","3 Aug 07:32",583140,418100,26299,20.13,0,402238,32,,,,,,,,,,,,,,"1459463526215530"],
+["","4 Aug 00:02",932618,647742,35254,142.05,1,631332,188,,,,,,,,,,,,,,"1460144762814073"],
+["It does more than you might think 🫣😲","4 Aug 00:30",647084,470238,12926,82.55,8,464029,121,,,,,,,,,,,,,,"1460159336145949"],
+["I can’t work out what I’m looking at 😭","4 Aug 01:02",1397374,961718,44833,216.2,0,973148,1389,,,,,,,,,,,,,,"1460176279477588"],
+["Pitt had to play peacemaker on set.","4 Aug 02:03",1395365,1013171,19622,234.22,0,985379,49,,,,,,,,,,,,,,"1460216282806921"],
+["Few people in the world can say they have saved someone’s life at the mere age o","4 Aug 02:31",586961,431706,5002,94.51,4,441451,28,,,,,,,,,,,,,,"1460232782805271"],
+["Some of the wildest celebrity couples you might have never known were together","4 Aug 04:31",1855582,971576,266820,229.41,0,1021061,25,,,,,,,,,,,,,,"1461276699367546"],
+["A Netflix documentary has looked into the Idaho murders.","4 Aug 05:15",405059,271184,25762,61.55,0,272868,68,,,,,,,,,,,,,,"1460330559462160"],
+["Who knew it was so simple 😲","4 Aug 05:16",1218094,812943,77643,182.05,0,805179,68,,,,,,,,,,,,,,"1461305106031372"],
+["She set the record straight on stage.","4 Aug 06:01",695907,446728,60312,22.45,0,433107,279,,,,,,,,,,,,,,"1460359049459311"],
+["Fair enough... or a bit odd? 🤔","4 Aug 06:02",2036208,1374242,61253,312.36,0,1314843,103,,,,,,,,,,,,,,"1461334102695139"],
+["Not very nice 👍","4 Aug 06:30",1970499,1412464,39602,294.16,0,1360942,64,,,,,,,,,,,,,,"1460376539457562"],
+["Her family have issued a desperate plea.","4 Aug 07:00",257318,202818,2852,40.73,0,195766,10,,,,,,,,,,,,,,"1460394666122416"],
+["He's made a name for himself 😨","4 Aug 07:02",761436,528965,26862,115.1,0,512771,29,,,,,,,,,,,,,,"1461372689357947"],
+["","4 Aug 07:28",1302752,820385,111849,47.89,0,802255,507,,,,,,,,,,,,,,"1461390902689459"],
+["","4 Aug 07:31",689133,502824,15282,105.67,0,488870,32,,,,,,,,,,,,,,"1460413756120507"],
+["","5 Aug 00:09",691130,477426,34577,27.81,0,453650,110,,,,,,,,,,,,,,"1461109832717566"],
+["This one is taking way too much brain power 🤯","5 Aug 01:02",329117,233341,12652,45.6,0,223449,94,,,,,,,,,,,,,,"1461140142714535"],
+["A grieving dolphin has been filmed carrying her dead calf through the ocean for ","5 Aug 01:31",755030,514459,32366,105.96,1,503709,85,,,,,,,,,,,,,,"1461158992712650"],
+["A devastating tragedy.","5 Aug 02:06",354047,247682,8695,13.11,0,252523,7,,,,,,,,,,,,,,"1461180329377183"],
+["The documents have raised some questions.","5 Aug 03:02",327982,216802,13544,12.5,1,224440,84,,,,,,,,,,,,,,"1461215566040326"],
+["These characters aren’t returning to the main cast of Ted Lasso season 4 😮⚽️","5 Aug 21:48",301704,195301,49295,42.22,1,0,50,,,,,,,,,,,,,,"1462055615956321"],
+["She's warning others not to make the same error 😬","5 Aug 22:01",343631,0,11760,59.06,0,263319,12,,,,,,,,,,,,,,"1462063679288848"],
+["Katie Price has spent a fair few quid during her quest to look a million dollars","5 Aug 22:30",339436,260124,11889,55.12,0,262544,351,,,,,,,,,,,,,,"1462079955953887"],
+["","5 Aug 23:01",67429,57698,1665,13.86,0,57456,31,,,,,,,,,,,,,,"1462098902618659"]
+];
+const BRANDS={
+ lad:{label:'LAD Bible',logoHtml:'LAD<br>BIBLE',title:'LAD Bible — Video Retention Dashboard',META:META_LAD,RAW:RAW_LAD,DEEP:DEEP_LAD,DUR:DUR_LAD,CID:CID_LAD},
+ ladimg:{label:'LAD Bible',logoHtml:'LAD<br>IMG',title:'LAD Bible — Image Posts',META:META_LIMG,IMG:IMG_LAD,img:true},
+ food:{label:'Food Bible',logoHtml:'FOOD<br>BIBLE',title:'Food Bible — Video Retention Dashboard',META:META_FOOD,RAW:RAW_FOOD,DEEP:DEEP_FOOD,DUR:DUR_FOOD,CID:CID_FOOD},
+ uni:{label:'UNILAD',logoHtml:'UNI<br>LAD',title:'UNILAD — Video Retention Dashboard',META:META_UNI,RAW:RAW_UNI,DEEP:DEEP_UNI,DUR:DUR_UNI,CID:CID_UNI}
+};
+let META,RAW,DEEP,DUR,CID,POSTS,DRILLED,CURBRAND='lad';
+function bootImages(B){
+META=B.META;
+
+root.querySelector('header.top h1').textContent=B.title;
+root.querySelector('.logo').innerHTML=B.logoHtml;
+root.querySelector('#' + 'pill').textContent='Image posts';
+root.querySelector('#' + 'kpiTbl').closest('.card').style.display='none';
+const cw=root.querySelector('.chip');if(cw)cw.parentElement.style.display='none';
+const rb=root.querySelector('.tabbtn[data-tab="tab-rpm"]');if(rb)rb.style.display='none';
+root.querySelector('#' + 'tab-main').style.display='';root.querySelector('#' + 'tab-rpm').style.display='none';
+root.querySelectorAll('.tabbtn[data-tab]').forEach(x=>x.classList.toggle('on',x.dataset.tab==='tab-main'));
+['q','qbig'].forEach(id=>{const el=root.querySelector('#' + id);if(el)el.value='';});
+const h2i=root.querySelector('#tbl').closest('.card').querySelector('h2');if(h2i)h2i.childNodes[0].textContent='All image posts ';
+const fmtInt=n=>n==null?'—':n.toLocaleString('en-GB');
+const fmtBig=n=>n==null?'—':n>=1e6?(n/1e6).toFixed(2)+'M':n>=1e3?(n/1e3).toFixed(0)+'K':(''+n);
+const money=n=>n==null?'—':'$'+n.toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});
+const money0=n=>'$'+Math.round(n).toLocaleString('en-GB');
+const md=a=>{if(!a.length)return 0;const s=a.slice().sort((x,y)=>x-y);const i=(s.length-1)/2;return (s[Math.floor(i)]+s[Math.ceil(i)])/2;};
+let IMGS=B.IMG.map(r=>({t:r[0],date:r[1],v:r[2],vw:r[3],e:r[4],er:r[5],nf:r[6],im:r[7],c:r[8],d:r[9],qv:r[10],rpmq:r[11],earnD:r[12],reac:r[13],clk:r[14],com:r[15],shr:r[16],folp:r[17],nonp:r[18],net:r[19],lc:r[20],vr:r[21],fb:r[22]?'https://www.facebook.com/100064556895235/posts/'+r[22]:null}));
+if(!IMGS.length){
+  root.querySelector('#' + 'subline').innerHTML=`<b style="color:var(--ink-1)">No image data pulled for ${B.label} yet</b> — switch the Facebook profile to ${B.label} in Chrome and ask Claude to run the image pull.`;
+  ['kpis','insights','foot'].forEach(id=>{root.querySelector('#' + id).innerHTML='';});
+  const tb=root.querySelector('#' + 'tbl');tb.querySelector('thead').innerHTML='';tb.querySelector('tbody').innerHTML='';
+  root.querySelector('#' + 'cnt').textContent='';
+  return;
+}
+IMGS.forEach(p=>{
+  p.earn=p.earnD!=null?p.earnD:p.er;
+  p.rpm=p.v?p.earn/p.v*1000:0;
+  p.engRate=p.v?p.e/p.v*100:0;
+  p.cm=p.com!=null?p.com:p.c;
+  p.shrRate=(p.shr!=null&&p.vw)?p.shr/p.vw*1e5:null;
+  p.clkRate=(p.clk!=null&&p.v)?p.clk/p.v*100:null;
+  const m=p.date.match(/(\d+) (\w+) (\d+):(\d+)/);p.ts=m?new Date(2026,MONTHS[m[2]],+m[1],+m[3],+m[4]).getTime():0;p.hr=m?+m[3]:null;
+});
+const __maxTs=Math.max(...IMGS.map(p=>p.ts));
+const __dw=dateWin(DATEF,__maxTs);
+if(__dw)IMGS=IMGS.filter(p=>p.ts>=__dw[0]&&p.ts<__dw[1]);
+setDnote(__dw,__maxTs);
+const RANGE_LABEL=__dw?fmtDW(__dw):META.range.replace(' 2026','');
+if(!IMGS.length){
+  root.querySelector('#' + 'subline').innerHTML=`<b style="color:var(--ink-1)">No image posts in this date range</b> — the image data covers ${META.range}. Pick another range above.`;
+  ['kpis','insights','foot'].forEach(id=>{root.querySelector('#' + id).innerHTML='';});
+  const tb=root.querySelector('#' + 'tbl');tb.querySelector('thead').innerHTML='';tb.querySelector('tbody').innerHTML='';
+  root.querySelector('#' + 'cnt').textContent='';
+  return;
+}
+const DR=IMGS.filter(p=>p.rpmq!=null);
+root.querySelector('#' + 'subline').innerHTML=`${IMGS.length} image posts · ${META.range}<span class="dot">•</span>Source: <a href="https://www.facebook.com/professional_dashboard/content/content_library/" target="_blank" rel="noopener" style="color:var(--seq-450);text-decoration:none;font-weight:600">${META.source} ↗</a><span class="dot">•</span>Pulled ${META.pulled}<span class="dot">•</span><b style="color:var(--ink-1)">${DR.length} of ${IMGS.length} posts drilled into per-image insights (qualified RPM, clicks, shares, follower split)</b>`;
+const tot=k=>IMGS.reduce((s,p)=>s+(p[k]||0),0);
+const totV=tot('v'),totE=tot('earn'),totEng=tot('e');
+const totNet=DR.reduce((s,p)=>s+(p.net||0),0);
+const totClk=DR.reduce((s,p)=>s+(p.clk||0),0);
+const totShr=DR.reduce((s,p)=>s+(p.shr||0),0);
+const medQrpm=md(DR.map(p=>p.rpmq));
+const nonW=DR.reduce((s,p)=>s+(p.nonp!=null?p.nonp*p.vw:0),0)/Math.max(1,DR.reduce((s,p)=>s+(p.nonp!=null?p.vw:0),0));
+root.querySelector('#' + 'kpis').innerHTML=[
+ {l:'Image posts',v:IMGS.length,n:RANGE_LABEL},
+ {l:'Total views',v:fmtBig(totV),n:fmtInt(totV)},
+ {l:'Image earnings',v:money0(totE),n:'Facebook estimate'},
+ {l:'Qualified RPM',v:'$'+medQrpm.toFixed(2),n:'median $ per 1,000 qualified views'},
+ {l:'Photo clicks',v:fmtBig(totClk),n:'taps to open the image'},
+ {l:'Shares',v:fmtBig(totShr),n:'across '+DR.length+' drilled posts'},
+ {l:'Non-follower reach',v:nonW.toFixed(1)+'%',n:'viewer-weighted average'},
+ {l:'Net follows',v:(totNet>0?'+':'')+fmtInt(totNet),n:'from image posts'}
+].map(k=>`<div class="tile"><div class="lbl">${k.l}</div><div class="val">${k.v}</div><div class="note">${k.n}</div></div>`).join('');
+const byEr=[...IMGS].sort((a,b)=>b.earn-a.earn);
+const topEr=byEr[0];
+const n10=Math.max(1,Math.round(IMGS.length/10));
+const erShare=totE?byEr.slice(0,n10).reduce((s,p)=>s+p.earn,0)/totE*100:0;
+const byV=[...IMGS].sort((a,b)=>b.v-a.v);
+const vShare=totV?byV.slice(0,n10).reduce((s,p)=>s+p.v,0)/totV*100:0;
+const corr2=(xs,ys)=>{const n=xs.length;if(n<3)return 0;const mx=xs.reduce((a,b)=>a+b,0)/n,my=ys.reduce((a,b)=>a+b,0)/n;let s=0,dx=0,dy=0;for(let i=0;i<n;i++){s+=(xs[i]-mx)*(ys[i]-my);dx+=(xs[i]-mx)**2;dy+=(ys[i]-my)**2;}return dx&&dy?s/Math.sqrt(dx*dy):0;};
+const qvShare=(()=>{const w=DR.filter(p=>p.qv!=null&&p.v);return w.reduce((s,p)=>s+p.qv,0)/Math.max(1,w.reduce((s,p)=>s+p.v,0))*100;})();
+let INS=[
+ `<div class="insight"><b>What pays:</b> image money is heavily concentrated — the top ${n10} earners take <b>${erShare.toFixed(0)}%</b> of all image earnings. Biggest single payer: <b>"${(topEr.t||'the 29 Jul rare-disorder diagnosis photo').slice(0,44)}…"</b> at <b>${money(topEr.earn)}</b> (${fmtBig(topEr.v)} views). The real paying unit is the <b>qualified view</b> — about <b>${qvShare.toFixed(0)}%</b> of raw views qualify, and a typical image pays <b>$${medQrpm.toFixed(2)} per 1,000 qualified views</b>.</div>`
+];
+{
+ const lo=DR.filter(p=>p.rpmq<0.10), hi=DR.filter(p=>p.rpmq>=0.15);
+ if(lo.length>=5){
+   const lost=lo.reduce((s,p)=>s+Math.max(0,(medQrpm-p.rpmq)/1000*(p.qv||0)),0);
+   const loShare=lo.length/DR.length*100;
+   INS.push(`<div class="insight"><b>The two-tier rate (biggest money lever in this data):</b> ${hi.length} drilled posts earn a normal <b>$0.15–0.26</b>/1K qualified rate, but <b>${lo.length} posts (${loShare.toFixed(0)}%) fall into a $0.03–0.06 band</b> — same reach, roughly <b>4× less money</b>. Those low-band posts left an estimated <b>${money0(lost)}</b> behind vs the typical rate. They cluster on copyright-sensitive celebrity/film photos and screenshots — worth checking which images trip limited monetisation before posting.</div>`);
+ }
+}
+{
+ const w=DR.filter(p=>p.clk!=null&&p.v>1000);
+ if(w.length>=10){
+   const clkOfEng=totEng?totClk/DR.reduce((s,p)=>s+(p.e||0),0)*100:0;
+   const topC=[...w].sort((a,b)=>b.clkRate-a.clkRate)[0];
+   const cCorr=corr2(w.map(p=>p.clkRate),w.map(p=>Math.log(p.v)));
+   INS.push(`<div class="insight"><b>Clicks are the hidden engagement engine:</b> photo taps (${fmtBig(totClk)}) dwarf every other action — reactions, comments and shares combined are a fraction of them. Typical image gets <b>${md(w.map(p=>p.clkRate)).toFixed(1)}%</b> of viewers tapping to open; the best curiosity bait ("${topC.t.slice(0,32)}…") hit <b>${topC.clkRate.toFixed(1)}%</b>. Click-bait framing (zoom-to-read, spot-the-detail, quiz images) reliably drives taps${Math.abs(cCorr)>=0.25?` and travels further too (consistency ${cCorr.toFixed(2)})`:''}.</div>`);
+ }
+}
+{
+ const rankArr=xs=>{const idx=xs.map((x,i)=>i).sort((a,b)=>xs[a]-xs[b]);const r=new Array(xs.length);let i=0;while(i<idx.length){let j=i;while(j+1<idx.length&&xs[idx[j+1]]===xs[idx[i]])j++;const avg=(i+j)/2;for(let k=i;k<=j;k++)r[idx[k]]=avg;i=j+1;}return r;};
+ const spear=(xs,ys)=>corr2(rankArr(xs),rankArr(ys));
+ const sq=(arr,key)=>{const s=arr.slice().sort((a,b)=>key(a)-key(b));const q=Math.max(1,Math.floor(s.length/4));return {lo:s.slice(0,q),hi:s.slice(-q)};};
+ const mdv=a=>md(a.map(p=>p.v));
+ const W=DR.filter(p=>p.vw>1000&&p.shr!=null&&p.clk!=null).map(p=>Object.assign({},p,{rev:p.v/p.vw}));
+ if(W.length>=30){
+  const sRev=spear(W.map(p=>p.rev),W.map(p=>p.v));
+  const sClk=spear(W.map(p=>p.clkRate),W.map(p=>p.v));
+  const sReac=spear(W.map(p=>p.reac/p.vw),W.map(p=>p.v));
+  const sShr=spear(W.map(p=>p.shrRate),W.map(p=>p.v));
+  const rq=sq(W,p=>p.rev), cq=sq(W,p=>p.clkRate), aq=sq(W,p=>p.reac/p.vw), hq=sq(W,p=>p.shrRate);
+  INS.push(`<div class="insight"><b>What drives distribution (${W.length} drilled posts):</b> image reach is Facebook <b>re-serving what holds attention</b>, not sharing. The ladder, by rank-correlation with views: <b>re-view ratio ${sRev>=0?'+':''}${sRev.toFixed(2)}</b> (top quartile ${fmtBig(Math.round(mdv(rq.hi)))} vs ${fmtBig(Math.round(mdv(rq.lo)))} median — <b>${(mdv(rq.hi)/Math.max(1,mdv(rq.lo))).toFixed(1)}×</b>) · <b>click rate ${sClk>=0?'+':''}${sClk.toFixed(2)}</b> (${(mdv(cq.hi)/Math.max(1,mdv(cq.lo))).toFixed(1)}×) · reaction rate ${sReac>=0?'+':''}${sReac.toFixed(2)} (${(mdv(aq.hi)/Math.max(1,mdv(aq.lo))).toFixed(1)}×) · <b>share rate just ${sShr>=0?'+':''}${sShr.toFixed(2)}</b> (${(mdv(hq.hi)/Math.max(1,mdv(hq.lo))).toFixed(1)}×). The controllable lever is the <b>tap</b>: images that make people open them (zoom-to-read text, spot-the-detail, quizzes) trigger the re-serve loop — top-decile posts get ~8% of views tapping vs ~1% at the bottom.</div>`);
+  const sNonShr=spear(W.map(p=>p.shrRate),W.map(p=>p.nonp!=null?p.nonp:0));
+  const sNonV=spear(W.map(p=>p.nonp!=null?p.nonp:0),W.map(p=>p.v));
+  const sNonNet=spear(W.map(p=>p.nonp!=null?p.nonp:0),W.map(p=>p.net!=null?p.net:0));
+  INS.push(`<div class="insight"><b>Shares are the escape hatch, not the reach engine:</b> share rate is the best predictor of <b>non-follower</b> reach (${sNonShr>=0?'+':''}${sNonShr.toFixed(2)}), and non-follower reach is what converts to follows (${sNonNet>=0?'+':''}${sNonNet.toFixed(2)}) — but escaping the bubble doesn&#39;t make a post big: non-follower share vs total views runs <b>${sNonV.toFixed(2)}</b>. In practice the monster image posts are served <i>deeper into the existing follower base</i>, while share-heavy posts reach new people in smaller numbers. Two different games: taps for money-reach, shares for audience growth.</div>`);
+ }
+}
+{
+ const w=DR.filter(p=>p.nonp!=null);
+ if(w.length>=10){
+   const medNon=md(w.map(p=>p.nonp));
+   const brk=[...w].sort((a,b)=>b.nonp-a.nonp).slice(0,2);
+   const gain=[...w].sort((a,b)=>(b.net||0)-(a.net||0))[0];
+   INS.push(`<div class="insight"><b>Images are a followers&#39; product:</b> the typical post is <b>${(100-medNon).toFixed(0)}% follower-served</b> (median non-follower share just ${medNon.toFixed(1)}%) — photos rarely escape the existing audience, unlike reels. Breakouts exist: ${brk.map(p=>`"${p.t.slice(0,26)}…" went <b>${p.nonp}%</b> non-follower`).join(' and ')}. Net follow impact is marginal${totNet<0?' and slightly negative':''} (${totNet>0?'+':''}${fmtInt(totNet)} across ${w.length} drilled posts${gain&&gain.net>0?`; best gainer +${gain.net} on "${gain.t.slice(0,24)}…"`:''}) — images keep the audience warm rather than grow it.</div>`);
+ }
+}
+{
+ const TOPICS=[['sport',/football|premier league|wimbledon|mcgregor|ufc|octagon|bout|tournament|olympic|bellingham|england|match|boxing|goal|fifa|world cup/i],['health',/symptom|cancer|diagnos|illness|infection|health|weight|diet|nhs|doctor|disease|cure|virus|brain|jab/i],['celebrity & TV',/\bstar\b|actor|actress|celebrit|show|film|movie|hollywood|bbc|itv|netflix|series|singer|presenter|strictly|big brother|spider-man|odyssey/i],['crime & tragedy',/arrest|police|jail|prison|court|murder|killed|charge|sentence|investigat|missing|death|died|dead|attack/i],['puzzles & quizzes',/answer|puzzle|brain|work out|spot|can you|guess|iq|eyes checked|minute/i]];
+ const tb=TOPICS.map(([lbl,rx])=>{const b=IMGS.filter(p=>rx.test(p.t));return b.length>=6?{lbl:lbl,n:b.length,m:md(b.map(p=>p.v)),r:md(b.filter(p=>p.rpmq!=null).map(p=>p.rpmq))}:null}).filter(Boolean).sort((a,b)=>b.m-a.m);
+ if(tb.length>=2)INS.push(`<div class="insight"><b>Topic travel &amp; rate:</b> ${tb.map(t=>`<b>${t.lbl}</b> ${fmtBig(Math.round(t.m))} median views${t.r?` · $${t.r.toFixed(2)}/1K`:''} (${t.n})`).join(' · ')} — ${tb[0].lbl} images travel ~<b>${(tb[0].m/tb[tb.length-1].m).toFixed(1)}×</b> further than ${tb[tb.length-1].lbl}.</div>`);
+}
+{
+ const hrs={};IMGS.forEach(p=>{if(p.hr==null)return;(hrs[p.hr]=hrs[p.hr]||[]).push(p.v);});
+ const hrMed=Object.entries(hrs).filter(([h,a])=>a.length>=8).map(([h,a])=>({h:+h,m:md(a),n:a.length})).sort((a,b)=>b.m-a.m);
+ if(hrMed.length>=3)INS.push(`<div class="insight"><b>Posting time:</b> best median views by hour — ${hrMed.slice(0,3).map(x=>`<b>${String(x.h).padStart(2,'0')}:00</b> (${fmtBig(Math.round(x.m))} · ${x.n} posts)`).join(' · ')}; quietest ${String(hrMed[hrMed.length-1].h).padStart(2,'0')}:00 (${fmtBig(Math.round(hrMed[hrMed.length-1].m))}).</div>`);
+}
+root.querySelector('#' + 'insights').innerHTML=INS.join('');
+const ICOLS=[
+ {k:'t',l:'Image post',cls:'l',fmt:(v,p)=>(v||'<span class="muted">(caption not captured)</span>')+(p.fb?` <a href="${p.fb}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:var(--seq-450);text-decoration:none">↗</a>`:'')},
+ {k:'date',l:'Date',cls:'l',fmt:v=>`<span class="muted">${v}</span>`},
+ {k:'v',l:'Views',fmt:fmtInt},
+ {k:'vw',l:'Viewers',fmt:fmtInt},
+ {k:'qv',l:'Qualified',fmt:v=>v==null?'<span class="muted">—</span>':fmtInt(v)},
+ {k:'earn',l:'Earnings',fmt:money},
+ {k:'rpmq',l:'RPM /1K qual.',fmt:v=>v==null?'<span class="muted">—</span>':(v<0.10?`<span style="color:var(--red,#d4183d);font-weight:600">$${v.toFixed(2)}</span>`:'$'+v.toFixed(2))},
+ {k:'clk',l:'Clicks',fmt:v=>v==null?'<span class="muted">—</span>':fmtInt(v)},
+ {k:'shr',l:'Shares',fmt:v=>v==null?'<span class="muted">—</span>':fmtInt(v)},
+ {k:'cm',l:'Comments',fmt:fmtInt},
+ {k:'engRate',l:'Eng %',fmt:v=>v.toFixed(1)+'%'},
+ {k:'nonp',l:'Non-fol %',fmt:v=>v==null?'<span class="muted">—</span>':v.toFixed(1)+'%'},
+ {k:'net',l:'Net foll.',fmt:v=>v==null?'<span class="muted">—</span>':(v>0?`<span class="pos">+${v}</span>`:v)},
+ {k:'im',l:'Impressions',fmt:fmtInt}
+];
+let isk='date',isd=-1,ifl='';
+const renderImgTable=()=>{
+ const thead=root.querySelector('#tbl thead');
+ thead.innerHTML='<tr>'+ICOLS.map(c=>`<th class="${c.cls||''}" data-k="${c.k}">${c.l} ${c.k===isk?`<span class="arr">${isd<0?'▼':'▲'}</span>`:''}</th>`).join('')+'</tr>';
+ thead.querySelectorAll('th').forEach(th=>th.onclick=()=>{const k=th.dataset.k;if(k===isk)isd*=-1;else{isk=k;isd=(k==='t'||k==='date')?1:-1;}renderImgTable();});
+ let rows=IMGS.filter(p=>!ifl||String(p.t).toLowerCase().includes(ifl));
+ rows.sort((a,b)=>{const k=isk==='date'?'ts':isk;let x=a[k],y=b[k];if(x==null)x=-1e18;if(y==null)y=-1e18;if(typeof x==='string')return x.localeCompare(y)*isd;return (x-y)*isd;});
+ root.querySelector('#tbl tbody').innerHTML=rows.map(p=>'<tr>'+ICOLS.map(c=>`<td class="${c.cls||''}">${c.fmt(p[c.k],p)}</td>`).join('')+'</tr>').join('');
+ root.querySelector('#' + 'cnt').textContent='('+rows.length+' shown)';
+};
+root.querySelector('#' + 'q').oninput=e=>{ifl=e.target.value.toLowerCase();root.querySelector('#' + 'qbig').value=e.target.value;renderImgTable();};
+root.querySelector('#' + 'qbig').oninput=e=>{ifl=e.target.value.toLowerCase();root.querySelector('#' + 'q').value=e.target.value;renderImgTable();};
+renderImgTable();
+root.querySelector('#' + 'foot').innerHTML=`Source: ${B.label}'s Facebook <b>Professional Dashboard → Content Library</b>, filtered to <b>Photos</b> (${META.range}), pulled ${META.pulled}. ${DR.length} of ${IMGS.length} posts were opened individually to capture the per-image insights page: qualified views (the views Facebook actually pays on), earnings rate per 1,000 qualified views, photo clicks, shares, reactions, follower vs non-follower split and net follows. Posts without those numbers (${IMGS.length-DR.length}, mostly the newest) show — in those columns; their earnings use the content-library estimate. The ↗ next to each caption opens the actual post on Facebook. Earnings on the newest posts are usually still settling at pull time. 5 Aug is a partial day.`;
+}
+function bootBrand(key){
+const B=BRANDS[key];CURBRAND=key;
+if(B.img){bootImages(B);return;}
+root.querySelector('#' + 'kpiTbl').closest('.card').style.display='';
+{const cw=root.querySelector('.chip');if(cw)cw.parentElement.style.display='';}
+{const rb=root.querySelector('.tabbtn[data-tab="tab-rpm"]');if(rb)rb.style.display='';}
+root.querySelector('#' + 'pill').textContent='All videos';
+{const h2v=root.querySelector('#tbl').closest('.card').querySelector('h2');if(h2v)h2v.childNodes[0].textContent='All videos ';}
+META=B.META;RAW=B.RAW;DEEP=B.DEEP;DUR=B.DUR;CID=B.CID;
+
+root.querySelector('header.top h1').textContent=B.title;
+root.querySelector('.logo').innerHTML=B.logoHtml;
+['q','qbig','qk'].forEach(id=>{const el=root.querySelector('#' + id);if(el)el.value='';});
+root.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c.dataset.f==='all'));
+if(!RAW.length){
+  root.querySelector('#' + 'subline').innerHTML=`<b style=\"color:var(--ink-1)\">No data pulled for ${B.label} yet</b> — switch the Facebook profile to ${B.label} in Chrome and ask Claude to run the data pull.`;
+  ['kpis','insights','kpiSummary','kpiDesc','rpmDesc','retVerdict','retMethod','retSumNote','retControl','retCaveat','foot'].forEach(id=>{const el=root.querySelector('#' + id);if(el)el.innerHTML='';});
+  ['kpiTbl','rpmTbl','retSum','retBand','retLong','tbl'].forEach(id=>{const el=root.querySelector('#' + id);if(el){el.querySelector('thead').innerHTML='';el.querySelector('tbody').innerHTML='';}});
+  root.querySelector('#' + 'cnt').textContent='';
+  return;
+}
+POSTS = RAW.map(r=>{const o={};KEYS.forEach((k,i)=>o[k]=r[i]);return o;});
+POSTS.forEach(p=>{ p.len=DUR[p.v]!=null?DUR[p.v]:null; });
+POSTS.forEach(p=>{ p.fb=CID[p.v]?"https://www.facebook.com/content/insights/?content_id="+encodeURIComponent(CID[p.v]):null; });
+POSTS.forEach(p=>{ const m=p.date.match(/(\d+) (\w+) (\d+):(\d+)/); p.ts=m?new Date(2026,MONTHS[m[2]],+m[1],+m[3],+m[4]).getTime():0; });
+const __maxTs=Math.max(...POSTS.map(p=>p.ts));
+const __dw=dateWin(DATEF,__maxTs);
+if(__dw)POSTS=POSTS.filter(p=>p.ts>=__dw[0]&&p.ts<__dw[1]);
+setDnote(__dw,__maxTs);
+const RANGE_LABEL=__dw?fmtDW(__dw):META.range.replace(' 2026','');
+if(!POSTS.length){
+  root.querySelector('#' + 'subline').innerHTML=`<b style="color:var(--ink-1)">No ${B.label} videos in this date range</b> — the data covers ${META.range}. Pick another range above.`;
+  ['kpis','insights','kpiSummary','kpiDesc','rpmDesc','retVerdict','retMethod','retSumNote','retControl','retCaveat','foot'].forEach(id=>{const el=root.querySelector('#' + id);if(el)el.innerHTML='';});
+  ['kpiTbl','rpmTbl','retSum','retBand','retLong','tbl'].forEach(id=>{const el=root.querySelector('#' + id);if(el){el.querySelector('thead').innerHTML='';el.querySelector('tbody').innerHTML='';}});
+  root.querySelector('#' + 'cnt').textContent='';
+  return;
+}
+POSTS.forEach(p=>{
+  p.wth=wtHours(p.wt); p.aws=awSec(p.aw);
+  p.rpm=p.v?p.er/p.v*1000:0;
+  p.hook=(p.v&&p.s3!=null)?p.s3/p.v*100:null;  // % of views that reached 3 seconds (null = not captured for this video)
+  p.deep=(p.s3&&p.m1!=null)?p.m1/p.s3*100:null; // % of 3-sec viewers who reached 1 minute
+  p.engRate=p.v?p.e/p.v*100:0;
+});
+POSTS.forEach(p=>{ const d=DEEP[p.v]; if(d){ p.dn=d[0]; p.dnc=d[1]; p.dfc=d[2]; p.aw2=d[3]; p.dp=d[4]; p.ql=d[5]; p.rt=d[6]; p.s20=d[7]; p.ni=d[8]; } });
+DRILLED = POSTS.filter(p=>p.dn!=null).length;
+const cat=p=>{const t=p.t.toLowerCase();if(/\(ad\)/i.test(p.t)||/euromillions/.test(t))return'ad';if(/snack|would you rather|wyr|this or that|rate|tries|try|reacts|judges|head to head|review/.test(t))return'snackwars';if(/criminologist|csi|forensic|navy seal|fbi|cia|klan|kkk|addict|homeless|child soldier|sicario|hitman|serial|sociopath|did |identities|abuse|dahmer|huntley|mccann/.test(t))return'truecrime';return'other';};
+POSTS.forEach(p=>p.cat=cat(p));
+const fmtInt=n=>n==null?'—':n.toLocaleString('en-GB');
+const fmtBig=n=>n>=1e6?(n/1e6).toFixed(2)+'M':n>=1e3?(n/1e3).toFixed(0)+'K':(''+n);
+const money=n=>'$'+n.toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});
+const money0=n=>'$'+Math.round(n).toLocaleString('en-GB');
+root.querySelector('#' + 'subline').innerHTML=`${POSTS.length} reel/live videos · ${META.range}<span class="dot">•</span>Source: <a href="https://www.facebook.com/professional_dashboard/content/content_library/" target="_blank" rel="noopener" style="color:var(--seq-450);text-decoration:none;font-weight:600">${META.source} ↗</a><span class="dot">•</span>Pulled ${META.pulled}<span class="dot">•</span><b style="color:var(--ink-1)">Click any video to drill down</b>`;
+/* KPIs */
+const tot=(k)=>POSTS.reduce((s,p)=>s+p[k],0);
+const totViews=tot('v'), totWatchH=tot('wth'), totEarn=tot('er');
+const avgAw=tot('aws')/POSTS.length;
+const hookP=POSTS.filter(p=>p.hook!=null);
+const avgHook=hookP.reduce((s,p)=>s+p.hook,0)/Math.max(1,hookP.length);
+const kpi=[
+  {l:'Videos',v:POSTS.length,n:'reels + live, '+RANGE_LABEL},
+  {l:'Total video views',v:fmtBig(totViews),n:fmtInt(totViews)},
+  {l:'Total watch time',v:Math.round(totWatchH/24).toLocaleString('en-GB')+' days',n:Math.round(totWatchH).toLocaleString('en-GB')+' hours'},
+  {l:'Avg watch time',v:avgAw.toFixed(0)+'s',n:'across all videos'},
+  {l:'Avg hook (3-sec)',v:avgHook.toFixed(0)+'%',n:hookP.length<POSTS.length?'across '+hookP.length+' analysed videos':'of views reach 3 seconds'},
+  {l:'Video earnings',v:money0(totEarn),n:'Facebook estimate'},
+  (()=>{const org=POSTS.filter(p=>p.dn!=null&&p.cat!=='ad');const nn=org.reduce((s,p)=>s+p.dnc,0);const tv=org.reduce((s,p)=>s+p.v,0);const all=POSTS.filter(p=>p.dn!=null);const an=all.reduce((s,p)=>s+p.dnc,0)/all.reduce((s,p)=>s+p.v,0)*100;return {l:'Organic non-follower reach',v:(nn/tv*100).toFixed(0)+'%',n:'excl. branded/AD (incl. paid: '+an.toFixed(0)+'%)'};})()
+].map(k=>`<div class="tile"><div class="lbl">${k.l}</div><div class="val">${k.v}</div><div class="note">${k.n}</div></div>`).join('');
+root.querySelector('#' + 'kpis').innerHTML=kpi;
+/* insights */
+const byRet=[...POSTS].sort((a,b)=>b.aws-a.aws);
+const topRet=byRet[0];
+const bigReach=[...POSTS].sort((a,b)=>b.v-a.v)[0];
+const snackAvg=POSTS.filter(p=>p.cat==='snackwars').reduce((s,p)=>s+p.aws,0)/Math.max(1,POSTS.filter(p=>p.cat==='snackwars').length);
+const otherAvg=POSTS.filter(p=>p.cat!=='snackwars').reduce((s,p)=>s+p.aws,0)/Math.max(1,POSTS.filter(p=>p.cat!=='snackwars').length);
+let INS=[
+  `<div class="insight"><b>Snack Wars / celebrity taste-tests hold attention far longer.</b> They average <b>${snackAvg.toFixed(0)}s</b> avg watch vs <b>${otherAvg.toFixed(0)}s</b> for everything else — the retention engine of the page.</div>`,
+  `<div class="insight">Best single retention: <b>"${topRet.t.slice(0,30)}…"</b> at <b>${topRet.aw}</b> average watch (${fmtInt(topRet.v)} views).</div>`,
+  `<div class="insight">Biggest reach doesn't mean best retention: <b>"${bigReach.t.slice(0,26)}…"</b> pulled <b>${fmtBig(bigReach.v)}</b> views but only <b>${bigReach.aw}</b> avg watch — a scroll-stopper, not a hold.</div>`,
+  `<div class="insight"><b>High non-follower reach on branded (AD) reels is paid distribution, not organic spread</b> — they show ~46–62% non-followers but near-zero qualified views (1–64 on 1M+ views) and $0 organic earnings: the reach is bought. The genuinely organic non-follower breakouts are <b>Jack Black & Paul Rudd</b> (75% non, 747K qualified views, +19× distribution, +550 follows) and <b>Steve Carell</b> (57% non, +3.4×, +163 follows).</div>`
+];
+if(CURBRAND!=='lad')INS.pop();
+if(CURBRAND==='uni'){
+  const drl=POSTS.filter(p=>p.dn!=null);
+  const viral=drl.filter(p=>p.dn>=50);
+  const vb=[...viral].sort((a,b)=>b.v-a.v)[0];
+  INS=[INS[1],INS[2]];
+  if(vb)INS.push(`<div class="insight"><b>${viral.length} of the ${drl.length} analysed videos reached a majority non-follower audience</b> — the page's viral engine. The biggest, <b>"${vb.t.slice(0,34)}…"</b>, went <b>${vb.dn}% non-follower</b> on ${fmtBig(vb.v)} views and added <b>${vb.ni>0?'+':''}${fmtInt(vb.ni)} follows</b>.</div>`);
+}
+root.querySelector('#' + 'insights').innerHTML=INS.join('');
+/* bars */
+/* KPI scorecard — traffic lights (organic videos only) */
+const light=(v,g,a)=>v==null?'x':v>=g?'g':v>=a?'a':'r';
+const KROWS=POSTS.filter(p=>p.cat!=='ad').map(p=>{
+  const l1=light(p.aws,25,15);                              // avg watch time vs 25s (data-derived)
+  const l3=p.s20==null?'x':(p.s20>=25?'g':p.s20>=15?'a':'r'); // 20-sec rate vs 25% (data-derived)
+  const l4=light(p.hook,50,35);                             // hook rate vs 50% (strongest earnings predictor)
+  return {p,l1,l3,l4,score:[l1,l3,l4].filter(x=>x==='g').length};
+}).sort((a,b)=>b.score-a.score||(b.p.aws-a.p.aws));
+const kN=KROWS.length;
+const kc=(fn)=>KROWS.filter(fn).length;
+root.querySelector('#' + 'kpiDesc').innerHTML=`One row per organic video (branded/AD posts excluded — their reach is paid, so watch KPIs aren't comparable). Targets (recalibrated from this page's own earnings data — each is the level that best separates high earners from the rest): <b>hook rate ≥ 50%</b> (the single strongest earnings predictor, correlation 0.85) · <b>avg watch time ≥ 25s</b> (median $74 earned above vs $8 below) · <b>20-sec view rate ≥ 25%</b> ($199 vs $11). <span class="tl g"></span>hits target <span class="tl a"></span>close (hook 35%+ / 15s+ / 15%+) <span class="tl r"></span>below <span class="tl x"></span>Facebook doesn't report it for that video. Click a row for the full breakdown.`;
+const hasS20=KROWS.some(r=>r.p.s20!=null);
+root.querySelector('#' + 'kpiSummary').innerHTML=[
+  {n:kc(r=>r.l4==='g'),l:'hit 50%+ hook rate'},
+  {n:kc(r=>r.l1==='g'),l:'hit 25s+ avg watch'},
+  ...(hasS20?[{n:kc(r=>r.l3==='g'),l:'hit 25%+ 20-sec rate'}]:[]),
+  ...(hasS20?[3,2,1,0]:[2,1,0]).map(s=>({n:kc(r=>r.score===s),l:hasS20?(s===3?'hit all 3':s===0?'hit none':'hit '+s+' of 3'):(s===2?'hit both':s===0?'hit none':'hit 1 of 2'),dist:true}))
+].map(x=>`<span class="kchip"${x.dist?' style="border-left:3px solid var(--s1);padding-left:8px"':''}><b>${x.n}</b> of ${kN} ${x.l}</span>`).join('');
+const dot=c=>`<span class="tl ${c}"></span>`;
+root.querySelector('#kpiTbl thead').innerHTML='<tr><th class="l">Video</th><th class="l">Date</th><th>Length</th><th>Hook (≥50%)</th><th>Avg watch (≥25s)</th><th>20-sec rate (≥25%)</th><th>Score</th></tr>';
+root.querySelector('#kpiTbl tbody').innerHTML=KROWS.map(r=>{const p=r.p;return `<tr data-t="${encodeURIComponent(p.t)}">
+  <td class="l">${p.t}${p.fb?` <a href="${p.fb}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:var(--seq-450);text-decoration:none">↗</a>`:``}</td><td class="l"><span class="muted">${p.date}</span></td><td>${p.len!=null?fmtLen(p.len):'—'}</td>
+  <td class="${r.l4==='g'?'pass':''}">${dot(r.l4)}${p.hook!=null?p.hook.toFixed(0)+'%':'—'}</td>
+  <td class="${r.l1==='g'?'pass':''}">${dot(r.l1)}${p.aw}</td>
+  <td class="${r.l3==='g'?'pass':''}">${dot(r.l3)}${p.s20!=null?p.s20+'%':'—'}</td>
+  <td>${'●'.repeat(r.score)||'—'}</td></tr>`;}).join('');
+root.querySelectorAll('#kpiTbl tbody tr').forEach(r=>r.onclick=()=>openPanel(decodeURIComponent(r.dataset.t)));
+/* RPM by video length — Facebook's earnings rate per 1,000 qualified views, from each video's insights page */
+(function(){
+  const mon=POSTS.filter(p=>p.cat!=='ad'&&p.len!=null&&p.rt!=null&&p.rt>0);
+  const useViews=!mon.length; /* brand's insights don't report qualified-view RPM (older insights layout) — fall back to earnings per 1,000 views */
+  const M=useViews?POSTS.filter(p=>p.cat!=='ad'&&p.len!=null&&p.er>0&&p.v>1000).map(p=>({...p,rt:p.rpm,ql:p.v})):mon;
+  const fx=useViews?3:2;
+  const BANDS=[[0,40,'Under 40s'],[40,90,'40s – 1:30'],[90,181,'1:30 – 3:00'],[181,1e9,'Over 3:00']];
+  const md=a=>{const s=a.slice().sort((x,y)=>x-y);const i=(s.length-1)/2;return (s[Math.floor(i)]+s[Math.ceil(i)])/2;};
+  if(!M.length){root.querySelector('#' + 'rpmDesc').innerHTML='No monetised videos with a known length yet for this brand.';root.querySelector('#rpmTbl thead').innerHTML='';root.querySelector('#rpmTbl tbody').innerHTML='';return;}
+  const rows=BANDS.map(([lo,hi,lbl])=>{
+    const b=M.filter(p=>p.len>=lo&&p.len<hi);
+    const xs=b.map(p=>p.rt);
+    const qs=b.map(p=>p.ql||0);
+    return xs.length?{lbl,n:xs.length,min:Math.min(...xs),max:Math.max(...xs),med:md(xs),qAvg:qs.reduce((a,c)=>a+c,0)/qs.length,qMed:md(qs),long:lo>=90}:{lbl,n:0,long:lo>=90};
+  });
+  const shorts=M.filter(p=>p.len<90).map(p=>p.rt), longs=M.filter(p=>p.len>=90).map(p=>p.rt);
+  const shortMax=shorts.length?Math.max(...shorts):null;
+  const top=Math.max(...M.map(p=>p.rt));
+  const scale=Math.ceil(top*10)/10;
+  const medLong=longs.length?md(longs):null;
+  if(useViews){
+    const allR=M.map(p=>p.rt);
+    root.querySelector('#' + 'rpmDesc').innerHTML=`${B.label}'s insights pages use Facebook's older layout and don't report <b>qualified views</b> or a per-video <b>earnings rate</b>, so RPM here is <b>earnings per 1,000 views</b> (content-library earnings ÷ views; monetised organic videos with 1,000+ views only). Across ${M.length} videos the rate runs <b>$${Math.min(...allR).toFixed(fx)} – $${Math.max(...allR).toFixed(fx)}</b>, typical <b>$${md(allR).toFixed(fx)}</b>${(shorts.length&&longs.length)?` — and the length pattern matches the other brands: videos 1:30+ typically earn <b>$${medLong.toFixed(fx)}</b> per 1,000 views vs <b>$${md(shorts).toFixed(fx)}</b> for shorts`:''}. Video lengths are approximate (read from each video's retention-chart axis), so treat the bands as indicative.`;
+  }else{
+    root.querySelector('#' + 'rpmDesc').innerHTML=`RPM here is <b>Facebook's earnings rate per 1,000 qualified views</b>, read from each video's own insights page (monetised organic videos only — branded/AD and $0 posts excluded). The range is the real story: <b>under 1:30 the rate is capped</b> — not one of the ${shorts.length} sub-1:30 videos beat <b>$${shortMax.toFixed(2)}</b>, however well it performed. Over 1:30 both the floor and the ceiling lift: the typical long video earns <b>$${medLong.toFixed(2)}</b> — more than the best short reel ever managed — and the top videos over 3:00 reach <b>$${top.toFixed(2)}</b>, nearly 3× the short-video cap. A couple of long stragglers still land low, so length earns the better rate rather than guaranteeing it. On qualified views, averages are skewed by the odd mega-hit (the under-40s figure is mostly one 1.76M-qualified-view video) — the <b>typical</b> video in every band lands in the same 14–23K window, so going longer doesn't cost qualified views while the rate roughly doubles.`;
+  }
+  root.querySelector('#rpmTbl thead').innerHTML=`<tr><th class="l">Video length</th><th>Videos</th><th>Avg ${useViews?'views':'qualified views'}</th><th>RPM range (low – high)</th><th>Typical (median)</th><th class="l" style="min-width:220px">$0 – $${scale.toFixed(2)}</th></tr>`;
+  root.querySelector('#rpmTbl tbody').innerHTML=rows.map(r=>{
+    if(!r.n)return '';
+    const col=r.long?'var(--good)':'var(--ink-3)';
+    const L=v=>(v/scale*100).toFixed(1);
+    const bar=`<div style="position:relative;height:16px;min-width:220px">
+      <div style="position:absolute;top:7px;left:0;right:0;height:2px;background:var(--line,rgba(128,128,128,.25));border-radius:1px"></div>
+      <div style="position:absolute;top:4px;left:${L(r.min)}%;width:${Math.max(2,(r.max-r.min)/scale*100).toFixed(1)}%;height:8px;background:${col};opacity:.45;border-radius:4px"></div>
+      <div style="position:absolute;top:2px;left:calc(${L(r.med)}% - 3px);width:6px;height:12px;background:${col};border-radius:3px"></div>
+    </div>`;
+    return `<tr${r.long?' style="font-weight:600"':''}>
+      <td class="l">${r.lbl}</td><td>${r.n}</td>
+      <td>${fmtBig(Math.round(r.qAvg))}<span class="muted" style="font-weight:400"> · typ ${fmtBig(Math.round(r.qMed))}</span></td>
+      <td>$${r.min.toFixed(fx)} – $${r.max.toFixed(fx)}</td>
+      <td>$${r.med.toFixed(fx)}</td>
+      <td class="l">${bar}</td></tr>`;
+  }).join('');
+})();
+/* Tabs */
+root.querySelectorAll('.tabbtn[data-tab]').forEach(b=>b.onclick=()=>{
+  root.querySelectorAll('.tabbtn[data-tab]').forEach(x=>x.classList.toggle('on',x===b));
+  root.querySelector('#' + 'tab-main').style.display=b.dataset.tab==='tab-main'?'':'none';
+  root.querySelector('#' + 'tab-rpm').style.display=b.dataset.tab==='tab-rpm'?'':'none';
+  root.scrollIntoView({block:'start',behavior:'auto'});
+});
+/* Retention vs RPM analysis (RPM analysis tab) */
+(function(){
+  const mon=POSTS.filter(p=>p.cat!=='ad'&&p.len!=null&&p.rt!=null&&p.rt>0&&p.aw2!=null);
+  const md=a=>{const s=a.slice().sort((x,y)=>x-y);const i=(s.length-1)/2;return (s[Math.floor(i)]+s[Math.ceil(i)])/2;};
+  const corr=(xs,ys)=>{const n=xs.length,mx=xs.reduce((a,b)=>a+b,0)/n,my=ys.reduce((a,b)=>a+b,0)/n;let s=0,dx=0,dy=0;for(let i=0;i<n;i++){s+=(xs[i]-mx)*(ys[i]-my);dx+=(xs[i]-mx)**2;dy+=(ys[i]-my)**2;}return s/Math.sqrt(dx*dy);};
+  const word=c=>{const a=Math.abs(c);return a<0.15?'none':a<0.35?'weak':a<0.6?'moderate':a<0.8?'strong':'very strong';};
+  const H3=root.querySelectorAll('#tab-rpm .retH');
+  if(!mon.length){
+    /* views-RPM fallback for brands whose insights pages don't report qualified-view rates */
+    const M2=POSTS.filter(p=>p.cat!=='ad'&&p.len!=null&&p.er>0&&p.v>1000&&p.aw2!=null);
+    const clearT=id=>{const el=root.querySelector('#' + id);el.querySelector('thead').innerHTML='';el.querySelector('tbody').innerHTML='';};
+    if(M2.length<12){
+      root.querySelector('#' + 'retVerdict').innerHTML='Not enough per-video retention data for this brand yet to test this properly.';
+      ['retMethod','retSumNote','retControl','retCaveat'].forEach(id=>root.querySelector('#' + id).innerHTML='');
+      ['retSum','retBand','retLong'].forEach(clearT);
+      H3.forEach(h=>h.style.display='none');
+      return;
+    }
+    H3.forEach(h=>h.style.display='');
+    H3[0].textContent='The result, band by band';
+    H3[1].textContent='See it for yourself — best-retained vs worst-retained (click any row)';
+    H3[2].style.display='none'; clearT('retLong');
+    const arr=M2.slice().sort((x,y)=>y.aw2-x.aw2);
+    const mpw=md(arr.map(p=>p.aw2));
+    const hiH=arr.filter(p=>p.aw2>mpw), loH=arr.filter(p=>p.aw2<=mpw);
+    const hiMed=md(hiH.map(p=>p.rpm)), loMed=md(loH.map(p=>p.rpm));
+    const c=corr(arr.map(p=>p.aw2),arr.map(p=>p.rpm));
+    const pv=Math.round((hiMed/loMed-1)*100);
+    root.querySelector('#' + 'retVerdict').innerHTML=`<b>${pv>=15?'Yes — better-retained videos earn a higher rate on this page too.':pv<=-15?'No — on this page the better-retained half actually earns a lower views-RPM.':'On this page the effect is small either way.'}</b> Across the ${arr.length} monetised videos with retention data, the better-retained half earns <b>$${hiMed.toFixed(3)}</b> per 1,000 views vs <b>$${loMed.toFixed(3)}</b> for the worse-retained half (${pv>0?'+':''}${pv}%), consistency ${c.toFixed(2)} (${word(c)}).`;
+    root.querySelector('#' + 'retMethod').innerHTML=`<b>How this was tested</b> — ${B.label}'s insights pages use Facebook's older layout, which doesn't report qualified views or a per-video earnings rate. So the rate here is <b>earnings per 1,000 views</b> (content library), and retention is <b>approximate % watched</b> (average watch time ÷ estimated length from the retention-chart axis). Videos are sorted by retention and split at the middle; the typical (median) rate of each half is compared. Cruder than the LAD Bible tab's qualified-view test — read it as a direction, not a law.`;
+    const BANDS2=[[0,40,'Under 40s'],[40,90,'40s – 1:30'],[90,1e9,'Over 1:30']];
+    const rows2=[['All lengths',arr]].concat(BANDS2.map(([lo,hi,lbl])=>[lbl,arr.filter(p=>p.len>=lo&&p.len<hi)]).filter(x=>x[1].length>=8));
+    root.querySelector('#retSum thead').innerHTML='<tr><th class="l">Video length</th><th>Videos</th><th>Better-retained half</th><th>Worse-retained half</th><th>Difference</th><th>Consistency (0–1)</th></tr>';
+    root.querySelector('#retSum tbody').innerHTML=rows2.map(([lbl,b])=>{
+      const m2=md(b.map(p=>p.aw2)); const hi2=b.filter(p=>p.aw2>m2),lo2=b.filter(p=>p.aw2<=m2);
+      if(!hi2.length||!lo2.length)return '';
+      const h2=md(hi2.map(p=>p.rpm)),l2=md(lo2.map(p=>p.rpm)),c2=corr(b.map(p=>p.aw2),b.map(p=>p.rpm)),p2=Math.round((h2/l2-1)*100);
+      return `<tr><td class="l">${lbl}</td><td>${b.length}</td><td>$${h2.toFixed(3)}</td><td>$${l2.toFixed(3)}</td><td>${p2>=0?`<span style="color:var(--good)">+${p2}%</span>`:`<span class="muted">${p2}%</span>`}</td><td>${c2.toFixed(2)} <span class="muted">(${word(c2)})</span></td></tr>`;
+    }).join('');
+    root.querySelector('#' + 'retSumNote').innerHTML='Median earnings per 1,000 views of each half, after sorting each group by approximate % watched.';
+    const rowHTML2=(p,hi)=>`<tr data-t="${encodeURIComponent(p.t)}" style="cursor:pointer"><td class="l">${p.t.slice(0,60)}</td><td>${fmtLen(p.len)}</td><td>${p.aw2}%</td><td style="${hi?'color:var(--good);font-weight:700':''}">$${p.rpm.toFixed(3)}</td></tr>`;
+    root.querySelector('#retBand thead').innerHTML='<tr><th class="l">Video</th><th>Length</th><th>% watched</th><th>RPM (views)</th></tr>';
+    root.querySelector('#retBand tbody').innerHTML=
+      arr.slice(0,10).map(p=>rowHTML2(p,true)).join('')+
+      `<tr><td colspan="4" class="muted" style="text-align:center;font-size:11px;padding:4px">— 10 best-retained above · 10 worst-retained below —</td></tr>`+
+      arr.slice(-10).map(p=>rowHTML2(p,false)).join('');
+    root.querySelector('#' + 'retControl').innerHTML='';
+    root.querySelector('#' + 'retCaveat').innerHTML=`<b>Caveats.</b> Lengths are approximate (retention-chart axis readings in coarse steps), % watched is derived rather than Facebook-reported, and views-RPM mixes in reach effects that a qualified-view rate would strip out. Treat this as directional until Facebook exposes the full metrics for this page.`;
+    root.querySelectorAll('#retBand tbody tr[data-t]').forEach(r=>r.onclick=()=>openPanel(decodeURIComponent(r.dataset.t)));
+    return;
+  }
+  H3.forEach(h=>h.style.display='');
+  H3[0].textContent='The result, band by band';
+  H3[1].textContent='See it for yourself — every 1:30–3:00 video, best-retained first';
+  H3[2].textContent='Over 3:00 — best-retained vs worst-retained';
+  const BANDS=[[0,90,'Under 1:30'],[90,181,'1:30 – 3:00'],[181,1e9,'Over 3:00']];
+  const res=BANDS.map(([lo,hi,lbl])=>{
+    const b=mon.filter(p=>p.len>=lo&&p.len<hi).sort((x,y)=>y.aw2-x.aw2);
+    const mpw=md(b.map(p=>p.aw2));
+    const hiH=b.filter(p=>p.aw2>mpw), loH=b.filter(p=>p.aw2<=mpw);
+    return {lbl,n:b.length,b,hiN:hiH.length,hiMed:md(hiH.map(p=>p.rt)),loMed:md(loH.map(p=>p.rt)),c:corr(b.map(p=>p.aw2),b.map(p=>p.rt)),long:lo>=90};
+  });
+  const mid=res[1], lng=res[2], sht=res[0];
+  const pct=r=>Math.round((r.hiMed/r.loMed-1)*100);
+  root.querySelector('#' + 'retVerdict').innerHTML=`<b>Yes — but only once a video is longer than 1:30.</b> For videos of similar length, the better-retained half earns <b>+${pct(mid)}%</b> per 1,000 qualified views in the 1:30–3:00 band and <b>+${pct(lng)}%</b> over 3:00. Under 1:30 retention doesn't move the rate at all ($${sht.hiMed.toFixed(2)} vs $${sht.loMed.toFixed(2)}) — the short-reel cap applies however well the video holds. Likely mechanism: longer videos carry ads through the video, so people have to <i>still be watching</i> when the ad slots arrive; short reels are paid a flat per-qualified-view rate.`;
+  root.querySelector('#' + 'retMethod').innerHTML=`<b>How this was tested</b> — (1) took the ${mon.length} monetised organic videos (branded/AD, $0 and unreported posts excluded); (2) compared like with like: videos are grouped into length bands first, because short videos naturally hold a higher % and sit on the low rate — mixing lengths would hide the real effect; (3) retention = Facebook's own "average percentage watched" from each video's insights page; (4) each band is sorted by retention and split in half at the middle, then the typical (median) RPM of the better-retained half is compared with the worse-retained half; (5) a consistency score (0 = no connection, 1 = rises perfectly in step) double-checks the halves comparison.`;
+  root.querySelector('#retSum thead').innerHTML='<tr><th class="l">Video length</th><th>Videos</th><th>Better-retained half</th><th>Worse-retained half</th><th>Difference</th><th>Consistency (0–1)</th></tr>';
+  root.querySelector('#retSum tbody').innerHTML=res.map(r=>`<tr${r.long?' style="font-weight:600"':''}>
+    <td class="l">${r.lbl}</td><td>${r.n}</td>
+    <td>$${r.hiMed.toFixed(2)}</td><td>$${r.loMed.toFixed(2)}</td>
+    <td>${r.long?`<span style="color:var(--good)">+${pct(r)}%</span>`:`<span class="muted">+${pct(r)}%</span>`}</td>
+    <td>${r.c.toFixed(2)} <span class="muted">(${word(r.c)})</span></td></tr>`).join('');
+  root.querySelector('#' + 'retSumNote').innerHTML=`Median RPM (per 1,000 qualified views) of each half. The under-1:30 row is the control that proves the point: even an <b>85%-watched</b> short reel can't beat the cap.`;
+  const rowHTML=(p,hi)=>`<tr data-t="${encodeURIComponent(p.t)}" style="cursor:pointer">
+    <td class="l">${p.t.slice(0,60)}</td><td>${fmtLen(p.len)}</td><td>${p.aw2}%</td>
+    <td style="${hi?'color:var(--good);font-weight:700':''}">$${p.rt.toFixed(2)}</td></tr>`;
+  const head='<tr><th class="l">Video</th><th>Length</th><th>% watched</th><th>RPM</th></tr>';
+  root.querySelector('#retBand thead').innerHTML=head;
+  root.querySelector('#retBand tbody').innerHTML=
+    mid.b.slice(0,mid.hiN).map(p=>rowHTML(p,true)).join('')+
+    `<tr><td colspan="4" class="muted" style="text-align:center;font-size:11px;padding:4px">— better-retained half above · worse-retained half below —</td></tr>`+
+    mid.b.slice(mid.hiN).map(p=>rowHTML(p,false)).join('');
+  root.querySelector('#retLong thead').innerHTML=head;
+  root.querySelector('#retLong tbody').innerHTML=
+    lng.b.slice(0,8).map(p=>rowHTML(p,true)).join('')+
+    `<tr><td colspan="4" class="muted" style="text-align:center;font-size:11px;padding:4px">… ${lng.n-16} videos in between …</td></tr>`+
+    lng.b.slice(-8).map(p=>rowHTML(p,false)).join('');
+  const best=sht.b[0];
+  const shortMax=Math.max(...sht.b.map(p=>p.rt));
+  root.querySelector('#' + 'retControl').innerHTML=`<b>The control case.</b> The best-retained video on the whole page — <b>"${best.t.slice(0,40)}"</b> at <b>${best.aw2}% watched</b> — earns just <b>$${best.rt.toFixed(2)}</b>, because at ${fmtLen(best.len)} it sits under the short-reel cap (no sub-1:30 video beats $${shortMax.toFixed(2)}). Retention can't buy a better rate down there; it can only add more qualified views.`;
+  root.querySelector('#' + 'retCaveat').innerHTML=`<b>Caveats & takeaway.</b> The 1:30–3:00 band is only ${mid.n} videos, so its very strong result deserves re-checking as more mid-length videos publish; on 3:00+ videos length and format still muddy the picture (a couple of long, weakly-retained videos still pay well). The practical read: retention work — better hooks, tighter edits — pays <b>twice</b> on 1:30+ videos (more qualified views <i>and</i> a better rate), which is exactly why the Snack Wars / interview formats are the earnings engine. Click any row for the full video breakdown. Everything on this tab recomputes automatically when the data refreshes.`;
+  root.querySelectorAll('#retBand tbody tr[data-t], #retLong tbody tr[data-t]').forEach(r=>r.onclick=()=>openPanel(decodeURIComponent(r.dataset.t)));
+})();
+/* table */
+function tld(kind,v){ if(v==null)return '<span class="tl x"></span>';
+  let c; if(kind==='aw')c=v>=25?'g':v>=15?'a':'r';
+  else if(kind==='wt')c=v>=25?'g':v>=15?'a':'r';
+  else if(kind==='hook')c=v>=50?'g':v>=35?'a':'r';
+  else c=v>=25?'g':v>=15?'a':'r';
+  return '<span class="tl '+c+'"></span>'; }
+const COLS=[
+  {k:'t',l:'Video',cls:'l',fmt:(v,p)=> v+(p.fb?` <a href="${p.fb}" target="_blank" rel="noopener" title="Open in Facebook analytics" onclick="event.stopPropagation()" style="color:var(--seq-450);text-decoration:none">↗</a>`:'')},
+  {k:'date',l:'Date',cls:'l',fmt:v=>`<span class="muted">${v}</span>`},
+  {k:'v',l:'Views',fmt:fmtInt},
+  {k:'len',l:'Length',fmt:v=> v==null?'<span class="muted">—</span>':fmtLen(v)},
+  {k:'aws',l:'Avg watch',fmt:(v,p)=> (p.cat==='ad'?'':tld('aw',v))+(v>=30?`<span class="hi">${p.aw}</span>`:p.aw)},
+  {k:'wth',l:'Watch time',fmt:(v,p)=>p.wt},
+  {k:'hook',l:'Hook %',fmt:(v,p)=> v==null?'<span class="muted">—</span>':(p.cat==='ad'?'':tld('hook',v))+v.toFixed(0)+'%'},
+  {k:'m1',l:'1-min views',fmt:fmtInt},
+  {k:'dn',l:'Non-foll %',fmt:(v,p)=> v==null?'<span class="muted">—</span>':(p.cat==='ad'?`${v}% <span class="muted">paid</span>`:(v>=30?`<span class="hi">${v}%</span>`:v+'%'))},
+  {k:'aw2',l:'% watched',fmt:v=> v==null?'<span class="muted">—</span>':v+'%'},
+  {k:'s20',l:'20-sec rate',fmt:(v,p)=> v==null?'<span class="muted">—</span>':(p.cat==='ad'?'':tld('s20',v))+v+'%'},
+  {k:'e',l:'Engagement',fmt:fmtInt},
+  {k:'er',l:'Earnings',fmt:money},
+  {k:'nf',l:'Net foll.',fmt:v=> v>0?`<span class="pos">+${v}</span>`:v},
+  {k:'d',l:'Dist ×',fmt:v=> v>0?`<span class="pos">+${v}x</span>`:v+'x'},
+  {k:'c',l:'Comments',fmt:fmtInt}
+];
+const wcInc=(t,q)=>{t=String(t).toLowerCase();q=String(q).toLowerCase().trim();if(!q)return true;if(t.length<q.length)return false;for(let i=0;i<=t.length-q.length;i++){let ok=true;for(let j=0;j<q.length;j++){const c=t[i+j],d=q[j];if(c!=='*'&&d!=='*'&&c!==d){ok=false;break}}if(ok)return true}return false};
+let sortK='date',sortDir=-1,filter='',fcat='all';
+function renderTable(){
+  const thead=root.querySelector('#tbl thead');
+  thead.innerHTML='<tr>'+COLS.map(c=>`<th class="${c.cls||''}" data-k="${c.k}">${c.l} ${c.k===sortK?`<span class="arr">${sortDir<0?'▼':'▲'}</span>`:''}</th>`).join('')+'</tr>';
+  thead.querySelectorAll('th').forEach(th=>th.onclick=()=>{const k=th.dataset.k;if(k===sortK)sortDir*=-1;else{sortK=k;sortDir=(k==='t'||k==='date')?1:-1;}renderTable();});
+  let rows=POSTS.filter(p=>(fcat==='all'||p.cat===fcat)&&wcInc(p.t,filter));
+  rows.sort((a,b)=>{const k=sortK==='date'?'ts':sortK;let x=a[k],y=b[k];if(typeof x==='string')return x.localeCompare(y)*sortDir;return (x-y)*sortDir;});
+  root.querySelector('#tbl tbody').innerHTML=rows.map(p=>'<tr data-t="'+encodeURIComponent(p.t)+'">'+COLS.map(c=>`<td class="${c.cls||''}">${c.fmt(p[c.k],p)}</td>`).join('')+'</tr>').join('');
+  root.querySelectorAll('#tbl tbody tr').forEach(r=>r.onclick=()=>openPanel(decodeURIComponent(r.dataset.t)));
+  root.querySelector('#' + 'cnt').textContent='('+rows.length+' shown)';
+}
+root.querySelector('#' + 'q').oninput=e=>{filter=e.target.value.toLowerCase();root.querySelector('#' + 'qbig').value=e.target.value;renderTable();};
+root.querySelector('#' + 'qbig').oninput=e=>{filter=e.target.value.toLowerCase();root.querySelector('#' + 'q').value=e.target.value;renderTable();};
+root.querySelector('#' + 'qk').oninput=e=>{const s=e.target.value.toLowerCase().trim();root.querySelectorAll('#kpiTbl tbody tr').forEach(r=>{const t=decodeURIComponent(r.dataset.t||'');r.style.display=(!s||wcInc(t,s))?'':'none';});};
+root.querySelectorAll('.chip').forEach(ch=>ch.onclick=()=>{root.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));ch.classList.add('on');fcat=ch.dataset.f;renderTable();});
+renderTable();
+/* drill-down */
+const panel=root.querySelector('#' + 'panel'),scrim=root.querySelector('#' + 'scrim');
+function openPanel(title){
+  const p=POSTS.find(x=>x.t===title);if(!p)return;
+  const xt=(CURBRAND==='lad'&&typeof XTRA_LAD!=='undefined')?(XTRA_LAD[p.v]||null):(CURBRAND==='uni'&&typeof XTRA_UNI!=='undefined')?(XTRA_UNI[p.v]||null):null;
+  panel.innerHTML=`
+    <button class="close" data-lad-close-panel="1">✕</button>
+    <div class="p-kicker">Reel · ${B.label}</div>
+    <h3>${p.t}</h3>
+    <div class="p-date">Published ${p.date}${p.len!=null?' · '+fmtLen(p.len)+' long':''}${p.fb?` · <a href="${p.fb}" target="_blank" rel="noopener" style="color:var(--seq-450);text-decoration:none;font-weight:600">Open in Facebook analytics ↗</a>`:''}</div>
+    <div class="hero"><div class="hv">${p.aw} <span style="font-size:14px;font-weight:600;color:var(--ink-2)">avg watch</span></div><div class="hl">${fmtInt(p.v)} views · ${p.wt} total watch time${p.hook!=null?' · '+p.hook.toFixed(0)+'% reached 3 seconds':''}</div></div>
+    <div class="p-sec">Retention</div>
+    ${row('Average watch time',p.aw)}
+    ${row('Total watch time',p.wt)}
+    ${p.s3!=null?row('3-second views',fmtInt(p.s3)+(p.hook!=null?' ('+p.hook.toFixed(0)+'% of views)':'')):''}
+    ${p.m1!=null?row('1-minute views',fmtInt(p.m1)+(p.deep!=null?' ('+p.deep.toFixed(0)+'% of 3-sec)':'')):''}
+    ${p.aw2!=null?row('Average % watched',p.aw2+'%'):''}
+    ${p.dp!=null?row('Main drop-off point',p.dp):''}
+    ${p.s20!=null?row('Player 20-sec view rate',p.s20+'%'):''}
+    ${p.dn!=null?`<div class="p-sec">Followers vs non-followers</div>
+    <div class="split"><div class="a" style="width:${100-p.dn}%;background:var(--seq-450)"></div><div class="b" style="width:${p.dn}%;background:var(--warm)"></div></div>
+    <div class="splitlbl" style="display:flex;justify-content:space-between;font-size:11px;color:var(--ink-2)"><span>${(100-p.dn).toFixed(1)}% followers · ${fmtInt(p.dfc)}</span><span>${p.dn}% non · ${fmtInt(p.dnc)}</span></div>
+    ${p.ni!=null?row('Net follows from post',(p.ni>0?'+':'')+fmtInt(p.ni)):''}
+    ${p.ql!=null?row('Qualified views',fmtInt(p.ql)):''}
+    ${p.rt!=null?row('Earnings rate (qual. RPM)','$'+p.rt.toFixed(2)):''}`:''}
+    <div class="p-sec">Reach & distribution</div>
+    ${row('Views',fmtInt(p.v))}
+    ${row('Viewers (unique)',fmtInt(p.vw))}
+    ${row('Impressions',fmtInt(p.im))}
+    ${row('Distribution vs typical',(p.d>0?'+':'')+p.d+'×')}
+    <div class="p-sec">Engagement & earnings</div>
+    ${row('Engagement',fmtInt(p.e)+' ('+p.engRate.toFixed(1)+'% of views)')}
+    ${row('Comments',fmtInt(p.c))}
+    ${xt&&xt.reac!=null?row('Reactions',fmtInt(xt.reac)):''}
+    ${xt&&xt.clk!=null?row('Clicks',fmtInt(xt.clk)):''}
+    ${xt&&xt.shr!=null?row('Shares',fmtInt(xt.shr)):''}
+    ${xt&&xt.sav!=null?row('Saves',fmtInt(xt.sav)):''}
+    ${xt&&xt.lc!=null?row('Link clicks',fmtInt(xt.lc)):''}
+    ${row('Net follows',(p.nf>0?'+':'')+fmtInt(p.nf))}
+    ${row('Approximate earnings',money(p.er))}
+    ${row('RPM (per 1,000 views)','$'+p.rpm.toFixed(3))}
+    ${xt&&xt.traf&&Object.keys(xt.traf).length?`<div class="p-sec">Where views came from</div>`+Object.entries(xt.traf).filter(([k,v])=>v>0).map(([k,v])=>row(k,v+'%')).join(''):''}
+    ${xt&&xt.age&&Object.keys(xt.age).length?`<div class="p-sec">Audience age</div>`+Object.entries(xt.age).map(([k,v])=>row(k,v+'%')).join(''):''}
+    <p style="font-size:11px;color:var(--ink-3);margin-top:14px">Watch time, average watch time and 3-sec/1-min views are Facebook's own per-video figures. "Hook %" = 3-second views ÷ views. "Distribution ×" is how far this video over- or under-reached vs the page's typical content. Branded (AD) videos show $0 organic earnings because they're paid separately.</p>`;
+  panel.classList.add('open');scrim.style.display='block';
+}
+function row(k,v){return `<div class="prow"><span class="k">${k}</span><span class="v">${v}</span></div>`;}
+function closePanel(){panel.classList.remove('open');scrim.style.display='none';}
+scrim.onclick=closePanel; root.addEventListener('click',e=>{if(e.target.closest('[data-lad-close-panel]'))closePanel();}); document.addEventListener('keydown',e=>{if(e.key==='Escape'&&panel.classList.contains('open'))closePanel();});
+/* footer */
+root.querySelector('#' + 'foot').innerHTML= CURBRAND!=='lad' ? `Source: ${B.label}'s Facebook <b>Professional Dashboard → Content Library</b> (${META.range}), pulled ${META.pulled}. Same method as the LAD Bible tab: the Content Library walked day-by-day, every video's own insights page opened individually (${DRILLED} of ${POSTS.length} drilled).` : `Source: LAD Bible's Facebook <b>Professional Dashboard → Content Library</b>, filtered to Reels + Live (${META.range}), pulled ${META.pulled}. Because Facebook's list only shows ~10 rows at a time, the month was walked day-by-day to capture every video (${POSTS.length} in total; 13 Jul had no video posts). Each row carries Facebook's own watch-time, average-watch-time and 3-sec/1-min view figures. Earnings are Facebook approximate figures; branded (AD) collabs read $0 organic.<br>
+  <b>Per-video insights fields</b> (follower / non-follower split, average % watched, drop-off point, qualified views, qualified RPM, and 20-sec view rate where Facebook reports it) live only on each video's own insights page, so every video's insights page was opened individually — populated for <b>${DRILLED} of ${POSTS.length}</b> videos — the only gap is the small 24 Jun "CIA officer" reel, for which Facebook returns "content unavailable" (its columns show "—"). Video lengths are Facebook's exact durations read from each insights page. The newest videos' splits and qualified views were re-measured on 27 Jul, so they read a touch fresher than the rest. In the 26 Jul refresh the splits for the biggest movers (KKK, "She makes HOW much", Shania Twain, Dahmer's mother, McDonald's breakfast, Jackass, Teddy Swims, Lily Allen, Amish contraception, Tom Holland WYR, Sociopath, Snack Wars ep3) were re-pulled from their live insights pages; the rest carry their 22 Jul values. Open any video to see its full breakdown. On branded (AD) reels — including the EuroMillions promo — the non-follower share is marked <i>paid</i>: their near-zero qualified views and $0 organic earnings show that reach was delivered as paid distribution, so it shouldn't be read as organic audience growth. The split varies enormously with reach: viral breakouts reach far beyond followers (KKK "left the Klan" <b>80.5%</b> non-followers, "She makes HOW much" <b>79%</b>, Jack Black <b>75%</b>, McDonald's breakfast <b>76%</b>), while the daily reels are ~90–97% existing followers. The 20-second rate is blank on most reels but present on the big ones (e.g. McDonald's breakfast 51.9%, Amish contraception 40.4%, KKK 39.0%). A living snapshot — ask Claude to keep pulling the remaining videos or re-pull to refresh.`;
+}
+/* date range selector */
+root.querySelectorAll('.dchip').forEach(ch=>ch.onclick=()=>{
+  root.querySelectorAll('.dchip').forEach(c=>c.classList.remove('on'));
+  ch.classList.add('on');
+  DATEF=ch.dataset.d;
+  bootBrand(CURBRAND);
+});
+/* brand switcher */
+root.querySelectorAll('.brandbtn').forEach(b=>b.onclick=()=>{
+  root.querySelectorAll('.brandbtn').forEach(x=>x.classList.toggle('on',x===b));
+  root.querySelectorAll('.tabbtn[data-tab]').forEach(x=>x.classList.toggle('on',x.dataset.tab==='tab-main'));
+  root.querySelector('#' + 'tab-main').style.display='';
+  root.querySelector('#' + 'tab-rpm').style.display='none';
+  bootBrand(b.dataset.b);
+  root.scrollIntoView({block:'start',behavior:'auto'});
+});
+bootBrand('lad');
+})();
+}
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',start);}else{start();}
+})();
